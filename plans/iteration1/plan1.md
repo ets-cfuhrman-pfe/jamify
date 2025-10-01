@@ -1,4 +1,4 @@
-# Plan d'itération 1 (exemple)
+# Plan d'itération 1 (exemple)x
 
 > Note: Texte en bloc comme ceci indique des directives aux auteurs. Vous devez supprimer ces directives des plans soumis.
 
