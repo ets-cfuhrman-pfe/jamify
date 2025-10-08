@@ -9,6 +9,8 @@
     const [selectedClass, setSelectedClass] = useSyncedState("class", "Guerrier");
     const [selectedTitle, setSelectedTitle] = useSyncedState("title", "Apprenti");
     const [showAvatarSelector, setShowAvatarSelector] = useSyncedState("showAvatarSelector", false);
+    const [showClassDropdown, setShowClassDropdown] = useSyncedState("showClassDropdown", false);
+    const [showTitleDropdown, setShowTitleDropdown] = useSyncedState("showTitleDropdown", false);
     const avatars = [
       "https://picsum.photos/id/1/200/300",
       "https://picsum.photos/id/2/200/300",
@@ -93,38 +95,99 @@
         )
       )),
       /* @__PURE__ */ figma.widget.h(AutoLayout, { direction: "vertical", spacing: 4 }, /* @__PURE__ */ figma.widget.h(Text, { fontSize: 14 }, "Nom :"), /* @__PURE__ */ figma.widget.h(
-        Input,
+        AutoLayout,
         {
-          value: name,
-          placeholder: "Entrez votre nom",
-          fontSize: 14,
-          onTextEditEnd: (e) => setName(e.characters)
-        }
+          padding: { vertical: 6, horizontal: 8 },
+          cornerRadius: 6,
+          fill: "#F5F5F5",
+          stroke: "#CCCCCC"
+        },
+        /* @__PURE__ */ figma.widget.h(
+          Input,
+          {
+            value: name,
+            placeholder: "Entrez votre nom",
+            fontSize: 14,
+            onTextEditEnd: (e) => setName(e.characters)
+          }
+        )
       )),
-      /* @__PURE__ */ figma.widget.h(AutoLayout, { direction: "vertical", spacing: 4 }, /* @__PURE__ */ figma.widget.h(Text, { fontSize: 14 }, "Classe :"), /* @__PURE__ */ figma.widget.h(AutoLayout, { spacing: 6 }, classes.map((c) => /* @__PURE__ */ figma.widget.h(
+      /* @__PURE__ */ figma.widget.h(AutoLayout, { direction: "vertical", spacing: 4 }, /* @__PURE__ */ figma.widget.h(Text, { fontSize: 14 }, "Classe :"), /* @__PURE__ */ figma.widget.h(
         AutoLayout,
         {
-          key: c,
-          padding: { vertical: 4, horizontal: 8 },
-          cornerRadius: 8,
-          fill: selectedClass === c ? "#CCE5FF" : "#F5F5F5",
+          padding: { vertical: 6, horizontal: 10 },
+          fill: "#F5F5F5",
           stroke: "#CCCCCC",
-          onClick: () => setSelectedClass(c)
+          cornerRadius: 8,
+          spacing: 4,
+          onClick: () => setShowClassDropdown(!showClassDropdown)
         },
-        /* @__PURE__ */ figma.widget.h(Text, null, c)
-      )))),
-      /* @__PURE__ */ figma.widget.h(AutoLayout, { direction: "vertical", spacing: 4 }, /* @__PURE__ */ figma.widget.h(Text, { fontSize: 14 }, "Titre :"), /* @__PURE__ */ figma.widget.h(AutoLayout, { spacing: 6 }, titles.map((t) => /* @__PURE__ */ figma.widget.h(
+        /* @__PURE__ */ figma.widget.h(Text, null, selectedClass),
+        /* @__PURE__ */ figma.widget.h(Text, { fontSize: 10 }, showClassDropdown ? "\u25B2" : "\u25BC")
+      ), showClassDropdown && /* @__PURE__ */ figma.widget.h(
         AutoLayout,
         {
-          key: t,
-          padding: { vertical: 4, horizontal: 8 },
+          direction: "vertical",
+          fill: "#FFFFFF",
+          stroke: "#DDDDDD",
           cornerRadius: 8,
-          fill: selectedTitle === t ? "#CCE5FF" : "#F5F5F5",
-          stroke: "#CCCCCC",
-          onClick: () => setSelectedTitle(t)
+          padding: 6,
+          spacing: 4,
+          width: 100
         },
-        /* @__PURE__ */ figma.widget.h(Text, null, t)
-      )))),
+        classes.map((c) => /* @__PURE__ */ figma.widget.h(
+          AutoLayout,
+          {
+            key: c,
+            padding: { vertical: 4, horizontal: 8 },
+            cornerRadius: 6,
+            fill: selectedClass === c ? "#CCE5FF" : "#FFFFFF",
+            onClick: () => {
+              setSelectedClass(c);
+              setShowClassDropdown(false);
+            }
+          },
+          /* @__PURE__ */ figma.widget.h(Text, null, c)
+        ))
+      )),
+      /* @__PURE__ */ figma.widget.h(AutoLayout, { direction: "vertical", spacing: 4 }, /* @__PURE__ */ figma.widget.h(Text, { fontSize: 14 }, "Titre :"), /* @__PURE__ */ figma.widget.h(
+        AutoLayout,
+        {
+          padding: { vertical: 6, horizontal: 10 },
+          fill: "#F5F5F5",
+          stroke: "#CCCCCC",
+          cornerRadius: 8,
+          spacing: 4,
+          onClick: () => setShowTitleDropdown(!showTitleDropdown)
+        },
+        /* @__PURE__ */ figma.widget.h(Text, null, selectedTitle),
+        /* @__PURE__ */ figma.widget.h(Text, { fontSize: 10 }, showTitleDropdown ? "\u25B2" : "\u25BC")
+      ), showTitleDropdown && /* @__PURE__ */ figma.widget.h(
+        AutoLayout,
+        {
+          direction: "vertical",
+          fill: "#FFFFFF",
+          stroke: "#DDDDDD",
+          cornerRadius: 8,
+          padding: 6,
+          spacing: 4,
+          width: 120
+        },
+        titles.map((t) => /* @__PURE__ */ figma.widget.h(
+          AutoLayout,
+          {
+            key: t,
+            padding: { vertical: 4, horizontal: 8 },
+            cornerRadius: 6,
+            fill: selectedTitle === t ? "#CCE5FF" : "#FFFFFF",
+            onClick: () => {
+              setSelectedTitle(t);
+              setShowTitleDropdown(false);
+            }
+          },
+          /* @__PURE__ */ figma.widget.h(Text, null, t)
+        ))
+      )),
       /* @__PURE__ */ figma.widget.h(AutoLayout, { direction: "vertical", spacing: 4, padding: { top: 12 } }, /* @__PURE__ */ figma.widget.h(Text, { fontSize: 14, fontWeight: "bold" }, "R\xE9sum\xE9 :"), /* @__PURE__ */ figma.widget.h(Text, { fontSize: 13 }, name, " \u2014 ", selectedClass, " (", titles.indexOf(selectedTitle) + 1, "/", titles.length, ") : ", selectedTitle))
     );
   }

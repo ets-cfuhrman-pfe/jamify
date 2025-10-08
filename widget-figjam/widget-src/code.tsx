@@ -11,8 +11,10 @@ function Widget() {
   const [selectedClass, setSelectedClass] = useSyncedState("class", "Guerrier");
   const [selectedTitle, setSelectedTitle] = useSyncedState("title", "Apprenti");
 
+  // Local state (not persisted)
   const [showAvatarSelector, setShowAvatarSelector] = useSyncedState("showAvatarSelector", false);
-
+  const [showClassDropdown, setShowClassDropdown] = useSyncedState("showClassDropdown", false);
+  const [showTitleDropdown, setShowTitleDropdown] = useSyncedState("showTitleDropdown", false);
 
   const avatars = [
     "https://picsum.photos/id/1/200/300",
@@ -108,50 +110,111 @@ function Widget() {
       {/* Name input */}
       <AutoLayout direction="vertical" spacing={4}>
         <Text fontSize={14}>Nom :</Text>
-        <Input
-          value={name}
-          placeholder="Entrez votre nom"
-          fontSize={14}
-          onTextEditEnd={(e) => setName(e.characters)}
-        />
+        <AutoLayout
+          padding={{ vertical: 6, horizontal: 8 }}
+          cornerRadius={6}
+          fill="#F5F5F5"
+          stroke="#CCCCCC"
+        >
+          <Input
+            value={name}
+            placeholder="Entrez votre nom"
+            fontSize={14}
+            onTextEditEnd={(e) => setName(e.characters)}
+          />
+        </AutoLayout>
       </AutoLayout>
 
-      {/* Class selector */}
+      {/* Classe dropdown */}
       <AutoLayout direction="vertical" spacing={4}>
         <Text fontSize={14}>Classe :</Text>
-        <AutoLayout spacing={6}>
-          {classes.map((c) => (
-            <AutoLayout
-              key={c}
-              padding={{ vertical: 4, horizontal: 8 }}
-              cornerRadius={8}
-              fill={selectedClass === c ? "#CCE5FF" : "#F5F5F5"}
-              stroke="#CCCCCC"
-              onClick={() => setSelectedClass(c)}
-            >
-              <Text>{c}</Text>
-            </AutoLayout>
-          ))}
-        </AutoLayout>
-      </AutoLayout>
 
-      {/* Title selector */}
+        {/* Compact dropdown button */}
+        <AutoLayout
+          padding={{ vertical: 6, horizontal: 10 }}
+          fill="#F5F5F5"
+          stroke="#CCCCCC"
+          cornerRadius={8}
+          spacing={4}
+          onClick={() => setShowClassDropdown(!showClassDropdown)}
+        >
+          <Text>{selectedClass}</Text>
+          <Text fontSize={10}>{showClassDropdown ? "▲" : "▼"}</Text>
+        </AutoLayout>
+
+        {/* Expanded dropdown list */}
+        {showClassDropdown && (
+          <AutoLayout
+            direction="vertical"
+            fill="#FFFFFF"
+            stroke="#DDDDDD"
+            cornerRadius={8}
+            padding={6}
+            spacing={4}
+            width={100}
+          >
+            {classes.map((c) => (
+              <AutoLayout
+                key={c}
+                padding={{ vertical: 4, horizontal: 8 }}
+                cornerRadius={6}
+                fill={selectedClass === c ? "#CCE5FF" : "#FFFFFF"}
+                onClick={() => {
+                  setSelectedClass(c);
+                  setShowClassDropdown(false);
+                }}
+              >
+                <Text>{c}</Text>
+              </AutoLayout>
+            ))}
+          </AutoLayout>
+        )}
+      </AutoLayout>
+{/*TODO later make the code more reusable as drop down and color are repeated. More modular*/}
+      {/* Title dropdown */}
       <AutoLayout direction="vertical" spacing={4}>
         <Text fontSize={14}>Titre :</Text>
-        <AutoLayout spacing={6}>
-          {titles.map((t) => (
-            <AutoLayout
-              key={t}
-              padding={{ vertical: 4, horizontal: 8 }}
-              cornerRadius={8}
-              fill={selectedTitle === t ? "#CCE5FF" : "#F5F5F5"}
-              stroke="#CCCCCC"
-              onClick={() => setSelectedTitle(t)}
-            >
-              <Text>{t}</Text>
-            </AutoLayout>
-          ))}
+
+        {/* Compact dropdown button */}
+        <AutoLayout
+          padding={{ vertical: 6, horizontal: 10 }}
+          fill="#F5F5F5"
+          stroke="#CCCCCC"
+          cornerRadius={8}
+          spacing={4}
+          onClick={() => setShowTitleDropdown(!showTitleDropdown)}
+        >
+          <Text>{selectedTitle}</Text>
+          <Text fontSize={10}>{showTitleDropdown ? "▲" : "▼"}</Text>
         </AutoLayout>
+
+        {/* Expanded dropdown list */}
+        {showTitleDropdown && (
+          <AutoLayout
+            direction="vertical"
+            fill="#FFFFFF"
+            stroke="#DDDDDD"
+            cornerRadius={8}
+            padding={6}
+            spacing={4}
+            width={120}
+          >
+            {titles.map((t) => (
+              <AutoLayout
+                key={t}
+                padding={{ vertical: 4, horizontal: 8 }}
+                cornerRadius={6}
+                fill={selectedTitle === t ? "#CCE5FF" : "#FFFFFF"}
+                onClick={() => {
+                  setSelectedTitle(t);
+                  setShowTitleDropdown(false);
+                }}
+              >
+                <Text>{t}</Text>
+              </AutoLayout>
+            ))}
+          </AutoLayout>
+        )}
       </AutoLayout>
 
       {/* Display summary */}
