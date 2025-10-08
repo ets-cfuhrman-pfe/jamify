@@ -11,6 +11,9 @@ function Widget() {
   const [selectedClass, setSelectedClass] = useSyncedState("class", "Guerrier");
   const [selectedTitle, setSelectedTitle] = useSyncedState("title", "Apprenti");
 
+  const [showAvatarSelector, setShowAvatarSelector] = useSyncedState("showAvatarSelector", false);
+
+
   const avatars = [
     "https://picsum.photos/id/1/200/300",
     "https://picsum.photos/id/2/200/300",
@@ -37,24 +40,69 @@ function Widget() {
       </Text>
 
       {/* Avatar selector */}
-      <AutoLayout spacing={8}>
-        {avatars.map((src, index) => (
+      <AutoLayout direction="vertical" spacing={8}>
+        <Text fontSize={14}>Avatar :</Text>
+
+        {/* When selector is closed -> show only chosen avatar */}
+        {!showAvatarSelector && (
           <AutoLayout
-            key={index}
             padding={4}
             cornerRadius={8}
-            fill={index === selectedAvatar ? "#CCE5FF" : "#FFFFFF"}
+            fill="#FFFFFF"
             stroke="#CCCCCC"
-            onClick={() => setSelectedAvatar(index)}
+            onClick={() => setShowAvatarSelector(true)}
           >
             <Image
-              src={src}
-              width={48}
-              height={48}
+              src={avatars[selectedAvatar]}
+              width={64}
+              height={64}
               cornerRadius={8}
             />
           </AutoLayout>
-        ))}
+        )}
+        {/* When selector is open -> show all avatars in a grid */}
+        {showAvatarSelector && (
+          <AutoLayout
+            direction="vertical"
+            spacing={8}
+            padding={8}
+            cornerRadius={12}
+            fill="#F9F9F9"
+            stroke="#DDDDDD"
+          >
+            <AutoLayout spacing={8}>
+              {avatars.map((src, index) => (
+                <AutoLayout
+                  key={index}
+                  padding={4}
+                  cornerRadius={8}
+                  fill={index === selectedAvatar ? "#CCE5FF" : "#FFFFFF"}
+                  stroke="#CCCCCC"
+                  onClick={() => {
+                    setSelectedAvatar(index);
+                    setShowAvatarSelector(false);
+                  }}
+                >
+                  <Image
+                    src={src}
+                    width={64}
+                    height={64}
+                    cornerRadius={8}
+                  />
+                </AutoLayout>
+              ))}
+            </AutoLayout>
+            {/* A small cancel button */}
+            <AutoLayout
+              padding={{ vertical: 4, horizontal: 8 }}
+              cornerRadius={6}
+              fill="#E0E0E0"
+              onClick={() => setShowAvatarSelector(false)}
+            >
+              <Text fontSize={12}>Fermer</Text>
+            </AutoLayout>
+          </AutoLayout>
+        )}
       </AutoLayout>
 
       {/* Name input */}

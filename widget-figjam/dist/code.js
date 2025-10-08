@@ -8,6 +8,7 @@
     const [selectedAvatar, setSelectedAvatar] = useSyncedState("avatar", 0);
     const [selectedClass, setSelectedClass] = useSyncedState("class", "Guerrier");
     const [selectedTitle, setSelectedTitle] = useSyncedState("title", "Apprenti");
+    const [showAvatarSelector, setShowAvatarSelector] = useSyncedState("showAvatarSelector", false);
     const avatars = [
       "https://picsum.photos/id/1/200/300",
       "https://picsum.photos/id/2/200/300",
@@ -29,26 +30,68 @@
         width: 280
       },
       /* @__PURE__ */ figma.widget.h(Text, { fontSize: 18, fontWeight: "bold" }, "Profil de l'\xE9tudiant"),
-      /* @__PURE__ */ figma.widget.h(AutoLayout, { spacing: 8 }, avatars.map((src, index) => /* @__PURE__ */ figma.widget.h(
+      /* @__PURE__ */ figma.widget.h(AutoLayout, { direction: "vertical", spacing: 8 }, /* @__PURE__ */ figma.widget.h(Text, { fontSize: 14 }, "Avatar :"), !showAvatarSelector && /* @__PURE__ */ figma.widget.h(
         AutoLayout,
         {
-          key: index,
           padding: 4,
           cornerRadius: 8,
-          fill: index === selectedAvatar ? "#CCE5FF" : "#FFFFFF",
+          fill: "#FFFFFF",
           stroke: "#CCCCCC",
-          onClick: () => setSelectedAvatar(index)
+          onClick: () => setShowAvatarSelector(true)
         },
         /* @__PURE__ */ figma.widget.h(
           Image,
           {
-            src,
-            width: 48,
-            height: 48,
+            src: avatars[selectedAvatar],
+            width: 64,
+            height: 64,
             cornerRadius: 8
           }
         )
-      ))),
+      ), showAvatarSelector && /* @__PURE__ */ figma.widget.h(
+        AutoLayout,
+        {
+          direction: "vertical",
+          spacing: 8,
+          padding: 8,
+          cornerRadius: 12,
+          fill: "#F9F9F9",
+          stroke: "#DDDDDD"
+        },
+        /* @__PURE__ */ figma.widget.h(AutoLayout, { spacing: 8 }, avatars.map((src, index) => /* @__PURE__ */ figma.widget.h(
+          AutoLayout,
+          {
+            key: index,
+            padding: 4,
+            cornerRadius: 8,
+            fill: index === selectedAvatar ? "#CCE5FF" : "#FFFFFF",
+            stroke: "#CCCCCC",
+            onClick: () => {
+              setSelectedAvatar(index);
+              setShowAvatarSelector(false);
+            }
+          },
+          /* @__PURE__ */ figma.widget.h(
+            Image,
+            {
+              src,
+              width: 64,
+              height: 64,
+              cornerRadius: 8
+            }
+          )
+        ))),
+        /* @__PURE__ */ figma.widget.h(
+          AutoLayout,
+          {
+            padding: { vertical: 4, horizontal: 8 },
+            cornerRadius: 6,
+            fill: "#E0E0E0",
+            onClick: () => setShowAvatarSelector(false)
+          },
+          /* @__PURE__ */ figma.widget.h(Text, { fontSize: 12 }, "Fermer")
+        )
+      )),
       /* @__PURE__ */ figma.widget.h(AutoLayout, { direction: "vertical", spacing: 4 }, /* @__PURE__ */ figma.widget.h(Text, { fontSize: 14 }, "Nom :"), /* @__PURE__ */ figma.widget.h(
         Input,
         {
