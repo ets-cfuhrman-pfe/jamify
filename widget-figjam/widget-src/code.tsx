@@ -16,7 +16,28 @@ function Widget() {
   const [showTitleDropdown, setShowTitleDropdown] = useSyncedState("showTitleDropdown", false)
 
   const [isEditing, setIsEditing] = useSyncedState("isEditing", true)
-
+  const [user, setUser] = useSyncedState("user", () => {
+    const me = figma.currentUser;
+    return {
+      id: me?.id ?? null,
+      name: me?.name ?? "Anonymous",
+      photoUrl: me?.photoUrl ?? null,
+      color: me?.color ?? null,
+      sessionId: me?.sessionId ?? null
+    };
+  });
+  const [activeUser, setActiveUser] = useSyncedState("activeUser", () => {
+    const me = figma.activeUsers[0]; 
+    return {
+      id: me?.id ?? null,
+      name: me?.name ?? "Anonymous",
+      photoUrl: me?.photoUrl ?? null,
+      color: me?.color ?? null,
+      sessionId: me?.sessionId ?? null
+    };
+  });
+  console.log("Currents user:", user); 
+  console.log("Active user:", activeUser);
   const avatars = [
     "https://picsum.photos/id/1/200/300",
     "https://picsum.photos/id/2/200/300",

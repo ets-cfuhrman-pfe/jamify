@@ -12,6 +12,30 @@
     const [showClassDropdown, setShowClassDropdown] = useSyncedState("showClassDropdown", false);
     const [showTitleDropdown, setShowTitleDropdown] = useSyncedState("showTitleDropdown", false);
     const [isEditing, setIsEditing] = useSyncedState("isEditing", true);
+    const [user, setUser] = useSyncedState("user", () => {
+      var _a, _b, _c, _d, _e;
+      const me = figma.currentUser;
+      return {
+        id: (_a = me == null ? void 0 : me.id) != null ? _a : null,
+        name: (_b = me == null ? void 0 : me.name) != null ? _b : "Anonymous",
+        photoUrl: (_c = me == null ? void 0 : me.photoUrl) != null ? _c : null,
+        color: (_d = me == null ? void 0 : me.color) != null ? _d : null,
+        sessionId: (_e = me == null ? void 0 : me.sessionId) != null ? _e : null
+      };
+    });
+    const [activeUser, setActiveUser] = useSyncedState("activeUser", () => {
+      var _a, _b, _c, _d, _e;
+      const me = figma.activeUsers[0];
+      return {
+        id: (_a = me == null ? void 0 : me.id) != null ? _a : null,
+        name: (_b = me == null ? void 0 : me.name) != null ? _b : "Anonymous",
+        photoUrl: (_c = me == null ? void 0 : me.photoUrl) != null ? _c : null,
+        color: (_d = me == null ? void 0 : me.color) != null ? _d : null,
+        sessionId: (_e = me == null ? void 0 : me.sessionId) != null ? _e : null
+      };
+    });
+    console.log("Currents user:", user);
+    console.log("Active user:", activeUser);
     const avatars = [
       "https://picsum.photos/id/1/200/300",
       "https://picsum.photos/id/2/200/300",
