@@ -17,11 +17,11 @@
 
 Les éléments de travail suivants seront abordés dans cette itération:
 
-| Nom / Description              | Priorité | [Taille estimée (points)](#commentEstimer "Comment estimer?") | Assigné à (nom) | Documents de référence |
-| ------------------------------ | -------: | ------------------------------------------------------------: | --------------- | ---------------------- |
-| Création de la maquette                           |        1 |                                                             3 | Philippe Fournier, Prabhjot Singh Josan          | Maquette |
-| UCP-01 Modification du projet                         |        1 |                                                             4 | Philippe Fournier, Burak          | Répertoire GitHub |
-| UCE-01 Personnalisation du profil                           |        1 |                                                             4 | Ashwin Saravanapavan, Prabhjot Singh Josan          | GitHub |
+| Nom / Description                 | Priorité | [Taille estimée (points)](#commentEstimer "Comment estimer?") | Assigné à (nom)                            | Documents de référence |
+| --------------------------------- | -------: | ------------------------------------------------------------: | ------------------------------------------ | ---------------------- |
+| Création de la maquette           |        1 |                                                             3 | Philippe Fournier, Prabhjot Singh Josan    | Maquette               |
+| UCP-01 Modification du projet     |        1 |                                                             4 | Philippe Fournier, Burak                   | Répertoire GitHub      |
+| UCE-01 Personnalisation du profil |        1 |                                                             4 | Ashwin Saravanapavan, Prabhjot Singh Josan | GitHub                 |
 
 ## Critères d'évaluation
 
