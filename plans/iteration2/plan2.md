@@ -11,7 +11,9 @@
 
 
 - Présenter le cas d'utilisation UCP-01.
-- Présenter le cas d'utilisation UCE-01.
+- Présenter le cas d'utilisation UCE-03.
+- Présenter le cas d'utilisation Widget Kanban.
+- Présenter le cas d'utilisation SessionID.
 
 ## Affectations d'éléments de travail
 
@@ -19,13 +21,16 @@ Les éléments de travail suivants seront abordés dans cette itération:
 
 | Nom / Description                 | Priorité | [Taille estimée (points)](#commentEstimer "Comment estimer?") | Assigné à (nom)                            | Documents de référence |
 | --------------------------------- | -------: | ------------------------------------------------------------: | ------------------------------------------ | ---------------------- |
-| UCP-01 Modification du projet     |        1 |                                                             4 | Philippe Fournier, Burak                   | GitHub                 |
 | UCE-01 Personnalisation du profil |        1 |                                                             4 | Ashwin Saravanapavan, Prabhjot Singh Josan | GitHub                 |
+| Widget Kanban                     |        1 |                                                             4 | Prabhjot Singh Josan                       | GitHub                 |
+| SessionID                         |        1 |                                                             4 | Ashwin Saravanapavan, Philippe Fournier    | GitHub                 |
+| UCE-03 Gestion de la progression  |        1 |                                                             4 | Burak, Prabhjot Singh Josan                | GitHub                 |
+
 
 ## Critères d'évaluation
 
 - Le client est satisfait de la maquette.
-- Démonstration des fonctionnalités UCP-01 et UCE-01 pas à pas avec le client.
+- Démonstration des fonctionnalités Widget Kanban, SessionID, UCE-03 et UCE-01 pas à pas avec le client.
 
 ### Éléments de travail: prévus vs réalisés
 
