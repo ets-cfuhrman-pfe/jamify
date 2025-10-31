@@ -1,5 +1,25 @@
 "use strict";
 (() => {
+  var __defProp = Object.defineProperty;
+  var __defProps = Object.defineProperties;
+  var __getOwnPropDescs = Object.getOwnPropertyDescriptors;
+  var __getOwnPropSymbols = Object.getOwnPropertySymbols;
+  var __hasOwnProp = Object.prototype.hasOwnProperty;
+  var __propIsEnum = Object.prototype.propertyIsEnumerable;
+  var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+  var __spreadValues = (a, b) => {
+    for (var prop in b || (b = {}))
+      if (__hasOwnProp.call(b, prop))
+        __defNormalProp(a, prop, b[prop]);
+    if (__getOwnPropSymbols)
+      for (var prop of __getOwnPropSymbols(b)) {
+        if (__propIsEnum.call(b, prop))
+          __defNormalProp(a, prop, b[prop]);
+      }
+    return a;
+  };
+  var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
+
   // widget-src/code.tsx
   var { widget } = figma;
   var { useSyncedState, AutoLayout, Text, Input, Image } = widget;
@@ -497,15 +517,287 @@
     );
   }
 
-  // widget-src/widget.tsx
+  // widget-src/postit.tsx
   var { widget: widget3 } = figma;
-  var { AutoLayout: AutoLayout3, Text: Text3, useSyncedState: useSyncedState3 } = widget3;
+  var { useSyncedState: useSyncedState3, AutoLayout: AutoLayout3, Text: Text3, Input: Input3 } = widget3;
+  function PostItBoard() {
+    const [postIts, setPostIts] = useSyncedState3("postIts", []);
+    const [isCreating, setIsCreating] = useSyncedState3("isCreatingPostIt", false);
+    const [newPostItContent, setNewPostItContent] = useSyncedState3(
+      "newPostItContent",
+      ""
+    );
+    const [currentUserId, setCurrentUserId] = useSyncedState3(
+      "currentUserId",
+      ""
+    );
+    const [currentUserName, setCurrentUserName] = useSyncedState3(
+      "currentUserName",
+      "Anonyme"
+    );
+    const colors = [
+      "#FFE5B4",
+      "#FFB6C1",
+      "#B4E5FF",
+      "#C1FFB6",
+      "#E5B4FF",
+      "#FFD700"
+    ];
+    const addPostIt = () => {
+      return new Promise((resolve) => {
+        const user = figma.currentUser;
+        const userId = (user == null ? void 0 : user.id) || "anonymous";
+        const userName = (user == null ? void 0 : user.name) || "Anonyme";
+        if (!currentUserId) {
+          setCurrentUserId(userId);
+          setCurrentUserName(userName);
+        }
+        if (newPostItContent.trim()) {
+          const newPostIt = {
+            id: `postit_${Date.now()}_${Math.random()}`,
+            content: newPostItContent,
+            authorId: userId,
+            authorName: userName,
+            color: colors[Math.floor(Math.random() * colors.length)],
+            timestamp: Date.now()
+          };
+          setPostIts([...postIts, newPostIt]);
+          setNewPostItContent("");
+          setIsCreating(false);
+        }
+        resolve();
+      });
+    };
+    const isCurrentUserAuthor = (authorId) => {
+      const user = figma.currentUser;
+      return (user == null ? void 0 : user.id) === authorId;
+    };
+    const deletePostIt = (id, authorId) => {
+      return new Promise((resolve) => {
+        if (isCurrentUserAuthor(authorId)) {
+          setPostIts(postIts.filter((p) => p.id !== id));
+          figma.notify("\u{1F5D1}\uFE0F Post-it supprim\xE9");
+        } else {
+          figma.notify("\u26A0\uFE0F Vous ne pouvez supprimer que vos propres post-its");
+        }
+        resolve();
+      });
+    };
+    const editPostIt = (id, newContent) => {
+      setPostIts(
+        postIts.map((p) => p.id === id ? __spreadProps(__spreadValues({}, p), { content: newContent }) : p)
+      );
+    };
+    return /* @__PURE__ */ figma.widget.h(
+      AutoLayout3,
+      {
+        direction: "vertical",
+        spacing: 12,
+        padding: 16,
+        cornerRadius: 12,
+        fill: "#FFFFFF",
+        stroke: "#E6E6E6",
+        width: 600
+      },
+      /* @__PURE__ */ figma.widget.h(
+        AutoLayout3,
+        {
+          direction: "horizontal",
+          spacing: 8,
+          verticalAlignItems: "center",
+          width: "fill-parent"
+        },
+        /* @__PURE__ */ figma.widget.h(Text3, { fontSize: 18, fontWeight: "bold" }, "\u{1F4DD} R\xE9troaction"),
+        /* @__PURE__ */ figma.widget.h(
+          AutoLayout3,
+          {
+            padding: { vertical: 6, horizontal: 12 },
+            cornerRadius: 6,
+            fill: "#4CAF50",
+            onClick: () => setIsCreating(!isCreating)
+          },
+          /* @__PURE__ */ figma.widget.h(Text3, { fontSize: 12, fill: "#FFFFFF", fontWeight: "bold" }, isCreating ? "Annuler" : "+ Nouveau post-it")
+        )
+      ),
+      isCreating && /* @__PURE__ */ figma.widget.h(
+        AutoLayout3,
+        {
+          direction: "vertical",
+          spacing: 8,
+          padding: 12,
+          cornerRadius: 8,
+          fill: "#FFF9E6",
+          stroke: "#FFD700",
+          width: "fill-parent"
+        },
+        /* @__PURE__ */ figma.widget.h(Text3, { fontSize: 13, fontWeight: "bold" }, "Nouveau post-it :"),
+        /* @__PURE__ */ figma.widget.h(
+          AutoLayout3,
+          {
+            padding: { vertical: 8, horizontal: 8 },
+            cornerRadius: 6,
+            fill: "#FFFFFF",
+            stroke: "#CCCCCC",
+            width: "fill-parent"
+          },
+          /* @__PURE__ */ figma.widget.h(
+            Input3,
+            {
+              value: newPostItContent,
+              placeholder: "\xC9crivez votre r\xE9troaction...",
+              fontSize: 12,
+              width: "fill-parent",
+              onTextEditEnd: (e) => setNewPostItContent(e.characters)
+            }
+          )
+        ),
+        /* @__PURE__ */ figma.widget.h(
+          AutoLayout3,
+          {
+            padding: { vertical: 6, horizontal: 12 },
+            cornerRadius: 6,
+            fill: "#4CAF50",
+            horizontalAlignItems: "center",
+            onClick: addPostIt
+          },
+          /* @__PURE__ */ figma.widget.h(Text3, { fontSize: 12, fill: "#FFFFFF", fontWeight: "bold" }, "Ajouter le post-it")
+        )
+      ),
+      /* @__PURE__ */ figma.widget.h(
+        AutoLayout3,
+        {
+          direction: "horizontal",
+          spacing: 12,
+          wrap: true,
+          width: "fill-parent"
+        },
+        postIts.length === 0 ? /* @__PURE__ */ figma.widget.h(Text3, { fontSize: 12, fill: "#999" }, 'Aucun post-it pour le moment. Cliquez sur "+ Nouveau post-it" pour commencer !') : postIts.map((postIt) => {
+          const [isEditing, setIsEditing] = useSyncedState3(
+            `editing_${postIt.id}`,
+            false
+          );
+          const [editContent, setEditContent] = useSyncedState3(
+            `editContent_${postIt.id}`,
+            postIt.content
+          );
+          return /* @__PURE__ */ figma.widget.h(
+            AutoLayout3,
+            {
+              key: postIt.id,
+              direction: "vertical",
+              spacing: 8,
+              padding: 12,
+              cornerRadius: 8,
+              fill: postIt.color,
+              stroke: "#00000020",
+              width: 180
+            },
+            isEditing ? (
+              // Edit mode
+              /* @__PURE__ */ figma.widget.h(figma.widget.Fragment, null, /* @__PURE__ */ figma.widget.h(
+                AutoLayout3,
+                {
+                  padding: { vertical: 6, horizontal: 8 },
+                  cornerRadius: 6,
+                  fill: "#FFFFFF",
+                  width: "fill-parent"
+                },
+                /* @__PURE__ */ figma.widget.h(
+                  Input3,
+                  {
+                    value: editContent,
+                    fontSize: 11,
+                    width: "fill-parent",
+                    onTextEditEnd: (e) => setEditContent(e.characters)
+                  }
+                )
+              ), /* @__PURE__ */ figma.widget.h(AutoLayout3, { direction: "horizontal", spacing: 4 }, /* @__PURE__ */ figma.widget.h(
+                AutoLayout3,
+                {
+                  padding: { vertical: 4, horizontal: 8 },
+                  cornerRadius: 4,
+                  fill: "#4CAF50",
+                  onClick: () => {
+                    return new Promise((resolve) => {
+                      if (isCurrentUserAuthor(postIt.authorId)) {
+                        editPostIt(postIt.id, editContent);
+                        setIsEditing(false);
+                      }
+                      resolve();
+                    });
+                  }
+                },
+                /* @__PURE__ */ figma.widget.h(Text3, { fontSize: 10, fill: "#FFFFFF" }, "\u2713 Sauvegarder")
+              ), /* @__PURE__ */ figma.widget.h(
+                AutoLayout3,
+                {
+                  padding: { vertical: 4, horizontal: 8 },
+                  cornerRadius: 4,
+                  fill: "#999999",
+                  onClick: () => {
+                    setEditContent(postIt.content);
+                    setIsEditing(false);
+                  }
+                },
+                /* @__PURE__ */ figma.widget.h(Text3, { fontSize: 10, fill: "#FFFFFF" }, "Annuler")
+              )))
+            ) : (
+              // View mode
+              /* @__PURE__ */ figma.widget.h(figma.widget.Fragment, null, /* @__PURE__ */ figma.widget.h(Text3, { fontSize: 11 }, postIt.content), /* @__PURE__ */ figma.widget.h(
+                AutoLayout3,
+                {
+                  direction: "vertical",
+                  spacing: 4,
+                  width: "fill-parent"
+                },
+                /* @__PURE__ */ figma.widget.h(Text3, { fontSize: 9, fill: "#666" }, "\u2014 ", postIt.authorName),
+                /* @__PURE__ */ figma.widget.h(AutoLayout3, { direction: "horizontal", spacing: 4 }, /* @__PURE__ */ figma.widget.h(
+                  AutoLayout3,
+                  {
+                    padding: { vertical: 3, horizontal: 6 },
+                    cornerRadius: 4,
+                    fill: "#2196F3",
+                    onClick: () => {
+                      return new Promise((resolve) => {
+                        if (isCurrentUserAuthor(postIt.authorId)) {
+                          setIsEditing(true);
+                        } else {
+                          figma.notify(
+                            "\u26A0\uFE0F Vous ne pouvez modifier que vos propres post-its"
+                          );
+                        }
+                        resolve();
+                      });
+                    }
+                  },
+                  /* @__PURE__ */ figma.widget.h(Text3, { fontSize: 9, fill: "#FFFFFF" }, "\u270F\uFE0F Modifier")
+                ), /* @__PURE__ */ figma.widget.h(
+                  AutoLayout3,
+                  {
+                    padding: { vertical: 3, horizontal: 6 },
+                    cornerRadius: 4,
+                    fill: "#F44336",
+                    onClick: () => deletePostIt(postIt.id, postIt.authorId)
+                  },
+                  /* @__PURE__ */ figma.widget.h(Text3, { fontSize: 9, fill: "#FFFFFF" }, "\u{1F5D1}\uFE0F Supprimer")
+                ))
+              ))
+            )
+          );
+        })
+      )
+    );
+  }
+
+  // widget-src/widget.tsx
+  var { widget: widget4 } = figma;
+  var { AutoLayout: AutoLayout4, Text: Text4, useSyncedState: useSyncedState4 } = widget4;
   function Widget() {
-    const [numberOfStudents] = useSyncedState3("teacherNumStudents", "");
+    const [numberOfStudents] = useSyncedState4("teacherNumStudents", "");
     const numStudents = parseInt(numberOfStudents) || 0;
     const studentIndices = Array.from({ length: numStudents }, (_, i) => i);
     return /* @__PURE__ */ figma.widget.h(
-      AutoLayout3,
+      AutoLayout4,
       {
         name: "Main Widget Container",
         direction: "horizontal",
@@ -515,8 +807,8 @@
         fill: "#F0F0F0"
       },
       /* @__PURE__ */ figma.widget.h(TeacherProfile, null),
-      numStudents > 0 ? /* @__PURE__ */ figma.widget.h(
-        AutoLayout3,
+      numStudents > 0 ? /* @__PURE__ */ figma.widget.h(AutoLayout4, { direction: "horizontal", spacing: 16 }, /* @__PURE__ */ figma.widget.h(
+        AutoLayout4,
         {
           direction: "vertical",
           spacing: 12,
@@ -525,9 +817,9 @@
           fill: "#FFFFFF",
           stroke: "#E6E6E6"
         },
-        /* @__PURE__ */ figma.widget.h(Text3, { fontSize: 18, fontWeight: "bold" }, "\xC9quipe"),
+        /* @__PURE__ */ figma.widget.h(Text4, { fontSize: 18, fontWeight: "bold" }, "\xC9quipe"),
         /* @__PURE__ */ figma.widget.h(
-          AutoLayout3,
+          AutoLayout4,
           {
             direction: "horizontal",
             spacing: 16,
@@ -536,8 +828,8 @@
           },
           studentIndices.map((index) => /* @__PURE__ */ figma.widget.h(StudentProfile, { key: index, studentId: index }))
         )
-      ) : /* @__PURE__ */ figma.widget.h(
-        AutoLayout3,
+      ), /* @__PURE__ */ figma.widget.h(PostItBoard, null)) : /* @__PURE__ */ figma.widget.h(
+        AutoLayout4,
         {
           direction: "vertical",
           spacing: 12,
@@ -547,10 +839,10 @@
           stroke: "#E6E6E6",
           width: 280
         },
-        /* @__PURE__ */ figma.widget.h(Text3, { fontSize: 16, fontWeight: "bold" }, "\u{1F465} Profils des \xE9tudiants"),
-        /* @__PURE__ */ figma.widget.h(Text3, { fontSize: 12, fill: "#666" }, "L'enseignant doit d'abord d\xE9finir le nombre d'\xE9tudiants dans le formulaire ci-dessus.")
+        /* @__PURE__ */ figma.widget.h(Text4, { fontSize: 16, fontWeight: "bold" }, "\u{1F465} Profils des \xE9tudiants"),
+        /* @__PURE__ */ figma.widget.h(Text4, { fontSize: 12, fill: "#666" }, "L'enseignant doit d'abord d\xE9finir le nombre d'\xE9tudiants dans le formulaire ci-dessus.")
       )
     );
   }
-  widget3.register(Widget);
+  widget4.register(Widget);
 })();

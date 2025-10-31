@@ -1,6 +1,7 @@
 // Main Widget - Combines multiple components
 import { StudentProfile } from "./code";
 import { TeacherProfile } from "./teacher";
+import { PostItBoard } from "./postit";
 
 const { widget } = figma;
 const { AutoLayout, Text, useSyncedState } = widget;
@@ -30,29 +31,35 @@ function Widget() {
 
       {/* Student Profiles Section */}
       {numStudents > 0 ? (
-        <AutoLayout
-          direction="vertical"
-          spacing={12}
-          padding={16}
-          cornerRadius={12}
-          fill="#FFFFFF"
-          stroke="#E6E6E6"
-        >
-          <Text fontSize={18} fontWeight="bold">
-            Équipe
-          </Text>
-
-          {/* Grid layout for student profiles */}
+        <AutoLayout direction="horizontal" spacing={16}>
+          {/* Équipe Section */}
           <AutoLayout
-            direction="horizontal"
-            spacing={16}
-            wrap={true}
-            width={"fill-parent"}
+            direction="vertical"
+            spacing={12}
+            padding={16}
+            cornerRadius={12}
+            fill="#FFFFFF"
+            stroke="#E6E6E6"
           >
-            {studentIndices.map((index) => (
-              <StudentProfile key={index} studentId={index} />
-            ))}
+            <Text fontSize={18} fontWeight="bold">
+              Équipe
+            </Text>
+
+            {/* Grid layout for student profiles */}
+            <AutoLayout
+              direction="horizontal"
+              spacing={16}
+              wrap={true}
+              width={"fill-parent"}
+            >
+              {studentIndices.map((index) => (
+                <StudentProfile key={index} studentId={index} />
+              ))}
+            </AutoLayout>
           </AutoLayout>
+
+          {/* Rétroaction with Post-its */}
+          <PostItBoard />
         </AutoLayout>
       ) : (
         <AutoLayout
