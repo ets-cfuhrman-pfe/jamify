@@ -2,14 +2,14 @@ const { widget } = figma;
 const { useSyncedState, useEffect, AutoLayout, Text } = widget;
 
 // Import types
-import { Issue, Column } from './types';
+import { Issue, Column } from "./types";
 
 // Import constants
-import { COLUMNS, XP_REWARDS, XP_PER_LEVEL } from './constants';
+import { COLUMNS, XP_REWARDS, XP_PER_LEVEL } from "./constants";
 
 // Import components
-import { CharacterProfile } from './CharacterProfile';
-import { KanbanColumn } from './KanbanColumn';
+import { CharacterProfile } from "./CharacterProfile";
+import { KanbanColumn } from "./KanbanColumn";
 
 // Main Widget
 function KanbanWidget() {
@@ -50,7 +50,10 @@ function KanbanWidget() {
 
   const [xp, setXp] = useSyncedState("xp", 45);
   const [level, setLevel] = useSyncedState("level", 1);
-  const [addingToColumn, setAddingToColumn] = useSyncedState<string | null>("addingToColumn", null);
+  const [addingToColumn, setAddingToColumn] = useSyncedState<string | null>(
+    "addingToColumn",
+    null
+  );
 
   const xpToNextLevel = level * XP_PER_LEVEL;
 
@@ -69,8 +72,17 @@ function KanbanWidget() {
   };
 
   const handleMove = (issueId: string) => {
-    const issue = issues.find(i => i.id === issueId);
+    const issue = issues.find((i) => i.id === issueId);
     if (!issue) return;
+
+    //Vérifie si la tâche est déjà terminée
+    if (issue.status === "done") {
+      // Feedback sur Figma pour l'utilisateur
+      try {
+        figma.notify("Cette tâche est déjà terminée.");
+      } catch (_) {}
+      return;
+    }
 
     // Cycle through statuses: todo -> in-progress -> done -> todo
     const statusOrder = ["todo", "in-progress", "done"];
@@ -91,7 +103,12 @@ function KanbanWidget() {
     }
   };
 
-  const handleAddIssue = (status: string, title: string, description: string, priority: "low" | "medium" | "high") => {
+  const handleAddIssue = (
+    status: string,
+    title: string,
+    description: string,
+    priority: "low" | "medium" | "high"
+  ) => {
     const newIssue: Issue = {
       id: Date.now().toString(),
       title: title,
@@ -116,8 +133,12 @@ function KanbanWidget() {
     >
       {/* Header */}
       <AutoLayout direction="vertical" spacing={8} width="fill-parent">
-        <Text fontSize={32} fontWeight={700} fill="#111827">Tableau Kanban Étudiant</Text>
-        <Text fontSize={14} fill="#6B7280">Complétez les quêtes et améliorez votre personnage!</Text>
+        <Text fontSize={32} fontWeight={700} fill="#111827">
+          Tableau Kanban Étudiant
+        </Text>
+        <Text fontSize={14} fill="#6B7280">
+          Complétez les quêtes et améliorez votre personnage!
+        </Text>
       </AutoLayout>
 
       {/* Character Profile */}
