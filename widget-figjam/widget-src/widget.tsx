@@ -3,10 +3,19 @@ import { StudentProfile } from "./code";
 import { TeacherProfile } from "./teacher";
 
 const { widget } = figma;
-const { AutoLayout, Text } = widget;
+const { AutoLayout, Text, useSyncedState } = widget;
 
 // Main Widget Container - Add your other functionalities here!
 function Widget() {
+  // Get the number of students from synced state (shared with TeacherProfile)
+  const [numberOfStudents] = useSyncedState("teacherNumStudents", "");
+
+  // Parse the number of students (default to 0 if invalid)
+  const numStudents = parseInt(numberOfStudents) || 0;
+
+  // Generate array of student indices
+  const studentIndices = Array.from({ length: numStudents }, (_, i) => i);
+
   return (
     <AutoLayout
       name="Main Widget Container"
@@ -16,36 +25,54 @@ function Widget() {
       cornerRadius={12}
       fill="#F0F0F0"
     >
+      {/* Teacher Section */}
       <TeacherProfile />
-      {/* Student Profile Section */}
-      <StudentProfile />
 
-      {/* 
-        Add your other functionalities here!
-        Examples:
-        - <TaskList />
-        - <ProgressTracker />
-        - <TeamView />
-        etc.
-      */}
+      {/* Student Profiles Section */}
+      {numStudents > 0 ? (
+        <AutoLayout
+          direction="vertical"
+          spacing={12}
+          padding={16}
+          cornerRadius={12}
+          fill="#FFFFFF"
+          stroke="#E6E6E6"
+        >
+          <Text fontSize={18} fontWeight="bold">
+            Équipe
+          </Text>
 
-      {/* Placeholder for future features */}
-      <AutoLayout
-        direction="vertical"
-        spacing={12}
-        padding={16}
-        cornerRadius={12}
-        fill="#FFFFFF"
-        stroke="#E6E6E6"
-        width={280}
-      >
-        <Text fontSize={16} fontWeight="bold">
-          Autres fonctionnalités
-        </Text>
-        <Text fontSize={12} fill="#666">
-          Placeholder.
-        </Text>
-      </AutoLayout>
+          {/* Grid layout for student profiles */}
+          <AutoLayout
+            direction="horizontal"
+            spacing={16}
+            wrap={true}
+            width={"fill-parent"}
+          >
+            {studentIndices.map((index) => (
+              <StudentProfile key={index} studentId={index} />
+            ))}
+          </AutoLayout>
+        </AutoLayout>
+      ) : (
+        <AutoLayout
+          direction="vertical"
+          spacing={12}
+          padding={16}
+          cornerRadius={12}
+          fill="#FFFFFF"
+          stroke="#E6E6E6"
+          width={280}
+        >
+          <Text fontSize={16} fontWeight="bold">
+            👥 Profils des étudiants
+          </Text>
+          <Text fontSize={12} fill="#666">
+            L'enseignant doit d'abord définir le nombre d'étudiants dans le
+            formulaire ci-dessus.
+          </Text>
+        </AutoLayout>
+      )}
     </AutoLayout>
   );
 }

@@ -3,25 +3,40 @@
   // widget-src/code.tsx
   var { widget } = figma;
   var { useSyncedState, AutoLayout, Text, Input, Image } = widget;
-  function StudentProfile() {
-    const [name, setName] = useSyncedState("name", "Student");
-    const [selectedAvatar, setSelectedAvatar] = useSyncedState("avatar", 0);
-    const [selectedClass, setSelectedClass] = useSyncedState("class", "Guerrier");
-    const [selectedTitle, setSelectedTitle] = useSyncedState("title", "Apprenti");
+  function StudentProfile({ studentId = 0 }) {
+    const [name, setName] = useSyncedState(
+      `student_${studentId}_name`,
+      `\xC9tudiant ${studentId + 1}`
+    );
+    const [selectedAvatar, setSelectedAvatar] = useSyncedState(
+      `student_${studentId}_avatar`,
+      0
+    );
+    const [selectedClass, setSelectedClass] = useSyncedState(
+      `student_${studentId}_class`,
+      "Guerrier"
+    );
+    const [selectedTitle, setSelectedTitle] = useSyncedState(
+      `student_${studentId}_title`,
+      "Apprenti"
+    );
     const [showAvatarSelector, setShowAvatarSelector] = useSyncedState(
-      "showAvatarSelector",
+      `student_${studentId}_showAvatarSelector`,
       false
     );
     const [showClassDropdown, setShowClassDropdown] = useSyncedState(
-      "showClassDropdown",
+      `student_${studentId}_showClassDropdown`,
       false
     );
     const [showTitleDropdown, setShowTitleDropdown] = useSyncedState(
-      "showTitleDropdown",
+      `student_${studentId}_showTitleDropdown`,
       false
     );
-    const [isEditing, setIsEditing] = useSyncedState("isEditing", true);
-    const [user, setUser] = useSyncedState("user", () => {
+    const [isEditing, setIsEditing] = useSyncedState(
+      `student_${studentId}_isEditing`,
+      true
+    );
+    const [user, setUser] = useSyncedState(`student_${studentId}_user`, () => {
       var _a, _b, _c, _d, _e;
       const me = figma.currentUser;
       return {
@@ -32,19 +47,22 @@
         sessionId: (_e = me == null ? void 0 : me.sessionId) != null ? _e : null
       };
     });
-    const [activeUser, setActiveUser] = useSyncedState("activeUser", () => {
-      var _a, _b, _c, _d, _e;
-      const me = figma.activeUsers[0];
-      return {
-        id: (_a = me == null ? void 0 : me.id) != null ? _a : null,
-        name: (_b = me == null ? void 0 : me.name) != null ? _b : "Anonymous",
-        photoUrl: (_c = me == null ? void 0 : me.photoUrl) != null ? _c : null,
-        color: (_d = me == null ? void 0 : me.color) != null ? _d : null,
-        sessionId: (_e = me == null ? void 0 : me.sessionId) != null ? _e : null
-      };
-    });
-    console.log("Currents user:", user);
-    console.log("Active user:", activeUser);
+    const [activeUser, setActiveUser] = useSyncedState(
+      `student_${studentId}_activeUser`,
+      () => {
+        var _a, _b, _c, _d, _e;
+        const me = figma.activeUsers[0];
+        return {
+          id: (_a = me == null ? void 0 : me.id) != null ? _a : null,
+          name: (_b = me == null ? void 0 : me.name) != null ? _b : "Anonymous",
+          photoUrl: (_c = me == null ? void 0 : me.photoUrl) != null ? _c : null,
+          color: (_d = me == null ? void 0 : me.color) != null ? _d : null,
+          sessionId: (_e = me == null ? void 0 : me.sessionId) != null ? _e : null
+        };
+      }
+    );
+    console.log(`Student ${studentId} - Current user:`, user);
+    console.log(`Student ${studentId} - Active user:`, activeUser);
     const avatars = [
       "https://picsum.photos/id/1/200/300",
       "https://picsum.photos/id/2/200/300",
@@ -481,8 +499,11 @@
 
   // widget-src/widget.tsx
   var { widget: widget3 } = figma;
-  var { AutoLayout: AutoLayout3, Text: Text3 } = widget3;
+  var { AutoLayout: AutoLayout3, Text: Text3, useSyncedState: useSyncedState3 } = widget3;
   function Widget() {
+    const [numberOfStudents] = useSyncedState3("teacherNumStudents", "");
+    const numStudents = parseInt(numberOfStudents) || 0;
+    const studentIndices = Array.from({ length: numStudents }, (_, i) => i);
     return /* @__PURE__ */ figma.widget.h(
       AutoLayout3,
       {
@@ -494,8 +515,28 @@
         fill: "#F0F0F0"
       },
       /* @__PURE__ */ figma.widget.h(TeacherProfile, null),
-      /* @__PURE__ */ figma.widget.h(StudentProfile, null),
-      /* @__PURE__ */ figma.widget.h(
+      numStudents > 0 ? /* @__PURE__ */ figma.widget.h(
+        AutoLayout3,
+        {
+          direction: "vertical",
+          spacing: 12,
+          padding: 16,
+          cornerRadius: 12,
+          fill: "#FFFFFF",
+          stroke: "#E6E6E6"
+        },
+        /* @__PURE__ */ figma.widget.h(Text3, { fontSize: 18, fontWeight: "bold" }, "\xC9quipe"),
+        /* @__PURE__ */ figma.widget.h(
+          AutoLayout3,
+          {
+            direction: "horizontal",
+            spacing: 16,
+            wrap: true,
+            width: "fill-parent"
+          },
+          studentIndices.map((index) => /* @__PURE__ */ figma.widget.h(StudentProfile, { key: index, studentId: index }))
+        )
+      ) : /* @__PURE__ */ figma.widget.h(
         AutoLayout3,
         {
           direction: "vertical",
@@ -506,8 +547,8 @@
           stroke: "#E6E6E6",
           width: 280
         },
-        /* @__PURE__ */ figma.widget.h(Text3, { fontSize: 16, fontWeight: "bold" }, "Autres fonctionnalit\xE9s"),
-        /* @__PURE__ */ figma.widget.h(Text3, { fontSize: 12, fill: "#666" }, "Placeholder.")
+        /* @__PURE__ */ figma.widget.h(Text3, { fontSize: 16, fontWeight: "bold" }, "\u{1F465} Profils des \xE9tudiants"),
+        /* @__PURE__ */ figma.widget.h(Text3, { fontSize: 12, fill: "#666" }, "L'enseignant doit d'abord d\xE9finir le nombre d'\xE9tudiants dans le formulaire ci-dessus.")
       )
     );
   }

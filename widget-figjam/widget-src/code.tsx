@@ -4,29 +4,44 @@ const { widget } = figma;
 const { useSyncedState, AutoLayout, Text, Input, Image } = widget;
 
 // Reusable Student Profile Component
-export function StudentProfile() {
-  // Persistent synced states
-  const [name, setName] = useSyncedState("name", "Student");
-  const [selectedAvatar, setSelectedAvatar] = useSyncedState("avatar", 0);
-  const [selectedClass, setSelectedClass] = useSyncedState("class", "Guerrier");
-  const [selectedTitle, setSelectedTitle] = useSyncedState("title", "Apprenti");
+export function StudentProfile({ studentId = 0 }: { studentId?: number }) {
+  // Persistent synced states - unique per student using studentId
+  const [name, setName] = useSyncedState(
+    `student_${studentId}_name`,
+    `Étudiant ${studentId + 1}`
+  );
+  const [selectedAvatar, setSelectedAvatar] = useSyncedState(
+    `student_${studentId}_avatar`,
+    0
+  );
+  const [selectedClass, setSelectedClass] = useSyncedState(
+    `student_${studentId}_class`,
+    "Guerrier"
+  );
+  const [selectedTitle, setSelectedTitle] = useSyncedState(
+    `student_${studentId}_title`,
+    "Apprenti"
+  );
 
-  // UI state
+  // UI state - unique per student
   const [showAvatarSelector, setShowAvatarSelector] = useSyncedState(
-    "showAvatarSelector",
+    `student_${studentId}_showAvatarSelector`,
     false
   );
   const [showClassDropdown, setShowClassDropdown] = useSyncedState(
-    "showClassDropdown",
+    `student_${studentId}_showClassDropdown`,
     false
   );
   const [showTitleDropdown, setShowTitleDropdown] = useSyncedState(
-    "showTitleDropdown",
+    `student_${studentId}_showTitleDropdown`,
     false
   );
 
-  const [isEditing, setIsEditing] = useSyncedState("isEditing", true);
-  const [user, setUser] = useSyncedState("user", () => {
+  const [isEditing, setIsEditing] = useSyncedState(
+    `student_${studentId}_isEditing`,
+    true
+  );
+  const [user, setUser] = useSyncedState(`student_${studentId}_user`, () => {
     const me = figma.currentUser;
     return {
       id: me?.id ?? null,
@@ -36,18 +51,21 @@ export function StudentProfile() {
       sessionId: me?.sessionId ?? null,
     };
   });
-  const [activeUser, setActiveUser] = useSyncedState("activeUser", () => {
-    const me = figma.activeUsers[0];
-    return {
-      id: me?.id ?? null,
-      name: me?.name ?? "Anonymous",
-      photoUrl: me?.photoUrl ?? null,
-      color: me?.color ?? null,
-      sessionId: me?.sessionId ?? null,
-    };
-  });
-  console.log("Currents user:", user);
-  console.log("Active user:", activeUser);
+  const [activeUser, setActiveUser] = useSyncedState(
+    `student_${studentId}_activeUser`,
+    () => {
+      const me = figma.activeUsers[0];
+      return {
+        id: me?.id ?? null,
+        name: me?.name ?? "Anonymous",
+        photoUrl: me?.photoUrl ?? null,
+        color: me?.color ?? null,
+        sessionId: me?.sessionId ?? null,
+      };
+    }
+  );
+  console.log(`Student ${studentId} - Current user:`, user);
+  console.log(`Student ${studentId} - Active user:`, activeUser);
   const avatars = [
     "https://picsum.photos/id/1/200/300",
     "https://picsum.photos/id/2/200/300",
