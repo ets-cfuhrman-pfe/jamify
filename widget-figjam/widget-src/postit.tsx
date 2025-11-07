@@ -116,7 +116,7 @@ export function PostItBoard() {
         width={"fill-parent"}
       >
         <Text fontSize={18} fontWeight="bold">
-          📝 Rétroaction
+          📝 Idéation
         </Text>
         <AutoLayout
           padding={{ vertical: 6, horizontal: 12 }}

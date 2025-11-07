@@ -517,21 +517,442 @@
     );
   }
 
-  // widget-src/postit.tsx
+  // widget-src/kanban board/constants.ts
+  var COLUMNS = [
+    { status: "todo", title: "To Do", color: "#4B5563" },
+    { status: "in-progress", title: "In Progress", color: "#2563EB" },
+    { status: "done", title: "Done", color: "#16A34A" }
+  ];
+  var XP_REWARDS = {
+    ADD_ISSUE: 10,
+    MOVE_ISSUE: 5,
+    COMPLETE_ISSUE: 20
+  };
+  var XP_PER_LEVEL = 100;
+  var PRIORITY_COLORS = {
+    low: { bg: "#DEF7EC", text: "#03543F", border: "#9AE6B4" },
+    medium: { bg: "#FEF3C7", text: "#92400E", border: "#FDE68A" },
+    high: { bg: "#FEE2E2", text: "#991B1B", border: "#FCA5A5" }
+  };
+
+  // widget-src/kanban board/IssueCard.tsx
   var { widget: widget3 } = figma;
-  var { useSyncedState: useSyncedState3, AutoLayout: AutoLayout3, Text: Text3, Input: Input3 } = widget3;
+  var { AutoLayout: AutoLayout3, Text: Text3 } = widget3;
+  function IssueCard({ issue, onMove }) {
+    const priorityColor = PRIORITY_COLORS[issue.priority];
+    return /* @__PURE__ */ figma.widget.h(
+      AutoLayout3,
+      {
+        direction: "vertical",
+        spacing: 12,
+        padding: 16,
+        fill: "#FFFFFF",
+        cornerRadius: 8,
+        stroke: { type: "solid", color: { r: 0.9, g: 0.9, b: 0.9, a: 1 } },
+        width: "fill-parent",
+        strokeWidth: 1,
+        onClick: () => {
+          const statusOrder = ["todo", "in-progress", "done"];
+          const currentIndex = statusOrder.indexOf(issue.status);
+          const nextStatus = statusOrder[(currentIndex + 1) % statusOrder.length];
+          onMove(issue.id, nextStatus);
+        }
+      },
+      /* @__PURE__ */ figma.widget.h(Text3, { fontSize: 14, fontWeight: 600, fill: "#111827", width: "fill-parent" }, issue.title),
+      issue.description && /* @__PURE__ */ figma.widget.h(Text3, { fontSize: 12, fill: "#6B7280", width: "fill-parent" }, issue.description),
+      /* @__PURE__ */ figma.widget.h(AutoLayout3, { direction: "horizontal", spacing: 8, width: "fill-parent", verticalAlignItems: "center" }, /* @__PURE__ */ figma.widget.h(
+        AutoLayout3,
+        {
+          padding: { vertical: 2, horizontal: 8 },
+          fill: priorityColor.bg,
+          cornerRadius: 4,
+          stroke: priorityColor.border,
+          strokeWidth: 1
+        },
+        /* @__PURE__ */ figma.widget.h(Text3, { fontSize: 11, fill: priorityColor.text }, issue.priority)
+      ), /* @__PURE__ */ figma.widget.h(AutoLayout3, { width: "fill-parent" }), /* @__PURE__ */ figma.widget.h(Text3, { fontSize: 10, fill: "#9CA3AF" }, new Date(issue.createdAt).toLocaleDateString()))
+    );
+  }
+
+  // widget-src/kanban board/AddIssueDialog.tsx
+  var { widget: widget4 } = figma;
+  var { useSyncedState: useSyncedState3, AutoLayout: AutoLayout4, Text: Text4, Input: Input3 } = widget4;
+  function AddIssueDialog({
+    status,
+    onAdd,
+    onCancel
+  }) {
+    const [title, setTitle] = useSyncedState3(`newIssueTitle_${status}`, "");
+    const [description, setDescription] = useSyncedState3(`newIssueDesc_${status}`, "");
+    const [priority, setPriority] = useSyncedState3(`newIssuePriority_${status}`, "medium");
+    const [showPriorityDropdown, setShowPriorityDropdown] = useSyncedState3(`showPriorityDropdown_${status}`, false);
+    const priorities = ["low", "medium", "high"];
+    return /* @__PURE__ */ figma.widget.h(
+      AutoLayout4,
+      {
+        direction: "vertical",
+        spacing: 12,
+        padding: 16,
+        fill: "#FFFFFF",
+        cornerRadius: 8,
+        stroke: { type: "solid", color: { r: 0.37, g: 0.51, b: 0.82, a: 1 } },
+        strokeWidth: 2,
+        width: "fill-parent"
+      },
+      /* @__PURE__ */ figma.widget.h(Text4, { fontSize: 14, fontWeight: 600, fill: "#374151" }, "New Issue"),
+      /* @__PURE__ */ figma.widget.h(AutoLayout4, { direction: "vertical", spacing: 4, width: "fill-parent" }, /* @__PURE__ */ figma.widget.h(Text4, { fontSize: 12, fill: "#6B7280" }, "Title:"), /* @__PURE__ */ figma.widget.h(
+        AutoLayout4,
+        {
+          padding: 8,
+          fill: { type: "solid", color: { r: 0.98, g: 0.98, b: 0.98, a: 1 } },
+          cornerRadius: 4,
+          stroke: { type: "solid", color: { r: 0.9, g: 0.9, b: 0.9, a: 1 } },
+          width: "fill-parent"
+        },
+        /* @__PURE__ */ figma.widget.h(
+          Input3,
+          {
+            value: title,
+            placeholder: "Enter issue title",
+            onTextEditEnd: (e) => setTitle(e.characters),
+            fontSize: 12,
+            width: "fill-parent"
+          }
+        )
+      )),
+      /* @__PURE__ */ figma.widget.h(AutoLayout4, { direction: "vertical", spacing: 4, width: "fill-parent" }, /* @__PURE__ */ figma.widget.h(Text4, { fontSize: 12, fill: "#6B7280" }, "Description:"), /* @__PURE__ */ figma.widget.h(
+        AutoLayout4,
+        {
+          padding: 8,
+          fill: { type: "solid", color: { r: 0.98, g: 0.98, b: 0.98, a: 1 } },
+          cornerRadius: 4,
+          stroke: { type: "solid", color: { r: 0.9, g: 0.9, b: 0.9, a: 1 } },
+          width: "fill-parent"
+        },
+        /* @__PURE__ */ figma.widget.h(
+          Input3,
+          {
+            value: description,
+            placeholder: "Enter description",
+            onTextEditEnd: (e) => setDescription(e.characters),
+            fontSize: 12,
+            width: "fill-parent"
+          }
+        )
+      )),
+      /* @__PURE__ */ figma.widget.h(AutoLayout4, { direction: "vertical", spacing: 4, width: "fill-parent" }, /* @__PURE__ */ figma.widget.h(Text4, { fontSize: 12, fill: "#6B7280" }, "Priority:"), /* @__PURE__ */ figma.widget.h(
+        AutoLayout4,
+        {
+          padding: 8,
+          fill: { type: "solid", color: { r: 0.98, g: 0.98, b: 0.98, a: 1 } },
+          cornerRadius: 4,
+          stroke: { type: "solid", color: { r: 0.9, g: 0.9, b: 0.9, a: 1 } },
+          spacing: 4,
+          onClick: () => setShowPriorityDropdown(!showPriorityDropdown)
+        },
+        /* @__PURE__ */ figma.widget.h(Text4, { fontSize: 12 }, priority),
+        /* @__PURE__ */ figma.widget.h(Text4, { fontSize: 10 }, showPriorityDropdown ? "\u25B2" : "\u25BC")
+      ), showPriorityDropdown && /* @__PURE__ */ figma.widget.h(
+        AutoLayout4,
+        {
+          direction: "vertical",
+          spacing: 4,
+          padding: 8,
+          fill: "#FFFFFF",
+          cornerRadius: 4,
+          stroke: { type: "solid", color: { r: 0.9, g: 0.9, b: 0.9, a: 1 } },
+          width: "fill-parent"
+        },
+        priorities.map((p) => /* @__PURE__ */ figma.widget.h(
+          AutoLayout4,
+          {
+            key: p,
+            padding: 6,
+            fill: priority === p ? { type: "solid", color: { r: 0.8, g: 0.9, b: 1, a: 1 } } : "#FFFFFF",
+            cornerRadius: 4,
+            onClick: () => {
+              setPriority(p);
+              setShowPriorityDropdown(false);
+            },
+            width: "fill-parent"
+          },
+          /* @__PURE__ */ figma.widget.h(Text4, { fontSize: 12 }, p)
+        ))
+      )),
+      /* @__PURE__ */ figma.widget.h(AutoLayout4, { direction: "horizontal", spacing: 8, width: "fill-parent" }, /* @__PURE__ */ figma.widget.h(
+        AutoLayout4,
+        {
+          padding: 10,
+          fill: { type: "solid", color: { r: 0.9, g: 0.9, b: 0.9, a: 1 } },
+          cornerRadius: 6,
+          onClick: onCancel,
+          width: "fill-parent",
+          horizontalAlignItems: "center"
+        },
+        /* @__PURE__ */ figma.widget.h(Text4, { fontSize: 12, fontWeight: 600, fill: "#374151" }, "Cancel")
+      ), /* @__PURE__ */ figma.widget.h(
+        AutoLayout4,
+        {
+          padding: 10,
+          fill: { type: "solid", color: { r: 0.37, g: 0.51, b: 0.82, a: 1 } },
+          cornerRadius: 6,
+          onClick: () => {
+            if (title.trim()) {
+              onAdd(title, description, priority);
+              setTitle("");
+              setDescription("");
+              setPriority("medium");
+            } else {
+              figma.notify("Please enter a title");
+            }
+          },
+          width: "fill-parent",
+          horizontalAlignItems: "center"
+        },
+        /* @__PURE__ */ figma.widget.h(Text4, { fontSize: 12, fontWeight: 600, fill: "#FFFFFF" }, "Add Issue")
+      ))
+    );
+  }
+
+  // widget-src/kanban board/KanbanColumn.tsx
+  var { widget: widget5 } = figma;
+  var { AutoLayout: AutoLayout5, Text: Text5 } = widget5;
+  function hexToRgb(hex) {
+    const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    return result ? {
+      r: parseInt(result[1], 16) / 255,
+      g: parseInt(result[2], 16) / 255,
+      b: parseInt(result[3], 16) / 255,
+      a: 1
+    } : { r: 0.5, g: 0.5, b: 0.5, a: 1 };
+  }
+  function KanbanColumn({
+    column,
+    issues,
+    onMove,
+    addingToColumn,
+    setAddingToColumn,
+    onAddIssue
+  }) {
+    const columnIssues = issues.filter((issue) => issue.status === column.status);
+    const columnColor = hexToRgb(column.color);
+    return /* @__PURE__ */ figma.widget.h(
+      AutoLayout5,
+      {
+        direction: "vertical",
+        spacing: 12,
+        padding: 16,
+        fill: "#F9FAFB",
+        cornerRadius: 8,
+        width: 500,
+        stroke: { type: "solid", color: columnColor },
+        strokeWidth: 2
+      },
+      /* @__PURE__ */ figma.widget.h(
+        AutoLayout5,
+        {
+          direction: "horizontal",
+          spacing: 8,
+          width: "fill-parent",
+          verticalAlignItems: "center"
+        },
+        /* @__PURE__ */ figma.widget.h(
+          AutoLayout5,
+          {
+            width: 24,
+            height: 24,
+            cornerRadius: 12,
+            fill: columnColor
+          }
+        ),
+        /* @__PURE__ */ figma.widget.h(Text5, { fontSize: 18, fontWeight: 700, fill: "#111827", width: "fill-parent" }, column.title),
+        /* @__PURE__ */ figma.widget.h(
+          AutoLayout5,
+          {
+            padding: { horizontal: 12, vertical: 6 },
+            fill: columnColor,
+            cornerRadius: 12
+          },
+          /* @__PURE__ */ figma.widget.h(Text5, { fontSize: 14, fontWeight: 600, fill: "#FFFFFF" }, columnIssues.length)
+        )
+      ),
+      /* @__PURE__ */ figma.widget.h(
+        AutoLayout5,
+        {
+          direction: "vertical",
+          spacing: 12,
+          width: "fill-parent"
+        },
+        columnIssues.map((issue) => /* @__PURE__ */ figma.widget.h(
+          IssueCard,
+          {
+            key: issue.id,
+            issue,
+            onMove: () => onMove(issue.id)
+          }
+        )),
+        addingToColumn === column.status ? /* @__PURE__ */ figma.widget.h(
+          AddIssueDialog,
+          {
+            status: column.status,
+            onAdd: (title, description, priority) => {
+              onAddIssue(column.status, title, description, priority);
+              setAddingToColumn(null);
+            },
+            onCancel: () => setAddingToColumn(null)
+          }
+        ) : /* @__PURE__ */ figma.widget.h(
+          AutoLayout5,
+          {
+            padding: 12,
+            fill: "#053b50ff",
+            cornerRadius: 8,
+            onClick: () => setAddingToColumn(column.status),
+            width: "fill-parent",
+            horizontalAlignItems: "center",
+            stroke: { type: "solid", color: { r: 0.8, g: 0.8, b: 0.8, a: 1 } },
+            strokeWidth: 1
+          },
+          /* @__PURE__ */ figma.widget.h(Text5, { fontSize: 14, fill: "#ffffffff" }, "+ Add Issue")
+        )
+      )
+    );
+  }
+
+  // widget-src/kanban board/KanbanBoard.tsx
+  var { widget: widget6 } = figma;
+  var { useSyncedState: useSyncedState4, useEffect, AutoLayout: AutoLayout6, Text: Text6 } = widget6;
+  function KanbanBoard() {
+    const [issues, setIssues] = useSyncedState4("issues", [
+      {
+        id: "1",
+        title: "Setup project repository",
+        description: "Initialize the project with all necessary dependencies",
+        status: "done",
+        priority: "high",
+        createdAt: (/* @__PURE__ */ new Date("2025-01-19")).toISOString()
+      },
+      {
+        id: "2",
+        title: "Design database schema",
+        description: "Create the initial database design for the application",
+        status: "in-progress",
+        priority: "high",
+        createdAt: (/* @__PURE__ */ new Date("2025-01-20")).toISOString()
+      },
+      {
+        id: "3",
+        title: "Implement user authentication",
+        description: "Add login and registration functionality",
+        status: "todo",
+        priority: "medium",
+        createdAt: (/* @__PURE__ */ new Date("2025-01-21")).toISOString()
+      },
+      {
+        id: "4",
+        title: "Write unit tests",
+        description: "Add test coverage for core components",
+        status: "todo",
+        priority: "low",
+        createdAt: (/* @__PURE__ */ new Date("2025-01-21")).toISOString()
+      }
+    ]);
+    const [xp, setXp] = useSyncedState4("xp", 45);
+    const [level, setLevel] = useSyncedState4("level", 1);
+    const [addingToColumn, setAddingToColumn] = useSyncedState4(
+      "addingToColumn",
+      null
+    );
+    const xpToNextLevel = level * XP_PER_LEVEL;
+    useEffect(() => {
+      if (xp >= xpToNextLevel) {
+        setLevel(level + 1);
+        setXp(xp - xpToNextLevel);
+        figma.notify(`\u{1F389} Level Up! You're now Level ${level + 1}!`);
+      }
+    });
+    const addXP = (amount, reason) => {
+      setXp(xp + amount);
+      figma.notify(`+${amount} XP - ${reason}`);
+    };
+    const handleMove = (issueId) => {
+      const issue = issues.find((i) => i.id === issueId);
+      if (!issue) return;
+      if (issue.status === "done") {
+        try {
+          figma.notify("Cette t\xE2che est d\xE9j\xE0 termin\xE9e.");
+        } catch (_) {
+        }
+        return;
+      }
+      const statusOrder = ["todo", "in-progress", "done"];
+      const currentIndex = statusOrder.indexOf(issue.status);
+      const newStatus = statusOrder[(currentIndex + 1) % statusOrder.length];
+      if (issue.status === newStatus) return;
+      const updatedIssues = issues.map(
+        (i) => i.id === issueId ? Object.assign({}, i, { status: newStatus }) : i
+      );
+      setIssues(updatedIssues);
+      if (newStatus === "done") {
+        addXP(XP_REWARDS.COMPLETE_ISSUE, "Issue completed");
+      } else {
+        addXP(XP_REWARDS.MOVE_ISSUE, "Issue moved");
+      }
+    };
+    const handleAddIssue = (status, title, description, priority) => {
+      const newIssue = {
+        id: Date.now().toString(),
+        title,
+        description,
+        status,
+        priority,
+        createdAt: (/* @__PURE__ */ new Date()).toISOString()
+      };
+      setIssues(issues.concat([newIssue]));
+      addXP(XP_REWARDS.ADD_ISSUE, "Issue created");
+    };
+    return /* @__PURE__ */ figma.widget.h(
+      AutoLayout6,
+      {
+        direction: "vertical",
+        spacing: 32,
+        padding: 32,
+        fill: { type: "solid", color: { r: 0.97, g: 0.98, b: 0.99, a: 1 } },
+        cornerRadius: 16,
+        width: "hug-contents",
+        height: "hug-contents"
+      },
+      /* @__PURE__ */ figma.widget.h(AutoLayout6, { direction: "vertical", spacing: 8, width: "fill-parent" }, /* @__PURE__ */ figma.widget.h(Text6, { fontSize: 32, fontWeight: 700, fill: "#111827" }, "Missions"), /* @__PURE__ */ figma.widget.h(Text6, { fontSize: 14, fill: "#6B7280" }, "Compl\xE9tez les qu\xEAtes et am\xE9liorez votre personnage!")),
+      /* @__PURE__ */ figma.widget.h(AutoLayout6, { direction: "horizontal", spacing: 16 }, COLUMNS.map((column) => /* @__PURE__ */ figma.widget.h(
+        KanbanColumn,
+        {
+          key: column.status,
+          column,
+          issues,
+          onMove: handleMove,
+          addingToColumn,
+          setAddingToColumn,
+          onAddIssue: handleAddIssue
+        }
+      )))
+    );
+  }
+
+  // widget-src/postit.tsx
+  var { widget: widget7 } = figma;
+  var { useSyncedState: useSyncedState5, AutoLayout: AutoLayout7, Text: Text7, Input: Input4 } = widget7;
   function PostItBoard() {
-    const [postIts, setPostIts] = useSyncedState3("postIts", []);
-    const [isCreating, setIsCreating] = useSyncedState3("isCreatingPostIt", false);
-    const [newPostItContent, setNewPostItContent] = useSyncedState3(
+    const [postIts, setPostIts] = useSyncedState5("postIts", []);
+    const [isCreating, setIsCreating] = useSyncedState5("isCreatingPostIt", false);
+    const [newPostItContent, setNewPostItContent] = useSyncedState5(
       "newPostItContent",
       ""
     );
-    const [currentUserId, setCurrentUserId] = useSyncedState3(
+    const [currentUserId, setCurrentUserId] = useSyncedState5(
       "currentUserId",
       ""
     );
-    const [currentUserName, setCurrentUserName] = useSyncedState3(
+    const [currentUserName, setCurrentUserName] = useSyncedState5(
       "currentUserName",
       "Anonyme"
     );
@@ -589,7 +1010,7 @@
       );
     };
     return /* @__PURE__ */ figma.widget.h(
-      AutoLayout3,
+      AutoLayout7,
       {
         direction: "vertical",
         spacing: 12,
@@ -600,27 +1021,27 @@
         width: 600
       },
       /* @__PURE__ */ figma.widget.h(
-        AutoLayout3,
+        AutoLayout7,
         {
           direction: "horizontal",
           spacing: 8,
           verticalAlignItems: "center",
           width: "fill-parent"
         },
-        /* @__PURE__ */ figma.widget.h(Text3, { fontSize: 18, fontWeight: "bold" }, "\u{1F4DD} R\xE9troaction"),
+        /* @__PURE__ */ figma.widget.h(Text7, { fontSize: 18, fontWeight: "bold" }, "\u{1F4DD} Id\xE9ation"),
         /* @__PURE__ */ figma.widget.h(
-          AutoLayout3,
+          AutoLayout7,
           {
             padding: { vertical: 6, horizontal: 12 },
             cornerRadius: 6,
             fill: "#4CAF50",
             onClick: () => setIsCreating(!isCreating)
           },
-          /* @__PURE__ */ figma.widget.h(Text3, { fontSize: 12, fill: "#FFFFFF", fontWeight: "bold" }, isCreating ? "Annuler" : "+ Nouveau post-it")
+          /* @__PURE__ */ figma.widget.h(Text7, { fontSize: 12, fill: "#FFFFFF", fontWeight: "bold" }, isCreating ? "Annuler" : "+ Nouveau post-it")
         )
       ),
       isCreating && /* @__PURE__ */ figma.widget.h(
-        AutoLayout3,
+        AutoLayout7,
         {
           direction: "vertical",
           spacing: 8,
@@ -630,9 +1051,9 @@
           stroke: "#FFD700",
           width: "fill-parent"
         },
-        /* @__PURE__ */ figma.widget.h(Text3, { fontSize: 13, fontWeight: "bold" }, "Nouveau post-it :"),
+        /* @__PURE__ */ figma.widget.h(Text7, { fontSize: 13, fontWeight: "bold" }, "Nouveau post-it :"),
         /* @__PURE__ */ figma.widget.h(
-          AutoLayout3,
+          AutoLayout7,
           {
             padding: { vertical: 8, horizontal: 8 },
             cornerRadius: 6,
@@ -641,7 +1062,7 @@
             width: "fill-parent"
           },
           /* @__PURE__ */ figma.widget.h(
-            Input3,
+            Input4,
             {
               value: newPostItContent,
               placeholder: "\xC9crivez votre r\xE9troaction...",
@@ -652,7 +1073,7 @@
           )
         ),
         /* @__PURE__ */ figma.widget.h(
-          AutoLayout3,
+          AutoLayout7,
           {
             padding: { vertical: 6, horizontal: 12 },
             cornerRadius: 6,
@@ -660,28 +1081,28 @@
             horizontalAlignItems: "center",
             onClick: addPostIt
           },
-          /* @__PURE__ */ figma.widget.h(Text3, { fontSize: 12, fill: "#FFFFFF", fontWeight: "bold" }, "Ajouter le post-it")
+          /* @__PURE__ */ figma.widget.h(Text7, { fontSize: 12, fill: "#FFFFFF", fontWeight: "bold" }, "Ajouter le post-it")
         )
       ),
       /* @__PURE__ */ figma.widget.h(
-        AutoLayout3,
+        AutoLayout7,
         {
           direction: "horizontal",
           spacing: 12,
           wrap: true,
           width: "fill-parent"
         },
-        postIts.length === 0 ? /* @__PURE__ */ figma.widget.h(Text3, { fontSize: 12, fill: "#999" }, 'Aucun post-it pour le moment. Cliquez sur "+ Nouveau post-it" pour commencer !') : postIts.map((postIt) => {
-          const [isEditing, setIsEditing] = useSyncedState3(
+        postIts.length === 0 ? /* @__PURE__ */ figma.widget.h(Text7, { fontSize: 12, fill: "#999" }, 'Aucun post-it pour le moment. Cliquez sur "+ Nouveau post-it" pour commencer !') : postIts.map((postIt) => {
+          const [isEditing, setIsEditing] = useSyncedState5(
             `editing_${postIt.id}`,
             false
           );
-          const [editContent, setEditContent] = useSyncedState3(
+          const [editContent, setEditContent] = useSyncedState5(
             `editContent_${postIt.id}`,
             postIt.content
           );
           return /* @__PURE__ */ figma.widget.h(
-            AutoLayout3,
+            AutoLayout7,
             {
               key: postIt.id,
               direction: "vertical",
@@ -695,7 +1116,7 @@
             isEditing ? (
               // Edit mode
               /* @__PURE__ */ figma.widget.h(figma.widget.Fragment, null, /* @__PURE__ */ figma.widget.h(
-                AutoLayout3,
+                AutoLayout7,
                 {
                   padding: { vertical: 6, horizontal: 8 },
                   cornerRadius: 6,
@@ -703,7 +1124,7 @@
                   width: "fill-parent"
                 },
                 /* @__PURE__ */ figma.widget.h(
-                  Input3,
+                  Input4,
                   {
                     value: editContent,
                     fontSize: 11,
@@ -711,8 +1132,8 @@
                     onTextEditEnd: (e) => setEditContent(e.characters)
                   }
                 )
-              ), /* @__PURE__ */ figma.widget.h(AutoLayout3, { direction: "horizontal", spacing: 4 }, /* @__PURE__ */ figma.widget.h(
-                AutoLayout3,
+              ), /* @__PURE__ */ figma.widget.h(AutoLayout7, { direction: "horizontal", spacing: 4 }, /* @__PURE__ */ figma.widget.h(
+                AutoLayout7,
                 {
                   padding: { vertical: 4, horizontal: 8 },
                   cornerRadius: 4,
@@ -727,9 +1148,9 @@
                     });
                   }
                 },
-                /* @__PURE__ */ figma.widget.h(Text3, { fontSize: 10, fill: "#FFFFFF" }, "\u2713 Sauvegarder")
+                /* @__PURE__ */ figma.widget.h(Text7, { fontSize: 10, fill: "#FFFFFF" }, "\u2713 Sauvegarder")
               ), /* @__PURE__ */ figma.widget.h(
-                AutoLayout3,
+                AutoLayout7,
                 {
                   padding: { vertical: 4, horizontal: 8 },
                   cornerRadius: 4,
@@ -739,20 +1160,20 @@
                     setIsEditing(false);
                   }
                 },
-                /* @__PURE__ */ figma.widget.h(Text3, { fontSize: 10, fill: "#FFFFFF" }, "Annuler")
+                /* @__PURE__ */ figma.widget.h(Text7, { fontSize: 10, fill: "#FFFFFF" }, "Annuler")
               )))
             ) : (
               // View mode
-              /* @__PURE__ */ figma.widget.h(figma.widget.Fragment, null, /* @__PURE__ */ figma.widget.h(Text3, { fontSize: 11 }, postIt.content), /* @__PURE__ */ figma.widget.h(
-                AutoLayout3,
+              /* @__PURE__ */ figma.widget.h(figma.widget.Fragment, null, /* @__PURE__ */ figma.widget.h(Text7, { fontSize: 11 }, postIt.content), /* @__PURE__ */ figma.widget.h(
+                AutoLayout7,
                 {
                   direction: "vertical",
                   spacing: 4,
                   width: "fill-parent"
                 },
-                /* @__PURE__ */ figma.widget.h(Text3, { fontSize: 9, fill: "#666" }, "\u2014 ", postIt.authorName),
-                /* @__PURE__ */ figma.widget.h(AutoLayout3, { direction: "horizontal", spacing: 4 }, /* @__PURE__ */ figma.widget.h(
-                  AutoLayout3,
+                /* @__PURE__ */ figma.widget.h(Text7, { fontSize: 9, fill: "#666" }, "\u2014 ", postIt.authorName),
+                /* @__PURE__ */ figma.widget.h(AutoLayout7, { direction: "horizontal", spacing: 4 }, /* @__PURE__ */ figma.widget.h(
+                  AutoLayout7,
                   {
                     padding: { vertical: 3, horizontal: 6 },
                     cornerRadius: 4,
@@ -770,16 +1191,16 @@
                       });
                     }
                   },
-                  /* @__PURE__ */ figma.widget.h(Text3, { fontSize: 9, fill: "#FFFFFF" }, "\u270F\uFE0F Modifier")
+                  /* @__PURE__ */ figma.widget.h(Text7, { fontSize: 9, fill: "#FFFFFF" }, "\u270F\uFE0F Modifier")
                 ), /* @__PURE__ */ figma.widget.h(
-                  AutoLayout3,
+                  AutoLayout7,
                   {
                     padding: { vertical: 3, horizontal: 6 },
                     cornerRadius: 4,
                     fill: "#F44336",
                     onClick: () => deletePostIt(postIt.id, postIt.authorId)
                   },
-                  /* @__PURE__ */ figma.widget.h(Text3, { fontSize: 9, fill: "#FFFFFF" }, "\u{1F5D1}\uFE0F Supprimer")
+                  /* @__PURE__ */ figma.widget.h(Text7, { fontSize: 9, fill: "#FFFFFF" }, "\u{1F5D1}\uFE0F Supprimer")
                 ))
               ))
             )
@@ -790,25 +1211,24 @@
   }
 
   // widget-src/widget.tsx
-  var { widget: widget4 } = figma;
-  var { AutoLayout: AutoLayout4, Text: Text4, useSyncedState: useSyncedState4 } = widget4;
+  var { widget: widget8 } = figma;
+  var { AutoLayout: AutoLayout8, Text: Text8, useSyncedState: useSyncedState6 } = widget8;
   function Widget() {
-    const [numberOfStudents] = useSyncedState4("teacherNumStudents", "");
+    const [numberOfStudents] = useSyncedState6("teacherNumStudents", "");
     const numStudents = parseInt(numberOfStudents) || 0;
     const studentIndices = Array.from({ length: numStudents }, (_, i) => i);
     return /* @__PURE__ */ figma.widget.h(
-      AutoLayout4,
+      AutoLayout8,
       {
         name: "Main Widget Container",
-        direction: "horizontal",
+        direction: "vertical",
         spacing: 16,
         padding: 16,
         cornerRadius: 12,
         fill: "#F0F0F0"
       },
-      /* @__PURE__ */ figma.widget.h(TeacherProfile, null),
-      numStudents > 0 ? /* @__PURE__ */ figma.widget.h(AutoLayout4, { direction: "horizontal", spacing: 16 }, /* @__PURE__ */ figma.widget.h(
-        AutoLayout4,
+      /* @__PURE__ */ figma.widget.h(AutoLayout8, { direction: "horizontal", spacing: 16 }, /* @__PURE__ */ figma.widget.h(TeacherProfile, null), numStudents > 0 ? /* @__PURE__ */ figma.widget.h(AutoLayout8, { direction: "horizontal", spacing: 16 }, /* @__PURE__ */ figma.widget.h(
+        AutoLayout8,
         {
           direction: "vertical",
           spacing: 12,
@@ -817,9 +1237,9 @@
           fill: "#FFFFFF",
           stroke: "#E6E6E6"
         },
-        /* @__PURE__ */ figma.widget.h(Text4, { fontSize: 18, fontWeight: "bold" }, "\xC9quipe"),
+        /* @__PURE__ */ figma.widget.h(Text8, { fontSize: 18, fontWeight: "bold" }, "Groupe d'aventuriers"),
         /* @__PURE__ */ figma.widget.h(
-          AutoLayout4,
+          AutoLayout8,
           {
             direction: "horizontal",
             spacing: 16,
@@ -829,7 +1249,7 @@
           studentIndices.map((index) => /* @__PURE__ */ figma.widget.h(StudentProfile, { key: index, studentId: index }))
         )
       ), /* @__PURE__ */ figma.widget.h(PostItBoard, null)) : /* @__PURE__ */ figma.widget.h(
-        AutoLayout4,
+        AutoLayout8,
         {
           direction: "vertical",
           spacing: 12,
@@ -839,10 +1259,11 @@
           stroke: "#E6E6E6",
           width: 280
         },
-        /* @__PURE__ */ figma.widget.h(Text4, { fontSize: 16, fontWeight: "bold" }, "\u{1F465} Profils des \xE9tudiants"),
-        /* @__PURE__ */ figma.widget.h(Text4, { fontSize: 12, fill: "#666" }, "L'enseignant doit d'abord d\xE9finir le nombre d'\xE9tudiants dans le formulaire ci-dessus.")
-      )
+        /* @__PURE__ */ figma.widget.h(Text8, { fontSize: 16, fontWeight: "bold" }, "\u{1F465} Profils des \xE9tudiants"),
+        /* @__PURE__ */ figma.widget.h(Text8, { fontSize: 12, fill: "#666" }, "L'enseignant doit d'abord d\xE9finir le nombre d'\xE9tudiants dans le formulaire ci-dessus.")
+      )),
+      /* @__PURE__ */ figma.widget.h(KanbanBoard, null)
     );
   }
-  widget4.register(Widget);
+  widget8.register(Widget);
 })();
