@@ -1,50 +1,78 @@
-// Student profile widget
-const { widget } = figma
+// Student profile component - can be imported and reused
+const { widget } = figma;
 
-const { useSyncedState, AutoLayout, Text, Input, Image } = widget
+const { useSyncedState, AutoLayout, Text, Input, Image } = widget;
 
-function Widget() {
-  // Persistent synced states
-  const [name, setName] = useSyncedState("name", "Student")
-  const [selectedAvatar, setSelectedAvatar] = useSyncedState("avatar", 0)
-  const [selectedClass, setSelectedClass] = useSyncedState("class", "Guerrier")
-  const [selectedTitle, setSelectedTitle] = useSyncedState("title", "Apprenti")
+// Reusable Student Profile Component
+export function StudentProfile({ studentId = 0 }: { studentId?: number }) {
+  // Persistent synced states - unique per student using studentId
+  const [name, setName] = useSyncedState(
+    `student_${studentId}_name`,
+    `Étudiant ${studentId + 1}`
+  );
+  const [selectedAvatar, setSelectedAvatar] = useSyncedState(
+    `student_${studentId}_avatar`,
+    0
+  );
+  const [selectedClass, setSelectedClass] = useSyncedState(
+    `student_${studentId}_class`,
+    "Guerrier"
+  );
+  const [selectedTitle, setSelectedTitle] = useSyncedState(
+    `student_${studentId}_title`,
+    "Apprenti"
+  );
 
-  // UI state
-  const [showAvatarSelector, setShowAvatarSelector] = useSyncedState("showAvatarSelector", false)
-  const [showClassDropdown, setShowClassDropdown] = useSyncedState("showClassDropdown", false)
-  const [showTitleDropdown, setShowTitleDropdown] = useSyncedState("showTitleDropdown", false)
+  // UI state - unique per student
+  const [showAvatarSelector, setShowAvatarSelector] = useSyncedState(
+    `student_${studentId}_showAvatarSelector`,
+    false
+  );
+  const [showClassDropdown, setShowClassDropdown] = useSyncedState(
+    `student_${studentId}_showClassDropdown`,
+    false
+  );
+  const [showTitleDropdown, setShowTitleDropdown] = useSyncedState(
+    `student_${studentId}_showTitleDropdown`,
+    false
+  );
 
-  const [isEditing, setIsEditing] = useSyncedState("isEditing", true)
-  const [user, setUser] = useSyncedState("user", () => {
+  const [isEditing, setIsEditing] = useSyncedState(
+    `student_${studentId}_isEditing`,
+    true
+  );
+  const [user, setUser] = useSyncedState(`student_${studentId}_user`, () => {
     const me = figma.currentUser;
     return {
       id: me?.id ?? null,
       name: me?.name ?? "Anonymous",
       photoUrl: me?.photoUrl ?? null,
       color: me?.color ?? null,
-      sessionId: me?.sessionId ?? null
+      sessionId: me?.sessionId ?? null,
     };
   });
-  const [activeUser, setActiveUser] = useSyncedState("activeUser", () => {
-    const me = figma.activeUsers[0]; 
-    return {
-      id: me?.id ?? null,
-      name: me?.name ?? "Anonymous",
-      photoUrl: me?.photoUrl ?? null,
-      color: me?.color ?? null,
-      sessionId: me?.sessionId ?? null
-    };
-  });
-  console.log("Currents user:", user); 
-  console.log("Active user:", activeUser);
+  const [activeUser, setActiveUser] = useSyncedState(
+    `student_${studentId}_activeUser`,
+    () => {
+      const me = figma.activeUsers[0];
+      return {
+        id: me?.id ?? null,
+        name: me?.name ?? "Anonymous",
+        photoUrl: me?.photoUrl ?? null,
+        color: me?.color ?? null,
+        sessionId: me?.sessionId ?? null,
+      };
+    }
+  );
+  console.log(`Student ${studentId} - Current user:`, user);
+  console.log(`Student ${studentId} - Active user:`, activeUser);
   const avatars = [
     "https://picsum.photos/id/1/200/300",
     "https://picsum.photos/id/2/200/300",
     "https://picsum.photos/id/3/200/300",
-  ]
-  const classes = ["Guerrier", "Mage", "Archer", "Soigneur"]
-  const titles = ["Apprenti", "Aventurier", "Maître", "Légende"]
+  ];
+  const classes = ["Guerrier", "Mage", "Archer", "Soigneur"];
+  const titles = ["Apprenti", "Aventurier", "Maître", "Légende"];
 
   return (
     <AutoLayout
@@ -245,27 +273,41 @@ function Widget() {
             horizontalAlignItems="center"
             onClick={() => setIsEditing(false)}
           >
-            <Text fontSize={14} fontWeight="bold">Sauvegarder le profil</Text>
+            <Text fontSize={14} fontWeight="bold">
+              Sauvegarder le profil
+            </Text>
           </AutoLayout>
         </>
       ) : (
         // VIEW MODE
         <>
           <AutoLayout spacing={8} verticalAlignItems="center">
-            <Image src={avatars[selectedAvatar]} width={48} height={48} cornerRadius={8} />
+            <Image
+              src={avatars[selectedAvatar]}
+              width={48}
+              height={48}
+              cornerRadius={8}
+            />
             <AutoLayout direction="vertical">
-              <Text fontSize={16} fontWeight="bold">{name}</Text>
-              <Text fontSize={12}>{selectedClass} • {selectedTitle}</Text>
+              <Text fontSize={16} fontWeight="bold">
+                {name}
+              </Text>
+              <Text fontSize={12}>
+                {selectedClass} • {selectedTitle}
+              </Text>
             </AutoLayout>
           </AutoLayout>
           {/* Edit button */}
-          <AutoLayout padding={{ vertical: 8, horizontal: 24 }} cornerRadius={8} fill="#F5F5F5" onClick={() => setIsEditing(true)}>
+          <AutoLayout
+            padding={{ vertical: 8, horizontal: 24 }}
+            cornerRadius={8}
+            fill="#F5F5F5"
+            onClick={() => setIsEditing(true)}
+          >
             <Text fontSize={13}>Modifier</Text>
           </AutoLayout>
         </>
       )}
     </AutoLayout>
-  )
+  );
 }
-
-widget.register(Widget)

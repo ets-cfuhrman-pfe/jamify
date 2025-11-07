@@ -11,8 +11,8 @@ import { COLUMNS, XP_REWARDS, XP_PER_LEVEL } from "./constants";
 import { CharacterProfile } from "./CharacterProfile";
 import { KanbanColumn } from "./KanbanColumn";
 
-// Main Widget
-function KanbanWidget() {
+// Exported Kanban board component to embed inside main widget
+export function KanbanBoard() {
   const [issues, setIssues] = useSyncedState<Issue[]>("issues", [
     {
       id: "1",
@@ -134,15 +134,12 @@ function KanbanWidget() {
       {/* Header */}
       <AutoLayout direction="vertical" spacing={8} width="fill-parent">
         <Text fontSize={32} fontWeight={700} fill="#111827">
-          Tableau Kanban Étudiant
+          Missions
         </Text>
         <Text fontSize={14} fill="#6B7280">
           Complétez les quêtes et améliorez votre personnage!
         </Text>
       </AutoLayout>
-
-      {/* Character Profile */}
-      <CharacterProfile level={level} xp={xp} xpToNextLevel={xpToNextLevel} />
 
       {/* Kanban Columns */}
       <AutoLayout direction="horizontal" spacing={16}>
@@ -161,5 +158,3 @@ function KanbanWidget() {
     </AutoLayout>
   );
 }
-
-widget.register(KanbanWidget);
