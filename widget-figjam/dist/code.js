@@ -40,6 +40,8 @@
       `student_${studentId}_title`,
       "Apprenti"
     );
+    const [xp] = useSyncedState(`student_${studentId}_xp`, 0);
+    const [level] = useSyncedState(`student_${studentId}_level`, 1);
     const [showAvatarSelector, setShowAvatarSelector] = useSyncedState(
       `student_${studentId}_showAvatarSelector`,
       false
@@ -56,33 +58,6 @@
       `student_${studentId}_isEditing`,
       true
     );
-    const [user, setUser] = useSyncedState(`student_${studentId}_user`, () => {
-      var _a, _b, _c, _d, _e;
-      const me = figma.currentUser;
-      return {
-        id: (_a = me == null ? void 0 : me.id) != null ? _a : null,
-        name: (_b = me == null ? void 0 : me.name) != null ? _b : "Anonymous",
-        photoUrl: (_c = me == null ? void 0 : me.photoUrl) != null ? _c : null,
-        color: (_d = me == null ? void 0 : me.color) != null ? _d : null,
-        sessionId: (_e = me == null ? void 0 : me.sessionId) != null ? _e : null
-      };
-    });
-    const [activeUser, setActiveUser] = useSyncedState(
-      `student_${studentId}_activeUser`,
-      () => {
-        var _a, _b, _c, _d, _e;
-        const me = figma.activeUsers[0];
-        return {
-          id: (_a = me == null ? void 0 : me.id) != null ? _a : null,
-          name: (_b = me == null ? void 0 : me.name) != null ? _b : "Anonymous",
-          photoUrl: (_c = me == null ? void 0 : me.photoUrl) != null ? _c : null,
-          color: (_d = me == null ? void 0 : me.color) != null ? _d : null,
-          sessionId: (_e = me == null ? void 0 : me.sessionId) != null ? _e : null
-        };
-      }
-    );
-    console.log(`Student ${studentId} - Current user:`, user);
-    console.log(`Student ${studentId} - Active user:`, activeUser);
     const avatars = [
       "https://picsum.photos/id/1/200/300",
       "https://picsum.photos/id/2/200/300",
@@ -90,6 +65,7 @@
     ];
     const classes = ["Guerrier", "Mage", "Archer", "Soigneur"];
     const titles = ["Apprenti", "Aventurier", "Ma\xEEtre", "L\xE9gende"];
+    const xpToNextLevel = level * 100;
     return /* @__PURE__ */ figma.widget.h(
       AutoLayout,
       {
@@ -278,7 +254,7 @@
             height: 48,
             cornerRadius: 8
           }
-        ), /* @__PURE__ */ figma.widget.h(AutoLayout, { direction: "vertical" }, /* @__PURE__ */ figma.widget.h(Text, { fontSize: 16, fontWeight: "bold" }, name), /* @__PURE__ */ figma.widget.h(Text, { fontSize: 12 }, selectedClass, " \u2022 ", selectedTitle))), /* @__PURE__ */ figma.widget.h(
+        ), /* @__PURE__ */ figma.widget.h(AutoLayout, { direction: "vertical" }, /* @__PURE__ */ figma.widget.h(Text, { fontSize: 16, fontWeight: "bold" }, name), /* @__PURE__ */ figma.widget.h(Text, { fontSize: 12 }, selectedClass, " \u2022 ", selectedTitle))), /* @__PURE__ */ figma.widget.h(AutoLayout, { direction: "vertical", spacing: 4, width: "fill-parent", horizontalAlignItems: "center" }, /* @__PURE__ */ figma.widget.h(Text, { fontSize: 14, fontWeight: "bold" }, "Level ", level), /* @__PURE__ */ figma.widget.h(Text, { fontSize: 12, fill: "#666666" }, xp, " / ", xpToNextLevel, " XP")), /* @__PURE__ */ figma.widget.h(
           AutoLayout,
           {
             padding: { vertical: 8, horizontal: 24 },
@@ -944,9 +920,19 @@
     const [numberOfStudentsStr] = useSyncedState5("teacherNumStudents", "0");
     const numberOfStudents = parseInt(numberOfStudentsStr) || 0;
     const studentNames = [];
+    const studentXP = [];
+    const studentLevels = [];
+    const setStudentXP = [];
+    const setStudentLevels = [];
     for (let i = 0; i < numberOfStudents; i++) {
       const [studentName] = useSyncedState5(`student_${i}_name`, `\xC9tudiant ${i + 1}`);
+      const [xp2, setXp2] = useSyncedState5(`student_${i}_xp`, 0);
+      const [level2, setLevel2] = useSyncedState5(`student_${i}_level`, 1);
       studentNames.push(studentName);
+      studentXP.push(xp2);
+      studentLevels.push(level2);
+      setStudentXP.push(setXp2);
+      setStudentLevels.push(setLevel2);
     }
     const [xp, setXp] = useSyncedState5("xp", 45);
     const [level, setLevel] = useSyncedState5("level", 1);
@@ -959,12 +945,28 @@
       if (xp >= xpToNextLevel) {
         setLevel(level + 1);
         setXp(xp - xpToNextLevel);
-        figma.notify(`\u{1F389} Level Up! You're now Level ${level + 1}!`);
+        figma.notify(`\uFFFD\uFFFD Level Up! You're now Level ${level + 1}!`);
       }
     });
     const addXP = (amount, reason) => {
       setXp(xp + amount);
       figma.notify(`+${amount} XP - ${reason}`);
+    };
+    const addStudentXP = (studentId, amount) => {
+      if (studentId === void 0) return;
+      const currentXP = studentXP[studentId];
+      const currentLevel = studentLevels[studentId];
+      const xpToNextLevel2 = currentLevel * XP_PER_LEVEL;
+      const newXP = currentXP + amount;
+      setStudentXP[studentId](newXP);
+      if (newXP >= xpToNextLevel2) {
+        setStudentLevels[studentId](currentLevel + 1);
+        setStudentXP[studentId](newXP - xpToNextLevel2);
+        try {
+          figma.notify(`\u{1F389} ${studentNames[studentId]} leveled up to level ${currentLevel + 1}!`);
+        } catch (_) {
+        }
+      }
     };
     const handleMove = (issueId) => {
       const issue = issues.find((i) => i.id === issueId);
@@ -986,8 +988,10 @@
       setIssues(updatedIssues);
       if (newStatus === "done") {
         addXP(XP_REWARDS.COMPLETE_ISSUE, "Issue completed");
+        addStudentXP(issue.assignedToId, XP_REWARDS.COMPLETE_ISSUE);
       } else {
         addXP(XP_REWARDS.MOVE_ISSUE, "Issue moved");
+        addStudentXP(issue.assignedToId, XP_REWARDS.MOVE_ISSUE);
       }
     };
     const handleAddIssue = (status, title, description, priority, assignedToId) => {
@@ -1003,6 +1007,7 @@
       };
       setIssues(issues.concat([newIssue]));
       addXP(XP_REWARDS.ADD_ISSUE, "Issue created");
+      addStudentXP(assignedToId, XP_REWARDS.ADD_ISSUE);
     };
     return /* @__PURE__ */ figma.widget.h(
       AutoLayout6,

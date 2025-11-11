@@ -52,12 +52,22 @@ export function KanbanBoard() {
   const [numberOfStudentsStr] = useSyncedState("teacherNumStudents", "0");
   const numberOfStudents = parseInt(numberOfStudentsStr) || 0;
 
-  // Collect all student names from synced states
-  // We need to read up to numberOfStudents student names
+  // Collect all student names, XP, levels from synced states
   const studentNames: string[] = [];
+  const studentXP: number[] = [];
+  const studentLevels: number[] = [];
+  const setStudentXP: ((value: number) => void)[] = [];
+  const setStudentLevels: ((value: number) => void)[] = [];
+  
   for (let i = 0; i < numberOfStudents; i++) {
     const [studentName] = useSyncedState(`student_${i}_name`, `Étudiant ${i + 1}`);
+    const [xp, setXp] = useSyncedState(`student_${i}_xp`, 0);
+    const [level, setLevel] = useSyncedState(`student_${i}_level`, 1);
     studentNames.push(studentName);
+    studentXP.push(xp);
+    studentLevels.push(level);
+    setStudentXP.push(setXp);
+    setStudentLevels.push(setLevel);
   }
 
   const [xp, setXp] = useSyncedState("xp", 45);
@@ -74,13 +84,34 @@ export function KanbanBoard() {
     if (xp >= xpToNextLevel) {
       setLevel(level + 1);
       setXp(xp - xpToNextLevel);
-      figma.notify(`🎉 Level Up! You're now Level ${level + 1}!`);
+      figma.notify(`�� Level Up! You're now Level ${level + 1}!`);
     }
   });
 
   const addXP = (amount: number, reason: string) => {
     setXp(xp + amount);
     figma.notify(`+${amount} XP - ${reason}`);
+  };
+
+  // Add XP to a specific student
+  const addStudentXP = (studentId: number | undefined, amount: number) => {
+    if (studentId === undefined) return; // No student assigned
+    
+    const currentXP = studentXP[studentId];
+    const currentLevel = studentLevels[studentId];
+    const xpToNextLevel = currentLevel * XP_PER_LEVEL;
+    
+    const newXP = currentXP + amount;
+    setStudentXP[studentId](newXP);
+    
+    // Check for level up
+    if (newXP >= xpToNextLevel) {
+      setStudentLevels[studentId](currentLevel + 1);
+      setStudentXP[studentId](newXP - xpToNextLevel);
+      try {
+        figma.notify(`🎉 ${studentNames[studentId]} leveled up to level ${currentLevel + 1}!`);
+      } catch (_) { }
+    }
   };
 
   const handleMove = (issueId: string) => {
@@ -110,8 +141,10 @@ export function KanbanBoard() {
 
     if (newStatus === "done") {
       addXP(XP_REWARDS.COMPLETE_ISSUE, "Issue completed");
+      addStudentXP(issue.assignedToId, XP_REWARDS.COMPLETE_ISSUE);
     } else {
       addXP(XP_REWARDS.MOVE_ISSUE, "Issue moved");
+      addStudentXP(issue.assignedToId, XP_REWARDS.MOVE_ISSUE);
     }
   };
 
@@ -134,6 +167,7 @@ export function KanbanBoard() {
     };
     setIssues(issues.concat([newIssue]));
     addXP(XP_REWARDS.ADD_ISSUE, "Issue created");
+    addStudentXP(assignedToId, XP_REWARDS.ADD_ISSUE);
   };
 
   return (

@@ -23,6 +23,10 @@ export function StudentProfile({ studentId = 0 }: { studentId?: number }) {
     "Apprenti"
   );
 
+  // Read per-student XP and level
+  const [xp] = useSyncedState(`student_${studentId}_xp`, 0);
+  const [level] = useSyncedState(`student_${studentId}_level`, 1);
+
   // UI state - unique per student
   const [showAvatarSelector, setShowAvatarSelector] = useSyncedState(
     `student_${studentId}_showAvatarSelector`,
@@ -41,31 +45,7 @@ export function StudentProfile({ studentId = 0 }: { studentId?: number }) {
     `student_${studentId}_isEditing`,
     true
   );
-  const [user, setUser] = useSyncedState(`student_${studentId}_user`, () => {
-    const me = figma.currentUser;
-    return {
-      id: me?.id ?? null,
-      name: me?.name ?? "Anonymous",
-      photoUrl: me?.photoUrl ?? null,
-      color: me?.color ?? null,
-      sessionId: me?.sessionId ?? null,
-    };
-  });
-  const [activeUser, setActiveUser] = useSyncedState(
-    `student_${studentId}_activeUser`,
-    () => {
-      const me = figma.activeUsers[0];
-      return {
-        id: me?.id ?? null,
-        name: me?.name ?? "Anonymous",
-        photoUrl: me?.photoUrl ?? null,
-        color: me?.color ?? null,
-        sessionId: me?.sessionId ?? null,
-      };
-    }
-  );
-  console.log(`Student ${studentId} - Current user:`, user);
-  console.log(`Student ${studentId} - Active user:`, activeUser);
+
   const avatars = [
     "https://picsum.photos/id/1/200/300",
     "https://picsum.photos/id/2/200/300",
@@ -73,6 +53,9 @@ export function StudentProfile({ studentId = 0 }: { studentId?: number }) {
   ];
   const classes = ["Guerrier", "Mage", "Archer", "Soigneur"];
   const titles = ["Apprenti", "Aventurier", "Maître", "Légende"];
+
+  // Calculate XP to next level
+  const xpToNextLevel = (level) * 100; // XP_PER_LEVEL = 100
 
   return (
     <AutoLayout
@@ -297,6 +280,15 @@ export function StudentProfile({ studentId = 0 }: { studentId?: number }) {
               </Text>
             </AutoLayout>
           </AutoLayout>
+
+          {/* XP Display */}
+          <AutoLayout direction="vertical" spacing={4} width="fill-parent" horizontalAlignItems="center">
+            <Text fontSize={14} fontWeight="bold">Level {level}</Text>
+            <Text fontSize={12} fill="#666666">
+              {xp} / {xpToNextLevel} XP
+            </Text>
+          </AutoLayout>
+
           {/* Edit button */}
           <AutoLayout
             padding={{ vertical: 8, horizontal: 24 }}
