@@ -537,9 +537,17 @@
 
   // widget-src/kanban board/IssueCard.tsx
   var { widget: widget3 } = figma;
-  var { AutoLayout: AutoLayout3, Text: Text3 } = widget3;
-  function IssueCard({ issue, onMove }) {
+  var { AutoLayout: AutoLayout3, Text: Text3, useSyncedState: useSyncedState3 } = widget3;
+  function IssueCard({
+    issue,
+    onMove,
+    studentNames = []
+  }) {
     const priorityColor = PRIORITY_COLORS[issue.priority];
+    const getAssignedName = () => {
+      if (issue.assignedToId === void 0) return "Non assign\xE9";
+      return studentNames[issue.assignedToId] || "\xC9tudiant";
+    };
     return /* @__PURE__ */ figma.widget.h(
       AutoLayout3,
       {
@@ -563,6 +571,17 @@
       /* @__PURE__ */ figma.widget.h(AutoLayout3, { direction: "horizontal", spacing: 8, width: "fill-parent", verticalAlignItems: "center" }, /* @__PURE__ */ figma.widget.h(
         AutoLayout3,
         {
+          padding: { vertical: 4, horizontal: 8 },
+          fill: "#F0F9FF",
+          cornerRadius: 4,
+          stroke: { type: "solid", color: { r: 0.7, g: 0.85, b: 1, a: 1 } },
+          strokeWidth: 1
+        },
+        /* @__PURE__ */ figma.widget.h(Text3, { fontSize: 11, fill: "#0369A1" }, getAssignedName())
+      )),
+      /* @__PURE__ */ figma.widget.h(AutoLayout3, { direction: "horizontal", spacing: 8, width: "fill-parent", verticalAlignItems: "center" }, /* @__PURE__ */ figma.widget.h(
+        AutoLayout3,
+        {
           padding: { vertical: 2, horizontal: 8 },
           fill: priorityColor.bg,
           cornerRadius: 4,
@@ -576,17 +595,24 @@
 
   // widget-src/kanban board/AddIssueDialog.tsx
   var { widget: widget4 } = figma;
-  var { useSyncedState: useSyncedState3, AutoLayout: AutoLayout4, Text: Text4, Input: Input3 } = widget4;
+  var { useSyncedState: useSyncedState4, AutoLayout: AutoLayout4, Text: Text4, Input: Input3 } = widget4;
   function AddIssueDialog({
     status,
     onAdd,
-    onCancel
+    onCancel,
+    studentNames = []
   }) {
-    const [title, setTitle] = useSyncedState3(`newIssueTitle_${status}`, "");
-    const [description, setDescription] = useSyncedState3(`newIssueDesc_${status}`, "");
-    const [priority, setPriority] = useSyncedState3(`newIssuePriority_${status}`, "medium");
-    const [showPriorityDropdown, setShowPriorityDropdown] = useSyncedState3(`showPriorityDropdown_${status}`, false);
+    const [title, setTitle] = useSyncedState4(`newIssueTitle_${status}`, "");
+    const [description, setDescription] = useSyncedState4(`newIssueDesc_${status}`, "");
+    const [priority, setPriority] = useSyncedState4(`newIssuePriority_${status}`, "medium");
+    const [showPriorityDropdown, setShowPriorityDropdown] = useSyncedState4(`showPriorityDropdown_${status}`, false);
+    const [assignedToId, setAssignedToId] = useSyncedState4(`newIssueAssignedTo_${status}`, void 0);
+    const [showStudentDropdown, setShowStudentDropdown] = useSyncedState4(`showStudentDropdown_${status}`, false);
     const priorities = ["low", "medium", "high"];
+    const getAssignedName = () => {
+      if (assignedToId === void 0) return "Non assign\xE9";
+      return studentNames[assignedToId] || "\xC9tudiant";
+    };
     return /* @__PURE__ */ figma.widget.h(
       AutoLayout4,
       {
@@ -679,6 +705,59 @@
           /* @__PURE__ */ figma.widget.h(Text4, { fontSize: 12 }, p)
         ))
       )),
+      /* @__PURE__ */ figma.widget.h(AutoLayout4, { direction: "vertical", spacing: 4, width: "fill-parent" }, /* @__PURE__ */ figma.widget.h(Text4, { fontSize: 12, fill: "#6B7280" }, "Assign to:"), /* @__PURE__ */ figma.widget.h(
+        AutoLayout4,
+        {
+          padding: 8,
+          fill: { type: "solid", color: { r: 0.98, g: 0.98, b: 0.98, a: 1 } },
+          cornerRadius: 4,
+          stroke: { type: "solid", color: { r: 0.9, g: 0.9, b: 0.9, a: 1 } },
+          spacing: 4,
+          onClick: () => setShowStudentDropdown(!showStudentDropdown)
+        },
+        /* @__PURE__ */ figma.widget.h(Text4, { fontSize: 12 }, getAssignedName()),
+        /* @__PURE__ */ figma.widget.h(Text4, { fontSize: 10 }, showStudentDropdown ? "\u25B2" : "\u25BC")
+      ), showStudentDropdown && /* @__PURE__ */ figma.widget.h(
+        AutoLayout4,
+        {
+          direction: "vertical",
+          spacing: 4,
+          padding: 8,
+          fill: "#FFFFFF",
+          cornerRadius: 4,
+          stroke: { type: "solid", color: { r: 0.9, g: 0.9, b: 0.9, a: 1 } },
+          width: "fill-parent"
+        },
+        /* @__PURE__ */ figma.widget.h(
+          AutoLayout4,
+          {
+            padding: 6,
+            fill: assignedToId === void 0 ? { type: "solid", color: { r: 0.8, g: 0.9, b: 1, a: 1 } } : "#FFFFFF",
+            cornerRadius: 4,
+            onClick: () => {
+              setAssignedToId(void 0);
+              setShowStudentDropdown(false);
+            },
+            width: "fill-parent"
+          },
+          /* @__PURE__ */ figma.widget.h(Text4, { fontSize: 12 }, "Non assign\xE9")
+        ),
+        studentNames.map((name, idx) => /* @__PURE__ */ figma.widget.h(
+          AutoLayout4,
+          {
+            key: idx,
+            padding: 6,
+            fill: assignedToId === idx ? { type: "solid", color: { r: 0.8, g: 0.9, b: 1, a: 1 } } : "#FFFFFF",
+            cornerRadius: 4,
+            onClick: () => {
+              setAssignedToId(idx);
+              setShowStudentDropdown(false);
+            },
+            width: "fill-parent"
+          },
+          /* @__PURE__ */ figma.widget.h(Text4, { fontSize: 12 }, name)
+        ))
+      )),
       /* @__PURE__ */ figma.widget.h(AutoLayout4, { direction: "horizontal", spacing: 8, width: "fill-parent" }, /* @__PURE__ */ figma.widget.h(
         AutoLayout4,
         {
@@ -698,10 +777,11 @@
           cornerRadius: 6,
           onClick: () => {
             if (title.trim()) {
-              onAdd(title, description, priority);
+              onAdd(title, description, priority, assignedToId);
               setTitle("");
               setDescription("");
               setPriority("medium");
+              setAssignedToId(void 0);
             } else {
               figma.notify("Please enter a title");
             }
@@ -732,7 +812,8 @@
     onMove,
     addingToColumn,
     setAddingToColumn,
-    onAddIssue
+    onAddIssue,
+    studentNames = []
   }) {
     const columnIssues = issues.filter((issue) => issue.status === column.status);
     const columnColor = hexToRgb(column.color);
@@ -786,20 +867,23 @@
         columnIssues.map((issue) => /* @__PURE__ */ figma.widget.h(
           IssueCard,
           {
-            key: issue.id,
             issue,
-            onMove: () => onMove(issue.id)
+            onMove: (issueId, newStatus) => {
+              onMove(issueId);
+            },
+            studentNames
           }
         )),
         addingToColumn === column.status ? /* @__PURE__ */ figma.widget.h(
           AddIssueDialog,
           {
             status: column.status,
-            onAdd: (title, description, priority) => {
-              onAddIssue(column.status, title, description, priority);
+            onAdd: (title, description, priority, assignedToId) => {
+              onAddIssue(column.status, title, description, priority, assignedToId);
               setAddingToColumn(null);
             },
-            onCancel: () => setAddingToColumn(null)
+            onCancel: () => setAddingToColumn(null),
+            studentNames
           }
         ) : /* @__PURE__ */ figma.widget.h(
           AutoLayout5,
@@ -821,9 +905,9 @@
 
   // widget-src/kanban board/KanbanBoard.tsx
   var { widget: widget6 } = figma;
-  var { useSyncedState: useSyncedState4, useEffect, AutoLayout: AutoLayout6, Text: Text6 } = widget6;
+  var { useSyncedState: useSyncedState5, useEffect, AutoLayout: AutoLayout6, Text: Text6 } = widget6;
   function KanbanBoard() {
-    const [issues, setIssues] = useSyncedState4("issues", [
+    const [issues, setIssues] = useSyncedState5("issues", [
       {
         id: "1",
         title: "Setup project repository",
@@ -857,9 +941,16 @@
         createdAt: (/* @__PURE__ */ new Date("2025-01-21")).toISOString()
       }
     ]);
-    const [xp, setXp] = useSyncedState4("xp", 45);
-    const [level, setLevel] = useSyncedState4("level", 1);
-    const [addingToColumn, setAddingToColumn] = useSyncedState4(
+    const [numberOfStudentsStr] = useSyncedState5("teacherNumStudents", "0");
+    const numberOfStudents = parseInt(numberOfStudentsStr) || 0;
+    const studentNames = [];
+    for (let i = 0; i < numberOfStudents; i++) {
+      const [studentName] = useSyncedState5(`student_${i}_name`, `\xC9tudiant ${i + 1}`);
+      studentNames.push(studentName);
+    }
+    const [xp, setXp] = useSyncedState5("xp", 45);
+    const [level, setLevel] = useSyncedState5("level", 1);
+    const [addingToColumn, setAddingToColumn] = useSyncedState5(
       "addingToColumn",
       null
     );
@@ -899,14 +990,16 @@
         addXP(XP_REWARDS.MOVE_ISSUE, "Issue moved");
       }
     };
-    const handleAddIssue = (status, title, description, priority) => {
+    const handleAddIssue = (status, title, description, priority, assignedToId) => {
+      const newId = Math.random().toString();
       const newIssue = {
-        id: Date.now().toString(),
+        id: newId,
         title,
         description,
         status,
         priority,
-        createdAt: (/* @__PURE__ */ new Date()).toISOString()
+        createdAt: (/* @__PURE__ */ new Date()).toISOString(),
+        assignedToId
       };
       setIssues(issues.concat([newIssue]));
       addXP(XP_REWARDS.ADD_ISSUE, "Issue created");
@@ -926,13 +1019,13 @@
       /* @__PURE__ */ figma.widget.h(AutoLayout6, { direction: "horizontal", spacing: 16 }, COLUMNS.map((column) => /* @__PURE__ */ figma.widget.h(
         KanbanColumn,
         {
-          key: column.status,
           column,
           issues,
           onMove: handleMove,
           addingToColumn,
           setAddingToColumn,
-          onAddIssue: handleAddIssue
+          onAddIssue: handleAddIssue,
+          studentNames
         }
       )))
     );
@@ -940,19 +1033,19 @@
 
   // widget-src/postit.tsx
   var { widget: widget7 } = figma;
-  var { useSyncedState: useSyncedState5, AutoLayout: AutoLayout7, Text: Text7, Input: Input4 } = widget7;
+  var { useSyncedState: useSyncedState6, AutoLayout: AutoLayout7, Text: Text7, Input: Input4 } = widget7;
   function PostItBoard() {
-    const [postIts, setPostIts] = useSyncedState5("postIts", []);
-    const [isCreating, setIsCreating] = useSyncedState5("isCreatingPostIt", false);
-    const [newPostItContent, setNewPostItContent] = useSyncedState5(
+    const [postIts, setPostIts] = useSyncedState6("postIts", []);
+    const [isCreating, setIsCreating] = useSyncedState6("isCreatingPostIt", false);
+    const [newPostItContent, setNewPostItContent] = useSyncedState6(
       "newPostItContent",
       ""
     );
-    const [currentUserId, setCurrentUserId] = useSyncedState5(
+    const [currentUserId, setCurrentUserId] = useSyncedState6(
       "currentUserId",
       ""
     );
-    const [currentUserName, setCurrentUserName] = useSyncedState5(
+    const [currentUserName, setCurrentUserName] = useSyncedState6(
       "currentUserName",
       "Anonyme"
     );
@@ -1093,11 +1186,11 @@
           width: "fill-parent"
         },
         postIts.length === 0 ? /* @__PURE__ */ figma.widget.h(Text7, { fontSize: 12, fill: "#999" }, 'Aucun post-it pour le moment. Cliquez sur "+ Nouveau post-it" pour commencer !') : postIts.map((postIt) => {
-          const [isEditing, setIsEditing] = useSyncedState5(
+          const [isEditing, setIsEditing] = useSyncedState6(
             `editing_${postIt.id}`,
             false
           );
-          const [editContent, setEditContent] = useSyncedState5(
+          const [editContent, setEditContent] = useSyncedState6(
             `editContent_${postIt.id}`,
             postIt.content
           );
@@ -1212,9 +1305,9 @@
 
   // widget-src/widget.tsx
   var { widget: widget8 } = figma;
-  var { AutoLayout: AutoLayout8, Text: Text8, useSyncedState: useSyncedState6 } = widget8;
+  var { AutoLayout: AutoLayout8, Text: Text8, useSyncedState: useSyncedState7 } = widget8;
   function Widget() {
-    const [numberOfStudents] = useSyncedState6("teacherNumStudents", "");
+    const [numberOfStudents] = useSyncedState7("teacherNumStudents", "");
     const numStudents = parseInt(numberOfStudents) || 0;
     const studentIndices = Array.from({ length: numStudents }, (_, i) => i);
     return /* @__PURE__ */ figma.widget.h(

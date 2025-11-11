@@ -48,6 +48,18 @@ export function KanbanBoard() {
     },
   ]);
 
+  // Read the number of students from teacher profile
+  const [numberOfStudentsStr] = useSyncedState("teacherNumStudents", "0");
+  const numberOfStudents = parseInt(numberOfStudentsStr) || 0;
+
+  // Collect all student names from synced states
+  // We need to read up to numberOfStudents student names
+  const studentNames: string[] = [];
+  for (let i = 0; i < numberOfStudents; i++) {
+    const [studentName] = useSyncedState(`student_${i}_name`, `Étudiant ${i + 1}`);
+    studentNames.push(studentName);
+  }
+
   const [xp, setXp] = useSyncedState("xp", 45);
   const [level, setLevel] = useSyncedState("level", 1);
   const [addingToColumn, setAddingToColumn] = useSyncedState<string | null>(
@@ -80,7 +92,7 @@ export function KanbanBoard() {
       // Feedback sur Figma pour l'utilisateur
       try {
         figma.notify("Cette tâche est déjà terminée.");
-      } catch (_) {}
+      } catch (_) { }
       return;
     }
 
@@ -107,15 +119,18 @@ export function KanbanBoard() {
     status: string,
     title: string,
     description: string,
-    priority: "low" | "medium" | "high"
+    priority: "low" | "medium" | "high",
+    assignedToId?: number
   ) => {
+    const newId = Math.random().toString();
     const newIssue: Issue = {
-      id: Date.now().toString(),
-      title: title,
-      description: description,
-      status: status,
-      priority: priority,
+      id: newId,
+      title,
+      description,
+      status,
+      priority,
       createdAt: new Date().toISOString(),
+      assignedToId: assignedToId,
     };
     setIssues(issues.concat([newIssue]));
     addXP(XP_REWARDS.ADD_ISSUE, "Issue created");
@@ -145,13 +160,13 @@ export function KanbanBoard() {
       <AutoLayout direction="horizontal" spacing={16}>
         {COLUMNS.map((column) => (
           <KanbanColumn
-            key={column.status}
             column={column}
             issues={issues}
             onMove={handleMove}
             addingToColumn={addingToColumn}
             setAddingToColumn={setAddingToColumn}
             onAddIssue={handleAddIssue}
+            studentNames={studentNames}
           />
         ))}
       </AutoLayout>
