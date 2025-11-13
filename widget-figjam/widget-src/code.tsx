@@ -64,8 +64,6 @@ export function StudentProfile({ studentId = 0 }: { studentId?: number }) {
       };
     }
   );
-  console.log(`Student ${studentId} - Current user:`, user);
-  console.log(`Student ${studentId} - Active user:`, activeUser);
   const avatars = [
     "https://picsum.photos/id/1/200/300",
     "https://picsum.photos/id/2/200/300",

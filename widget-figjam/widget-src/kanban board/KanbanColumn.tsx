@@ -33,7 +33,7 @@ export function KanbanColumn({
     onMove: (issueId: string) => void;
     addingToColumn: string | null;
     setAddingToColumn: (status: string | null) => void;
-    onAddIssue: (status: string, title: string, description: string, priority: "low" | "medium" | "high") => void;
+    onAddIssue: (status: string, title: string, description: string, priority: "low" | "medium" | "high", selectedQuest: string) => void;
 }) {
     const columnIssues = issues.filter((issue) => issue.status === column.status);
     const columnColor = hexToRgb(column.color);
@@ -94,8 +94,8 @@ export function KanbanColumn({
                 {addingToColumn === column.status ? (
                     <AddIssueDialog
                         status={column.status}
-                        onAdd={(title, description, priority) => {
-                            onAddIssue(column.status, title, description, priority);
+                        onAdd={(title, description, priority, selectedQuest) => {
+                            onAddIssue(column.status, title, description, priority, selectedQuest);
                             setAddingToColumn(null);
                         }}
                         onCancel={() => setAddingToColumn(null)}

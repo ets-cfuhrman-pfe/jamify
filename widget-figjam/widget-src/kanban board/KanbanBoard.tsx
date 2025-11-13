@@ -21,6 +21,7 @@ export function KanbanBoard() {
       status: "done",
       priority: "high",
       createdAt: new Date("2025-01-19").toISOString(),
+      questName: "Aucune",
     },
     {
       id: "2",
@@ -29,6 +30,7 @@ export function KanbanBoard() {
       status: "in-progress",
       priority: "high",
       createdAt: new Date("2025-01-20").toISOString(),
+      questName: "Aucune",
     },
     {
       id: "3",
@@ -37,6 +39,7 @@ export function KanbanBoard() {
       status: "todo",
       priority: "medium",
       createdAt: new Date("2025-01-21").toISOString(),
+      questName: "Aucune",
     },
     {
       id: "4",
@@ -45,6 +48,7 @@ export function KanbanBoard() {
       status: "todo",
       priority: "low",
       createdAt: new Date("2025-01-21").toISOString(),
+      questName: "Aucune",
     },
   ]);
 
@@ -107,8 +111,10 @@ export function KanbanBoard() {
     status: string,
     title: string,
     description: string,
-    priority: "low" | "medium" | "high"
+    priority: "low" | "medium" | "high",
+    selectedQuest: string,
   ) => {
+    console.log("Adding issue with quest:", selectedQuest);
     const newIssue: Issue = {
       id: Date.now().toString(),
       title: title,
@@ -116,6 +122,7 @@ export function KanbanBoard() {
       status: status,
       priority: priority,
       createdAt: new Date().toISOString(),
+      questName: selectedQuest || "Aucune",
     };
     setIssues(issues.concat([newIssue]));
     addXP(XP_REWARDS.ADD_ISSUE, "Issue created");

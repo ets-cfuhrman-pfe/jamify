@@ -6,6 +6,7 @@ export interface Issue {
   status: string;
   priority: "low" | "medium" | "high";
   createdAt: string;
+  questName: string | "Aucune";
 }
 
 export interface Column {

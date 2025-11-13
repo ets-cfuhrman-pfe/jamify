@@ -81,8 +81,6 @@
         };
       }
     );
-    console.log(`Student ${studentId} - Current user:`, user);
-    console.log(`Student ${studentId} - Active user:`, activeUser);
     const avatars = [
       "https://picsum.photos/id/1/200/300",
       "https://picsum.photos/id/2/200/300",
@@ -300,10 +298,7 @@
       "teacherClaimed",
       false
     );
-    const [canEdit, setCanEdit] = useSyncedState2(
-      "teacherCanEdit",
-      false
-    );
+    const [canEdit, setCanEdit] = useSyncedState2("teacherCanEdit", false);
     const [numberOfStudents, setNumberOfStudents] = useSyncedState2(
       "teacherNumStudents",
       ""
@@ -311,6 +306,8 @@
     const [rules, setRules] = useSyncedState2("teacherRules", "");
     const [context, setContext] = useSyncedState2("teacherContext", "");
     const [isEditing, setIsEditing] = useSyncedState2("teacherIsEditing", true);
+    const [quests, setQuests] = useSyncedState2("teacherQuests", []);
+    const [expandedQuest, setExpandedQuest] = useSyncedState2("expandedQuest", null);
     const claimTeacherRole = () => {
       if (!teacherClaimed) {
         setTeacherClaimed(true);
@@ -318,6 +315,29 @@
       }
     };
     const isCreator = canEdit;
+    const updateQuest = (id, field, value) => {
+      const updated = quests.map((q) => {
+        if (q.id === id) {
+          return __spreadProps(__spreadValues({}, q), { [field]: value });
+        }
+        return q;
+      });
+      setQuests(updated);
+    };
+    const addQuest = () => {
+      const newQuest = {
+        id: Date.now().toString(),
+        name: "Nouvelle qu\xEAte",
+        description: "",
+        difficulty: "",
+        xp: ""
+      };
+      quests.push(newQuest);
+      setQuests(quests);
+    };
+    const deleteQuest = (id) => {
+      setQuests(quests.filter((q) => q.id !== id));
+    };
     return /* @__PURE__ */ figma.widget.h(
       AutoLayout2,
       {
@@ -331,189 +351,264 @@
         stroke: "#E6E6E6",
         width: 320
       },
-      isEditing ? (
-        // EDIT MODE (only for creator)
-        /* @__PURE__ */ figma.widget.h(figma.widget.Fragment, null, /* @__PURE__ */ figma.widget.h(Text2, { fontSize: 18, fontWeight: "bold" }, "Formulaire enseignant"), !teacherClaimed && /* @__PURE__ */ figma.widget.h(
+      isEditing ? /* @__PURE__ */ figma.widget.h(figma.widget.Fragment, null, /* @__PURE__ */ figma.widget.h(Text2, { fontSize: 18, fontWeight: "bold" }, "Formulaire enseignant"), !teacherClaimed && /* @__PURE__ */ figma.widget.h(
+        AutoLayout2,
+        {
+          padding: 8,
+          cornerRadius: 8,
+          fill: "#E5F5FF",
+          stroke: "#99CCFF",
+          width: "fill-parent",
+          direction: "vertical",
+          spacing: 8
+        },
+        /* @__PURE__ */ figma.widget.h(Text2, { fontSize: 12, fill: "#0066CC" }, "\u{1F44B} Cliquez ci-dessous pour devenir l'enseignant"),
+        /* @__PURE__ */ figma.widget.h(
           AutoLayout2,
           {
-            padding: 8,
-            cornerRadius: 8,
-            fill: "#E5F5FF",
-            stroke: "#99CCFF",
+            padding: { vertical: 6, horizontal: 12 },
+            cornerRadius: 6,
+            fill: "#0066CC",
+            onClick: claimTeacherRole
+          },
+          /* @__PURE__ */ figma.widget.h(Text2, { fontSize: 12, fill: "#FFFFFF", fontWeight: "bold" }, "Je suis l'enseignant")
+        )
+      ), teacherClaimed && !isCreator && /* @__PURE__ */ figma.widget.h(
+        AutoLayout2,
+        {
+          padding: 8,
+          cornerRadius: 8,
+          fill: "#FFE5E5",
+          stroke: "#FF9999",
+          width: "fill-parent"
+        },
+        /* @__PURE__ */ figma.widget.h(Text2, { fontSize: 12, fill: "#CC0000" }, "\u26A0\uFE0F Seul l'enseignant peut modifier ce formulaire")
+      ), /* @__PURE__ */ figma.widget.h(AutoLayout2, { direction: "vertical", spacing: 4, width: "fill-parent" }, /* @__PURE__ */ figma.widget.h(Text2, { fontSize: 14, fontWeight: "bold" }, "Nombre d'\xE9tudiants :"), /* @__PURE__ */ figma.widget.h(
+        AutoLayout2,
+        {
+          padding: { vertical: 6, horizontal: 8 },
+          cornerRadius: 6,
+          fill: isCreator ? "#F5F5F5" : "#E0E0E0",
+          stroke: "#CCCCCC",
+          width: "fill-parent"
+        },
+        /* @__PURE__ */ figma.widget.h(
+          Input2,
+          {
+            value: numberOfStudents,
+            placeholder: "Ex: 30",
+            fontSize: 14,
             width: "fill-parent",
-            direction: "vertical",
-            spacing: 8
-          },
-          /* @__PURE__ */ figma.widget.h(Text2, { fontSize: 12, fill: "#0066CC" }, "\u{1F44B} Cliquez ci-dessous pour devenir l'enseignant"),
-          /* @__PURE__ */ figma.widget.h(
-            AutoLayout2,
-            {
-              padding: { vertical: 6, horizontal: 12 },
-              cornerRadius: 6,
-              fill: "#0066CC",
-              onClick: claimTeacherRole
-            },
-            /* @__PURE__ */ figma.widget.h(Text2, { fontSize: 12, fill: "#FFFFFF", fontWeight: "bold" }, "Je suis l'enseignant")
-          )
-        ), teacherClaimed && !isCreator && /* @__PURE__ */ figma.widget.h(
-          AutoLayout2,
-          {
-            padding: 8,
-            cornerRadius: 8,
-            fill: "#FFE5E5",
-            stroke: "#FF9999",
-            width: "fill-parent"
-          },
-          /* @__PURE__ */ figma.widget.h(Text2, { fontSize: 12, fill: "#CC0000" }, "\u26A0\uFE0F Seul l'enseignant peut modifier ce formulaire")
-        ), /* @__PURE__ */ figma.widget.h(AutoLayout2, { direction: "vertical", spacing: 4, width: "fill-parent" }, /* @__PURE__ */ figma.widget.h(Text2, { fontSize: 14, fontWeight: "bold" }, "Nombre d'\xE9tudiants :"), /* @__PURE__ */ figma.widget.h(
-          AutoLayout2,
-          {
-            padding: { vertical: 6, horizontal: 8 },
-            cornerRadius: 6,
-            fill: isCreator ? "#F5F5F5" : "#E0E0E0",
-            stroke: "#CCCCCC",
-            width: "fill-parent"
-          },
-          /* @__PURE__ */ figma.widget.h(
-            Input2,
-            {
-              value: numberOfStudents,
-              placeholder: "Ex: 30",
-              fontSize: 14,
-              width: "fill-parent",
-              inputFrameProps: { opacity: isCreator ? 1 : 0.5 },
-              onTextEditEnd: (e) => {
-                if (isCreator) {
-                  setNumberOfStudents(e.characters);
-                }
-              }
+            inputFrameProps: { opacity: isCreator ? 1 : 0.5 },
+            onTextEditEnd: (e) => {
+              if (isCreator) setNumberOfStudents(e.characters);
             }
-          )
-        )), /* @__PURE__ */ figma.widget.h(AutoLayout2, { direction: "vertical", spacing: 4, width: "fill-parent" }, /* @__PURE__ */ figma.widget.h(Text2, { fontSize: 14, fontWeight: "bold" }, "Contexte du projet :"), /* @__PURE__ */ figma.widget.h(
-          AutoLayout2,
+          }
+        )
+      )), /* @__PURE__ */ figma.widget.h(AutoLayout2, { direction: "vertical", spacing: 4, width: "fill-parent" }, /* @__PURE__ */ figma.widget.h(Text2, { fontSize: 14, fontWeight: "bold" }, "Contexte du projet :"), /* @__PURE__ */ figma.widget.h(
+        AutoLayout2,
+        {
+          padding: { vertical: 6, horizontal: 8 },
+          cornerRadius: 6,
+          fill: isCreator ? "#F5F5F5" : "#E0E0E0",
+          stroke: "#CCCCCC",
+          width: "fill-parent"
+        },
+        /* @__PURE__ */ figma.widget.h(
+          Input2,
           {
-            padding: { vertical: 6, horizontal: 8 },
-            cornerRadius: 6,
-            fill: isCreator ? "#F5F5F5" : "#E0E0E0",
-            stroke: "#CCCCCC",
-            width: "fill-parent"
-          },
-          /* @__PURE__ */ figma.widget.h(
-            Input2,
-            {
-              value: context,
-              placeholder: "D\xE9crivez le contexte...",
-              fontSize: 14,
-              width: "fill-parent",
-              inputFrameProps: { opacity: isCreator ? 1 : 0.5 },
-              onTextEditEnd: (e) => {
-                if (isCreator) {
-                  setContext(e.characters);
-                }
-              }
-            }
-          )
-        )), /* @__PURE__ */ figma.widget.h(AutoLayout2, { direction: "vertical", spacing: 4, width: "fill-parent" }, /* @__PURE__ */ figma.widget.h(Text2, { fontSize: 14, fontWeight: "bold" }, "R\xE8gles :"), /* @__PURE__ */ figma.widget.h(
-          AutoLayout2,
-          {
-            padding: { vertical: 6, horizontal: 8 },
-            cornerRadius: 6,
-            fill: isCreator ? "#F5F5F5" : "#E0E0E0",
-            stroke: "#CCCCCC",
-            width: "fill-parent"
-          },
-          /* @__PURE__ */ figma.widget.h(
-            Input2,
-            {
-              value: rules,
-              placeholder: "Listez les r\xE8gles...",
-              fontSize: 14,
-              width: "fill-parent",
-              inputFrameProps: { opacity: isCreator ? 1 : 0.5 },
-              onTextEditEnd: (e) => {
-                if (isCreator) {
-                  setRules(e.characters);
-                }
-              }
-            }
-          )
-        )), isCreator && /* @__PURE__ */ figma.widget.h(
-          AutoLayout2,
-          {
-            padding: { vertical: 8, horizontal: 50 },
-            fill: "#CCE5FF",
-            cornerRadius: 8,
-            horizontalAlignItems: "center",
-            onClick: () => setIsEditing(false)
-          },
-          /* @__PURE__ */ figma.widget.h(Text2, { fontSize: 14, fontWeight: "bold" }, "Sauvegarder le formulaire")
-        ))
-      ) : (
-        // VIEW MODE (everyone can see)
-        /* @__PURE__ */ figma.widget.h(figma.widget.Fragment, null, /* @__PURE__ */ figma.widget.h(Text2, { fontSize: 18, fontWeight: "bold" }, "Informations du projet"), /* @__PURE__ */ figma.widget.h(AutoLayout2, { direction: "vertical", spacing: 12, width: "fill-parent" }, /* @__PURE__ */ figma.widget.h(AutoLayout2, { direction: "vertical", spacing: 4 }, /* @__PURE__ */ figma.widget.h(Text2, { fontSize: 13, fontWeight: "bold" }, "Nombre d'\xE9tudiants :"), /* @__PURE__ */ figma.widget.h(Text2, { fontSize: 14 }, numberOfStudents || "\u2014")), /* @__PURE__ */ figma.widget.h(AutoLayout2, { direction: "vertical", spacing: 4 }, /* @__PURE__ */ figma.widget.h(Text2, { fontSize: 13, fontWeight: "bold" }, "Contexte :"), /* @__PURE__ */ figma.widget.h(Text2, { fontSize: 14 }, context || "\u2014")), /* @__PURE__ */ figma.widget.h(AutoLayout2, { direction: "vertical", spacing: 4 }, /* @__PURE__ */ figma.widget.h(Text2, { fontSize: 13, fontWeight: "bold" }, "R\xE8gles :"), /* @__PURE__ */ figma.widget.h(Text2, { fontSize: 14 }, rules || "\u2014"))), isCreator && /* @__PURE__ */ figma.widget.h(AutoLayout2, { direction: "vertical", spacing: 8, width: "fill-parent" }, /* @__PURE__ */ figma.widget.h(
-          AutoLayout2,
-          {
-            padding: { vertical: 8, horizontal: 24 },
-            cornerRadius: 8,
-            fill: "#28A745",
-            horizontalAlignItems: "center",
+            value: context,
+            placeholder: "D\xE9crivez le contexte...",
+            fontSize: 14,
             width: "fill-parent",
-            onClick: () => {
-              return new Promise((resolve) => {
-                const csvContent = "Nom,Classe,Titre,Nombre_Etudiants,Contexte,Regles\n";
-                const csvData = `"Donn\xE9es","du","projet","${numberOfStudents}","${context}","${rules}"
-`;
-                const fullCsv = csvContent + csvData;
-                figma.showUI(
-                  `
-                      <!DOCTYPE html>
-                      <html>
-                        <body>
-                          <script>
-                            const csvData = ${JSON.stringify(fullCsv)};
-                            const blob = new Blob([csvData], { type: 'text/csv;charset=utf-8;' });
-                            const url = URL.createObjectURL(blob);
-                            const link = document.createElement('a');
-                            link.href = url;
-                            link.download = 'donnees_projet.csv';
-                            document.body.appendChild(link);
-                            link.click();
-                            document.body.removeChild(link);
-                            URL.revokeObjectURL(url);
-                            
-                            setTimeout(() => {
-                              parent.postMessage({ pluginMessage: { type: 'download-complete' } }, '*');
-                            }, 500);
-                          <\/script>
-                        </body>
-                      </html>
-                    `,
-                  { visible: false, width: 1, height: 1 }
-                );
-                figma.ui.onmessage = (msg) => {
-                  if (msg.type === "download-complete") {
-                    figma.closePlugin();
-                    resolve();
-                  }
-                };
-                figma.notify("\u{1F4CA} T\xE9l\xE9chargement du fichier en cours...");
-              });
+            inputFrameProps: { opacity: isCreator ? 1 : 0.5 },
+            onTextEditEnd: (e) => {
+              if (isCreator) setContext(e.characters);
             }
+          }
+        )
+      )), /* @__PURE__ */ figma.widget.h(AutoLayout2, { direction: "vertical", spacing: 4, width: "fill-parent" }, /* @__PURE__ */ figma.widget.h(Text2, { fontSize: 14, fontWeight: "bold" }, "R\xE8gles :"), /* @__PURE__ */ figma.widget.h(
+        AutoLayout2,
+        {
+          padding: { vertical: 6, horizontal: 8 },
+          cornerRadius: 6,
+          fill: isCreator ? "#F5F5F5" : "#E0E0E0",
+          stroke: "#CCCCCC",
+          width: "fill-parent"
+        },
+        /* @__PURE__ */ figma.widget.h(
+          Input2,
+          {
+            value: rules,
+            placeholder: "Listez les r\xE8gles...",
+            fontSize: 14,
+            width: "fill-parent",
+            inputFrameProps: { opacity: isCreator ? 1 : 0.5 },
+            onTextEditEnd: (e) => {
+              if (isCreator) setRules(e.characters);
+            }
+          }
+        )
+      )), /* @__PURE__ */ figma.widget.h(AutoLayout2, { direction: "vertical", spacing: 6, width: "fill-parent" }, /* @__PURE__ */ figma.widget.h(Text2, { fontSize: 14, fontWeight: "bold" }, "Qu\xEAtes :"), quests.map((quest) => /* @__PURE__ */ figma.widget.h(
+        AutoLayout2,
+        {
+          key: quest.id,
+          direction: "vertical",
+          fill: "#F9F9F9",
+          stroke: "#CCCCCC",
+          cornerRadius: 6,
+          padding: 8,
+          width: "fill-parent",
+          spacing: 6
+        },
+        /* @__PURE__ */ figma.widget.h(
+          AutoLayout2,
+          {
+            width: "fill-parent",
+            onClick: () => setExpandedQuest(
+              expandedQuest === quest.id ? null : quest.id
+            )
           },
-          /* @__PURE__ */ figma.widget.h(Text2, { fontSize: 13, fill: "#FFFFFF", fontWeight: "bold" }, "\u{1F4CA} T\xE9l\xE9charger donn\xE9es Excel")
+          /* @__PURE__ */ figma.widget.h(AutoLayout2, { width: "fill-parent", horizontalAlignItems: "start" }, /* @__PURE__ */ figma.widget.h(Text2, { fontWeight: "bold", fontSize: 13 }, quest.name || "Sans titre")),
+          /* @__PURE__ */ figma.widget.h(AutoLayout2, { width: "fill-parent", horizontalAlignItems: "end" }, /* @__PURE__ */ figma.widget.h(Text2, { fontSize: 12, fill: "#667" }, expandedQuest === quest.id ? "\u25B2" : "\u25BC"))
+        ),
+        expandedQuest === quest.id && /* @__PURE__ */ figma.widget.h(AutoLayout2, { direction: "vertical", spacing: 4, width: "fill-parent" }, /* @__PURE__ */ figma.widget.h(Text2, { fontSize: 12 }, "Nom :"), /* @__PURE__ */ figma.widget.h(
+          AutoLayout2,
+          {
+            padding: { vertical: 6, horizontal: 8 },
+            cornerRadius: 6,
+            fill: isCreator ? "#FFFFFF" : "#E0E0E0",
+            stroke: "#CCCCCC",
+            width: "fill-parent"
+          },
+          /* @__PURE__ */ figma.widget.h(
+            Input2,
+            {
+              value: quest.name,
+              placeholder: "Nom de la qu\xEAte",
+              fontSize: 12,
+              width: "fill-parent",
+              onTextEditEnd: (e) => updateQuest(quest.id, "name", e.characters)
+            }
+          )
+        ), /* @__PURE__ */ figma.widget.h(Text2, { fontSize: 12 }, "Description :"), /* @__PURE__ */ figma.widget.h(
+          AutoLayout2,
+          {
+            padding: { vertical: 6, horizontal: 8 },
+            cornerRadius: 6,
+            fill: isCreator ? "#FFFFFF" : "#E0E0E0",
+            stroke: "#CCCCCC",
+            width: "fill-parent"
+          },
+          /* @__PURE__ */ figma.widget.h(
+            Input2,
+            {
+              value: quest.description,
+              placeholder: "D\xE9crivez la qu\xEAte...",
+              fontSize: 12,
+              width: "fill-parent",
+              onTextEditEnd: (e) => updateQuest(quest.id, "description", e.characters)
+            }
+          )
+        ), /* @__PURE__ */ figma.widget.h(Text2, { fontSize: 12 }, "Difficult\xE9 :"), /* @__PURE__ */ figma.widget.h(
+          AutoLayout2,
+          {
+            padding: { vertical: 6, horizontal: 8 },
+            cornerRadius: 6,
+            fill: isCreator ? "#FFFFFF" : "#E0E0E0",
+            stroke: "#CCCCCC",
+            width: "fill-parent"
+          },
+          /* @__PURE__ */ figma.widget.h(
+            Input2,
+            {
+              value: quest.difficulty,
+              placeholder: "Facile / Moyenne / Difficile",
+              fontSize: 12,
+              width: "fill-parent",
+              onTextEditEnd: (e) => updateQuest(quest.id, "difficulty", e.characters)
+            }
+          )
+        ), /* @__PURE__ */ figma.widget.h(Text2, { fontSize: 12 }, "Points d'exp\xE9rience :"), /* @__PURE__ */ figma.widget.h(
+          AutoLayout2,
+          {
+            padding: { vertical: 6, horizontal: 8 },
+            cornerRadius: 6,
+            fill: isCreator ? "#FFFFFF" : "#E0E0E0",
+            stroke: "#CCCCCC",
+            width: "fill-parent"
+          },
+          /* @__PURE__ */ figma.widget.h(
+            Input2,
+            {
+              value: quest.xp,
+              placeholder: "Ex: 100",
+              fontSize: 12,
+              width: "fill-parent",
+              onTextEditEnd: (e) => updateQuest(quest.id, "xp", e.characters)
+            }
+          )
         ), /* @__PURE__ */ figma.widget.h(
           AutoLayout2,
           {
-            padding: { vertical: 8, horizontal: 24 },
-            cornerRadius: 8,
-            fill: "#F5F5F5",
+            fill: "#FFCCCC",
+            cornerRadius: 6,
+            padding: { vertical: 4, horizontal: 8 },
             horizontalAlignItems: "center",
-            width: "fill-parent",
-            onClick: () => setIsEditing(true)
+            onClick: () => deleteQuest(quest.id)
           },
-          /* @__PURE__ */ figma.widget.h(Text2, { fontSize: 13 }, "Modifier")
-        )), !isCreator && /* @__PURE__ */ figma.widget.h(Text2, { fontSize: 11, fill: "#666" }, "Cr\xE9\xE9 par l'enseignant"))
-      )
+          /* @__PURE__ */ figma.widget.h(Text2, { fontSize: 12, fill: "#CC0000" }, "Supprimer \u{1F5D1}\uFE0F")
+        ))
+      )), isCreator && /* @__PURE__ */ figma.widget.h(
+        AutoLayout2,
+        {
+          fill: "#D6EAF8",
+          cornerRadius: 6,
+          padding: { vertical: 6, horizontal: 12 },
+          horizontalAlignItems: "center",
+          width: "fill-parent",
+          onClick: addQuest
+        },
+        /* @__PURE__ */ figma.widget.h(Text2, { fontSize: 13, fontWeight: "bold" }, "\u2795 Ajouter une qu\xEAte")
+      )), isCreator && /* @__PURE__ */ figma.widget.h(
+        AutoLayout2,
+        {
+          padding: { vertical: 8, horizontal: 50 },
+          fill: "#CCE5FF",
+          cornerRadius: 8,
+          horizontalAlignItems: "center",
+          onClick: () => setIsEditing(false)
+        },
+        /* @__PURE__ */ figma.widget.h(Text2, { fontSize: 14, fontWeight: "bold" }, "Sauvegarder le formulaire")
+      )) : /* @__PURE__ */ figma.widget.h(figma.widget.Fragment, null, /* @__PURE__ */ figma.widget.h(Text2, { fontSize: 18, fontWeight: "bold" }, "Informations du projet"), /* @__PURE__ */ figma.widget.h(AutoLayout2, { direction: "vertical", spacing: 12, width: "fill-parent" }, /* @__PURE__ */ figma.widget.h(AutoLayout2, { direction: "vertical", spacing: 4 }, /* @__PURE__ */ figma.widget.h(Text2, { fontSize: 13, fontWeight: "bold" }, "Nombre d'\xE9tudiants :"), /* @__PURE__ */ figma.widget.h(Text2, { fontSize: 14 }, numberOfStudents || "\u2014")), /* @__PURE__ */ figma.widget.h(AutoLayout2, { direction: "vertical", spacing: 4 }, /* @__PURE__ */ figma.widget.h(Text2, { fontSize: 13, fontWeight: "bold" }, "Contexte :"), /* @__PURE__ */ figma.widget.h(Text2, { fontSize: 14 }, context || "\u2014")), /* @__PURE__ */ figma.widget.h(AutoLayout2, { direction: "vertical", spacing: 4 }, /* @__PURE__ */ figma.widget.h(Text2, { fontSize: 13, fontWeight: "bold" }, "R\xE8gles :"), /* @__PURE__ */ figma.widget.h(Text2, { fontSize: 14 }, rules || "\u2014")), /* @__PURE__ */ figma.widget.h(AutoLayout2, { direction: "vertical", spacing: 4, width: "fill-parent" }, /* @__PURE__ */ figma.widget.h(Text2, { fontSize: 13, fontWeight: "bold" }, "Qu\xEAtes :"), quests.length === 0 && /* @__PURE__ */ figma.widget.h(Text2, { fontSize: 12, fill: "#999" }, "Aucune qu\xEAte d\xE9finie."), quests.map((quest) => /* @__PURE__ */ figma.widget.h(
+        AutoLayout2,
+        {
+          key: quest.id,
+          direction: "vertical",
+          fill: "#F9F9F9",
+          stroke: "#CCCCCC",
+          cornerRadius: 6,
+          padding: 8,
+          width: "fill-parent",
+          spacing: 4,
+          onClick: () => setExpandedQuest(
+            expandedQuest === quest.id ? null : quest.id
+          )
+        },
+        /* @__PURE__ */ figma.widget.h(AutoLayout2, { width: "fill-parent" }, /* @__PURE__ */ figma.widget.h(AutoLayout2, { width: "fill-parent", horizontalAlignItems: "start" }, /* @__PURE__ */ figma.widget.h(Text2, { fontWeight: "bold", fontSize: 13 }, quest.name || "Sans titre")), /* @__PURE__ */ figma.widget.h(AutoLayout2, { width: "fill-parent", horizontalAlignItems: "end" }, /* @__PURE__ */ figma.widget.h(Text2, { fontSize: 12, fill: "#667" }, expandedQuest === quest.id ? "\u25B2" : "\u25BC"))),
+        expandedQuest === quest.id && /* @__PURE__ */ figma.widget.h(AutoLayout2, { direction: "vertical", spacing: 2, width: "fill-parent" }, /* @__PURE__ */ figma.widget.h(Text2, { fontSize: 12 }, "Description : ", quest.description || "\u2014"), /* @__PURE__ */ figma.widget.h(Text2, { fontSize: 12 }, "Difficult\xE9 : ", quest.difficulty || "\u2014"), /* @__PURE__ */ figma.widget.h(Text2, { fontSize: 12 }, "XP : ", quest.xp || "\u2014"))
+      )))), isCreator && /* @__PURE__ */ figma.widget.h(AutoLayout2, { direction: "vertical", spacing: 8, width: "fill-parent" }, /* @__PURE__ */ figma.widget.h(
+        AutoLayout2,
+        {
+          padding: { vertical: 8, horizontal: 24 },
+          cornerRadius: 8,
+          fill: "#F5F5F5",
+          horizontalAlignItems: "center",
+          width: "fill-parent",
+          onClick: () => setIsEditing(true)
+        },
+        /* @__PURE__ */ figma.widget.h(Text2, { fontSize: 13 }, "Modifier")
+      )))
     );
   }
 
@@ -540,6 +635,7 @@
   var { AutoLayout: AutoLayout3, Text: Text3 } = widget3;
   function IssueCard({ issue, onMove }) {
     const priorityColor = PRIORITY_COLORS[issue.priority];
+    console.log("Rendering IssueCard for issue:", issue);
     return /* @__PURE__ */ figma.widget.h(
       AutoLayout3,
       {
@@ -560,6 +656,17 @@
       },
       /* @__PURE__ */ figma.widget.h(Text3, { fontSize: 14, fontWeight: 600, fill: "#111827", width: "fill-parent" }, issue.title),
       issue.description && /* @__PURE__ */ figma.widget.h(Text3, { fontSize: 12, fill: "#6B7280", width: "fill-parent" }, issue.description),
+      /* @__PURE__ */ figma.widget.h(
+        AutoLayout3,
+        {
+          padding: { vertical: 2, horizontal: 8 },
+          fill: "#80a7f6ba",
+          cornerRadius: 4,
+          stroke: "#153089ff",
+          strokeWidth: 1
+        },
+        issue.questName && /* @__PURE__ */ figma.widget.h(Text3, { fontSize: 10, fill: "#153089ff" }, "Qu\xEAte: ", issue.questName)
+      ),
       /* @__PURE__ */ figma.widget.h(AutoLayout3, { direction: "horizontal", spacing: 8, width: "fill-parent", verticalAlignItems: "center" }, /* @__PURE__ */ figma.widget.h(
         AutoLayout3,
         {
@@ -582,10 +689,16 @@
     onAdd,
     onCancel
   }) {
+    var _a;
     const [title, setTitle] = useSyncedState3(`newIssueTitle_${status}`, "");
     const [description, setDescription] = useSyncedState3(`newIssueDesc_${status}`, "");
     const [priority, setPriority] = useSyncedState3(`newIssuePriority_${status}`, "medium");
     const [showPriorityDropdown, setShowPriorityDropdown] = useSyncedState3(`showPriorityDropdown_${status}`, false);
+    const [quests] = useSyncedState3("teacherQuests", []);
+    console.log("Available quests in AddIssueDialog:", quests);
+    const [selectedQuest, setSelectedQuest] = useSyncedState3(`selectedQuest_${status}`, "");
+    const [questName, setQuestName] = useSyncedState3(`questName_${status}`, "");
+    const [showQuestDropdown, setShowQuestDropdown] = useSyncedState3(`showQuestDropdown_${status}`, false);
     const priorities = ["low", "medium", "high"];
     return /* @__PURE__ */ figma.widget.h(
       AutoLayout4,
@@ -604,7 +717,7 @@
         AutoLayout4,
         {
           padding: 8,
-          fill: { type: "solid", color: { r: 0.98, g: 0.98, b: 0.98, a: 1 } },
+          fill: "#FAFAFA",
           cornerRadius: 4,
           stroke: { type: "solid", color: { r: 0.9, g: 0.9, b: 0.9, a: 1 } },
           width: "fill-parent"
@@ -624,7 +737,7 @@
         AutoLayout4,
         {
           padding: 8,
-          fill: { type: "solid", color: { r: 0.98, g: 0.98, b: 0.98, a: 1 } },
+          fill: "#FAFAFA",
           cornerRadius: 4,
           stroke: { type: "solid", color: { r: 0.9, g: 0.9, b: 0.9, a: 1 } },
           width: "fill-parent"
@@ -640,11 +753,51 @@
           }
         )
       )),
+      /* @__PURE__ */ figma.widget.h(AutoLayout4, { direction: "vertical", spacing: 4, width: "fill-parent" }, /* @__PURE__ */ figma.widget.h(Text4, { fontSize: 12, fill: "#6B7280" }, "Quest:"), /* @__PURE__ */ figma.widget.h(
+        AutoLayout4,
+        {
+          padding: 8,
+          fill: "#FAFAFA",
+          cornerRadius: 4,
+          stroke: { type: "solid", color: { r: 0.9, g: 0.9, b: 0.9, a: 1 } },
+          spacing: 4,
+          onClick: () => setShowQuestDropdown(!showQuestDropdown)
+        },
+        /* @__PURE__ */ figma.widget.h(Text4, { fontSize: 12 }, selectedQuest ? ((_a = quests.find((q) => q.id === selectedQuest)) == null ? void 0 : _a.name) || "Unknown Quest" : "Select a quest"),
+        /* @__PURE__ */ figma.widget.h(Text4, { fontSize: 10 }, showQuestDropdown ? "\u25B2" : "\u25BC")
+      ), showQuestDropdown && quests.length > 0 && /* @__PURE__ */ figma.widget.h(
+        AutoLayout4,
+        {
+          direction: "vertical",
+          spacing: 4,
+          padding: 8,
+          fill: "#FFFFFF",
+          cornerRadius: 4,
+          stroke: { type: "solid", color: { r: 0.9, g: 0.9, b: 0.9, a: 1 } },
+          width: "fill-parent"
+        },
+        quests.map((q) => /* @__PURE__ */ figma.widget.h(
+          AutoLayout4,
+          {
+            key: q.id,
+            padding: 6,
+            fill: selectedQuest === q.id ? "#E0ECFF" : "#FFFFFF",
+            cornerRadius: 4,
+            onClick: () => {
+              setSelectedQuest(q.id);
+              setQuestName(q.name);
+              setShowQuestDropdown(false);
+            },
+            width: "fill-parent"
+          },
+          /* @__PURE__ */ figma.widget.h(Text4, { fontSize: 12 }, q.name || "Unnamed Quest")
+        ))
+      ), showQuestDropdown && quests.length === 0 && /* @__PURE__ */ figma.widget.h(Text4, { fontSize: 12, fill: "#999" }, "No quests available.")),
       /* @__PURE__ */ figma.widget.h(AutoLayout4, { direction: "vertical", spacing: 4, width: "fill-parent" }, /* @__PURE__ */ figma.widget.h(Text4, { fontSize: 12, fill: "#6B7280" }, "Priority:"), /* @__PURE__ */ figma.widget.h(
         AutoLayout4,
         {
           padding: 8,
-          fill: { type: "solid", color: { r: 0.98, g: 0.98, b: 0.98, a: 1 } },
+          fill: "#FAFAFA",
           cornerRadius: 4,
           stroke: { type: "solid", color: { r: 0.9, g: 0.9, b: 0.9, a: 1 } },
           spacing: 4,
@@ -668,7 +821,7 @@
           {
             key: p,
             padding: 6,
-            fill: priority === p ? { type: "solid", color: { r: 0.8, g: 0.9, b: 1, a: 1 } } : "#FFFFFF",
+            fill: priority === p ? "#E0ECFF" : "#FFFFFF",
             cornerRadius: 4,
             onClick: () => {
               setPriority(p);
@@ -683,13 +836,13 @@
         AutoLayout4,
         {
           padding: 10,
-          fill: { type: "solid", color: { r: 0.9, g: 0.9, b: 0.9, a: 1 } },
+          fill: "#EEE",
           cornerRadius: 6,
           onClick: onCancel,
           width: "fill-parent",
           horizontalAlignItems: "center"
         },
-        /* @__PURE__ */ figma.widget.h(Text4, { fontSize: 12, fontWeight: 600, fill: "#374151" }, "Cancel")
+        /* @__PURE__ */ figma.widget.h(Text4, { fontSize: 12, fontWeight: 600, fill: "#374151" }, "Annuler")
       ), /* @__PURE__ */ figma.widget.h(
         AutoLayout4,
         {
@@ -697,11 +850,15 @@
           fill: { type: "solid", color: { r: 0.37, g: 0.51, b: 0.82, a: 1 } },
           cornerRadius: 6,
           onClick: () => {
-            if (title.trim()) {
-              onAdd(title, description, priority);
+            if (questName === "" || questName === null) {
+              figma.notify("Veuillez s\xE9lectionner une qu\xEAte");
+            } else if (title.trim()) {
+              onAdd(title, description, priority, questName);
               setTitle("");
               setDescription("");
               setPriority("medium");
+              setSelectedQuest("");
+              setQuestName("");
             } else {
               figma.notify("Please enter a title");
             }
@@ -709,7 +866,7 @@
           width: "fill-parent",
           horizontalAlignItems: "center"
         },
-        /* @__PURE__ */ figma.widget.h(Text4, { fontSize: 12, fontWeight: 600, fill: "#FFFFFF" }, "Add Issue")
+        /* @__PURE__ */ figma.widget.h(Text4, { fontSize: 12, fontWeight: 600, fill: "#FFFFFF" }, "Sauvegarder")
       ))
     );
   }
@@ -795,8 +952,8 @@
           AddIssueDialog,
           {
             status: column.status,
-            onAdd: (title, description, priority) => {
-              onAddIssue(column.status, title, description, priority);
+            onAdd: (title, description, priority, selectedQuest) => {
+              onAddIssue(column.status, title, description, priority, selectedQuest);
               setAddingToColumn(null);
             },
             onCancel: () => setAddingToColumn(null)
@@ -830,7 +987,8 @@
         description: "Initialize the project with all necessary dependencies",
         status: "done",
         priority: "high",
-        createdAt: (/* @__PURE__ */ new Date("2025-01-19")).toISOString()
+        createdAt: (/* @__PURE__ */ new Date("2025-01-19")).toISOString(),
+        questName: "Aucune"
       },
       {
         id: "2",
@@ -838,7 +996,8 @@
         description: "Create the initial database design for the application",
         status: "in-progress",
         priority: "high",
-        createdAt: (/* @__PURE__ */ new Date("2025-01-20")).toISOString()
+        createdAt: (/* @__PURE__ */ new Date("2025-01-20")).toISOString(),
+        questName: "Aucune"
       },
       {
         id: "3",
@@ -846,7 +1005,8 @@
         description: "Add login and registration functionality",
         status: "todo",
         priority: "medium",
-        createdAt: (/* @__PURE__ */ new Date("2025-01-21")).toISOString()
+        createdAt: (/* @__PURE__ */ new Date("2025-01-21")).toISOString(),
+        questName: "Aucune"
       },
       {
         id: "4",
@@ -854,7 +1014,8 @@
         description: "Add test coverage for core components",
         status: "todo",
         priority: "low",
-        createdAt: (/* @__PURE__ */ new Date("2025-01-21")).toISOString()
+        createdAt: (/* @__PURE__ */ new Date("2025-01-21")).toISOString(),
+        questName: "Aucune"
       }
     ]);
     const [xp, setXp] = useSyncedState4("xp", 45);
@@ -899,14 +1060,16 @@
         addXP(XP_REWARDS.MOVE_ISSUE, "Issue moved");
       }
     };
-    const handleAddIssue = (status, title, description, priority) => {
+    const handleAddIssue = (status, title, description, priority, selectedQuest) => {
+      console.log("Adding issue with quest:", selectedQuest);
       const newIssue = {
         id: Date.now().toString(),
         title,
         description,
         status,
         priority,
-        createdAt: (/* @__PURE__ */ new Date()).toISOString()
+        createdAt: (/* @__PURE__ */ new Date()).toISOString(),
+        questName: selectedQuest || "Aucune"
       };
       setIssues(issues.concat([newIssue]));
       addXP(XP_REWARDS.ADD_ISSUE, "Issue created");

@@ -7,6 +7,8 @@ import { PRIORITY_COLORS } from './constants';
 export function IssueCard({ issue, onMove }: { issue: Issue; onMove: (issueId: string, newStatus: string) => void }) {
     const priorityColor = PRIORITY_COLORS[issue.priority];
 
+    console.log("Rendering IssueCard for issue:", issue);
+
     return (
         <AutoLayout
             direction="vertical"
@@ -32,6 +34,20 @@ export function IssueCard({ issue, onMove }: { issue: Issue; onMove: (issueId: s
             {issue.description && (
                 <Text fontSize={12} fill="#6B7280" width="fill-parent">{issue.description}</Text>
             )}
+
+            <AutoLayout
+                padding={{ vertical: 2, horizontal: 8 }}
+                fill={"#80a7f6ba"}
+                cornerRadius={4}
+                stroke={"#153089ff"}
+                strokeWidth={1}
+            >
+                {issue.questName && (
+                    <Text fontSize={10} fill="#153089ff">
+                        Quête: {issue.questName}
+                    </Text>
+                )}
+            </AutoLayout>
 
             {/* Footer with priority and date */}
             <AutoLayout direction="horizontal" spacing={8} width="fill-parent" verticalAlignItems="center">
