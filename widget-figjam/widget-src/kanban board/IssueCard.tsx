@@ -13,6 +13,7 @@ export function IssueCard({
     issue: Issue;
     onMove: (issueId: string, newStatus: string) => void;
     studentNames?: string[];
+    key?: string;
 }) {
     const priorityColor = PRIORITY_COLORS[issue.priority];
 

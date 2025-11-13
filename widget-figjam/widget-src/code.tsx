@@ -17,7 +17,7 @@ export function StudentProfile({ studentId = 0 }: { studentId?: number }) {
   );
   const [selectedClass, setSelectedClass] = useSyncedState(
     `student_${studentId}_class`,
-    'Guerrier'
+    'Rôdeur'
   );
 
   // Read per-student XP and level
@@ -41,17 +41,14 @@ export function StudentProfile({ studentId = 0 }: { studentId?: number }) {
     true
   );
 
-  // Classes and titles (display names in French)
-  const classes = ['Rôdeur', 'Mage', 'Barde', 'Alchimiste', 'Guerrier'];
+  const classes = ['Rôdeur', 'Mage', 'Barde', 'Alchimiste'];
   const titles = ['Apprenti', 'Aventurier', 'Maître', 'Légende'];
 
-  // Map French class names to imported image assets
   const classImageMap: Record<string, string> = {
     'Rôdeur': Ranger_1,
     'Mage': Mage_1,
     'Barde': Bard_1,
     'Alchimiste': Alchemist_1,
-    'Guerrier': Ranger_1, // fallback - no dedicated Warrior image available
   };
 
   const xpToNextLevel = level * 100;

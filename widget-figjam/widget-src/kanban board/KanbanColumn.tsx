@@ -36,6 +36,8 @@ export function KanbanColumn({
     setAddingToColumn: (status: string | null) => void;
     onAddIssue: (status: string, title: string, description: string, priority: "low" | "medium" | "high", assignedToId?: number) => void;
     studentNames?: string[];
+    // allow optional key when parent renders this component in a list
+    key?: string;
 }) {
     const columnIssues = issues.filter((issue) => issue.status === column.status);
     const columnColor = hexToRgb(column.color);
@@ -86,6 +88,7 @@ export function KanbanColumn({
             >
                 {columnIssues.map((issue) => (
                     <IssueCard
+                        key={issue.id}
                         issue={issue}
                         onMove={(issueId: string, newStatus: string) => {
                             onMove(issueId);
