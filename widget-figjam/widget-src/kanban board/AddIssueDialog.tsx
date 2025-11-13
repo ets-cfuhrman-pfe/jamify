@@ -22,6 +22,8 @@ export function AddIssueDialog({
 
     const priorities: ("low" | "medium" | "high")[] = ["low", "medium", "high"];
 
+    const getPriorityLabel = (p: "low" | "medium" | "high") => (p === 'low' ? 'bas' : p === 'medium' ? 'moyen' : 'élevé')
+
     const getAssignedName = () => {
         if (assignedToId === undefined) return "Non assigné";
         return studentNames[assignedToId] || "Étudiant";
@@ -52,7 +54,7 @@ export function AddIssueDialog({
                 >
                     <Input
                         value={title}
-                        placeholder="Enter issue title"
+                        placeholder="Entrer le titre de la tâche"
                         onTextEditEnd={(e) => setTitle(e.characters)}
                         fontSize={12}
                         width="fill-parent"
@@ -72,7 +74,7 @@ export function AddIssueDialog({
                 >
                     <Input
                         value={description}
-                        placeholder="Enter description"
+                        placeholder="Entrer la description"
                         onTextEditEnd={(e) => setDescription(e.characters)}
                         fontSize={12}
                         width="fill-parent"
@@ -82,7 +84,7 @@ export function AddIssueDialog({
 
             {/* Priority Dropdown */}
             <AutoLayout direction="vertical" spacing={4} width="fill-parent">
-                <Text fontSize={12} fill="#6B7280">Priority:</Text>
+                <Text fontSize={12} fill="#6B7280">Priorité:</Text>
                 <AutoLayout
                     padding={8}
                     fill={{ type: "solid", color: { r: 0.98, g: 0.98, b: 0.98, a: 1 } }}
@@ -91,7 +93,7 @@ export function AddIssueDialog({
                     spacing={4}
                     onClick={() => setShowPriorityDropdown(!showPriorityDropdown)}
                 >
-                    <Text fontSize={12}>{priority}</Text>
+                    <Text fontSize={12}>{getPriorityLabel(priority)}</Text>
                     <Text fontSize={10}>{showPriorityDropdown ? "▲" : "▼"}</Text>
                 </AutoLayout>
 
@@ -117,7 +119,7 @@ export function AddIssueDialog({
                                 }}
                                 width="fill-parent"
                             >
-                                <Text fontSize={12}>{p}</Text>
+                                <Text fontSize={12}>{getPriorityLabel(p)}</Text>
                             </AutoLayout>
                         ))}
                     </AutoLayout>
@@ -126,7 +128,7 @@ export function AddIssueDialog({
 
             {/* Student Assignment Dropdown */}
             <AutoLayout direction="vertical" spacing={4} width="fill-parent">
-                <Text fontSize={12} fill="#6B7280">Assign to:</Text>
+                <Text fontSize={12} fill="#6B7280">Attribuer à :</Text>
                 <AutoLayout
                     padding={8}
                     fill={{ type: "solid", color: { r: 0.98, g: 0.98, b: 0.98, a: 1 } }}
@@ -193,7 +195,7 @@ export function AddIssueDialog({
                     width="fill-parent"
                     horizontalAlignItems="center"
                 >
-                    <Text fontSize={12} fontWeight={600} fill="#374151">Cancel</Text>
+                    <Text fontSize={12} fontWeight={600} fill="#374151">Annuler</Text>
                 </AutoLayout>
 
                 <AutoLayout
@@ -214,7 +216,7 @@ export function AddIssueDialog({
                     width="fill-parent"
                     horizontalAlignItems="center"
                 >
-                    <Text fontSize={12} fontWeight={600} fill="#FFFFFF">Add Issue</Text>
+                    <Text fontSize={12} fontWeight={600} fill="#FFFFFF">Ajouter une tâche</Text>
                 </AutoLayout>
             </AutoLayout>
         </AutoLayout>

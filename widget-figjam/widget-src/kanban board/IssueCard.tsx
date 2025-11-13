@@ -16,6 +16,8 @@ export function IssueCard({
 }) {
     const priorityColor = PRIORITY_COLORS[issue.priority];
 
+    const getPriorityLabel = (p: 'low' | 'medium' | 'high') => (p === 'low' ? 'bas' : p === 'medium' ? 'moyen' : 'élevé')
+
     const getAssignedName = () => {
         if (issue.assignedToId === undefined) return "Non assigné";
         return studentNames[issue.assignedToId] || "Étudiant";
@@ -76,7 +78,7 @@ export function IssueCard({
                     strokeWidth={1}
                 >
                     <Text fontSize={11} fill={priorityColor.text}>
-                        {issue.priority}
+                        {getPriorityLabel(issue.priority)}
                     </Text>
                 </AutoLayout>
 

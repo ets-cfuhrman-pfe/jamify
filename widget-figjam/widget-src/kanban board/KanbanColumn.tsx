@@ -116,7 +116,7 @@ export function KanbanColumn({
                         stroke={{ type: "solid", color: { r: 0.8, g: 0.8, b: 0.8, a: 1 } }}
                         strokeWidth={1}
                     >
-                        <Text fontSize={14} fill="#ffffffff">+ Add Issue</Text>
+                        <Text fontSize={14} fill="#ffffffff">+ Ajouter une tâche</Text>
                     </AutoLayout>
                 )}
             </AutoLayout>
