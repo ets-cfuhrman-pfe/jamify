@@ -5,18 +5,27 @@ const { useSyncedState, AutoLayout, Text, Input } = widget;
 export function AddIssueDialog({
     status,
     onAdd,
-    onCancel
+    onCancel,
+    studentNames = []
 }: {
     status: string;
-    onAdd: (title: string, description: string, priority: "low" | "medium" | "high") => void;
+    onAdd: (title: string, description: string, priority: "low" | "medium" | "high", assignedToId?: number) => void;
     onCancel: () => void;
+    studentNames?: string[];
 }) {
     const [title, setTitle] = useSyncedState(`newIssueTitle_${status}`, "");
     const [description, setDescription] = useSyncedState(`newIssueDesc_${status}`, "");
     const [priority, setPriority] = useSyncedState<"low" | "medium" | "high">(`newIssuePriority_${status}`, "medium");
     const [showPriorityDropdown, setShowPriorityDropdown] = useSyncedState(`showPriorityDropdown_${status}`, false);
+    const [assignedToId, setAssignedToId] = useSyncedState<number | undefined>(`newIssueAssignedTo_${status}`, undefined);
+    const [showStudentDropdown, setShowStudentDropdown] = useSyncedState(`showStudentDropdown_${status}`, false);
 
     const priorities: ("low" | "medium" | "high")[] = ["low", "medium", "high"];
+
+    const getAssignedName = () => {
+        if (assignedToId === undefined) return "Non assigné";
+        return studentNames[assignedToId] || "Étudiant";
+    };
 
     return (
         <AutoLayout
@@ -115,6 +124,65 @@ export function AddIssueDialog({
                 )}
             </AutoLayout>
 
+            {/* Student Assignment Dropdown */}
+            <AutoLayout direction="vertical" spacing={4} width="fill-parent">
+                <Text fontSize={12} fill="#6B7280">Assign to:</Text>
+                <AutoLayout
+                    padding={8}
+                    fill={{ type: "solid", color: { r: 0.98, g: 0.98, b: 0.98, a: 1 } }}
+                    cornerRadius={4}
+                    stroke={{ type: "solid", color: { r: 0.9, g: 0.9, b: 0.9, a: 1 } }}
+                    spacing={4}
+                    onClick={() => setShowStudentDropdown(!showStudentDropdown)}
+                >
+                    <Text fontSize={12}>{getAssignedName()}</Text>
+                    <Text fontSize={10}>{showStudentDropdown ? "▲" : "▼"}</Text>
+                </AutoLayout>
+
+                {showStudentDropdown && (
+                    <AutoLayout
+                        direction="vertical"
+                        spacing={4}
+                        padding={8}
+                        fill="#FFFFFF"
+                        cornerRadius={4}
+                        stroke={{ type: "solid", color: { r: 0.9, g: 0.9, b: 0.9, a: 1 } }}
+                        width="fill-parent"
+                    >
+                        {/* Non assigné option */}
+                        <AutoLayout
+                            padding={6}
+                            fill={assignedToId === undefined ? { type: "solid", color: { r: 0.8, g: 0.9, b: 1, a: 1 } } : "#FFFFFF"}
+                            cornerRadius={4}
+                            onClick={() => {
+                                setAssignedToId(undefined);
+                                setShowStudentDropdown(false);
+                            }}
+                            width="fill-parent"
+                        >
+                            <Text fontSize={12}>Non assigné</Text>
+                        </AutoLayout>
+
+                        {/* Student options */}
+                        {studentNames.map((name, idx) => (
+                            <AutoLayout
+                                key={idx}
+                                padding={6}
+                                fill={assignedToId === idx ? { type: "solid", color: { r: 0.8, g: 0.9, b: 1, a: 1 } } : "#FFFFFF"}
+                                cornerRadius={4}
+                                onClick={() => {
+                                    setAssignedToId(idx);
+                                    setShowStudentDropdown(false);
+                                }}
+                                width="fill-parent"
+                            >
+                                <Text fontSize={12}>{name}</Text>
+                            </AutoLayout>
+                        ))}
+                    </AutoLayout>
+                )}
+            </AutoLayout>
+
             {/* Buttons */}
             <AutoLayout direction="horizontal" spacing={8} width="fill-parent">
                 <AutoLayout
@@ -134,10 +202,11 @@ export function AddIssueDialog({
                     cornerRadius={6}
                     onClick={() => {
                         if (title.trim()) {
-                            onAdd(title, description, priority);
+                            onAdd(title, description, priority, assignedToId);
                             setTitle("");
                             setDescription("");
                             setPriority("medium");
+                            setAssignedToId(undefined);
                         } else {
                             figma.notify("Please enter a title");
                         }

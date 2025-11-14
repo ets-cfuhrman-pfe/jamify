@@ -6,6 +6,7 @@ export interface Issue {
   status: string;
   priority: "low" | "medium" | "high";
   createdAt: string;
+  assignedToId?: number; // Index of the assigned student
 }
 
 export interface Column {
