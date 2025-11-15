@@ -17,7 +17,7 @@ export function AddIssueDialog({
     const [description, setDescription] = useSyncedState(`newIssueDesc_${status}`, "");
     const [priority, setPriority] = useSyncedState<"low" | "medium" | "high">(`newIssuePriority_${status}`, "medium");
     const [showPriorityDropdown, setShowPriorityDropdown] = useSyncedState(`showPriorityDropdown_${status}`, false);
-    const [assignedToId, setAssignedToId] = useSyncedState<number | undefined>(`newIssueAssignedTo_${status}`, undefined);
+    const [assignedToId, setAssignedToId] = useSyncedState<number | null>(`newIssueAssignedTo_${status}`, null);
     const [showStudentDropdown, setShowStudentDropdown] = useSyncedState(`showStudentDropdown_${status}`, false);
 
     const priorities: ("low" | "medium" | "high")[] = ["low", "medium", "high"];
@@ -25,7 +25,7 @@ export function AddIssueDialog({
     const getPriorityLabel = (p: "low" | "medium" | "high") => (p === 'low' ? 'bas' : p === 'medium' ? 'moyen' : 'élevé')
 
     const getAssignedName = () => {
-        if (assignedToId === undefined) return "Non assigné";
+        if (assignedToId == null) return "Non assigné";
         return studentNames[assignedToId] || "Étudiant";
     };
 
@@ -154,10 +154,10 @@ export function AddIssueDialog({
                         {/* Non assigné option */}
                         <AutoLayout
                             padding={6}
-                            fill={assignedToId === undefined ? { type: "solid", color: { r: 0.8, g: 0.9, b: 1, a: 1 } } : "#FFFFFF"}
+                            fill={assignedToId == null ? { type: "solid", color: { r: 0.8, g: 0.9, b: 1, a: 1 } } : "#FFFFFF"}
                             cornerRadius={4}
                             onClick={() => {
-                                setAssignedToId(undefined);
+                                setAssignedToId(null);
                                 setShowStudentDropdown(false);
                             }}
                             width="fill-parent"
@@ -204,11 +204,11 @@ export function AddIssueDialog({
                     cornerRadius={6}
                     onClick={() => {
                         if (title.trim()) {
-                            onAdd(title, description, priority, assignedToId);
+                            onAdd(title, description, priority, assignedToId == null ? undefined : assignedToId);
                             setTitle("");
                             setDescription("");
                             setPriority("medium");
-                            setAssignedToId(undefined);
+                            setAssignedToId(null);
                         } else {
                             figma.notify("Please enter a title");
                         }

@@ -48,11 +48,11 @@ export function IssueCard({
             </Text>
 
             {/* Description */}
-            {issue.description && (
+            {issue.description.trim().length > 0 ? (
                 <Text fontSize={12} fill="#6B7280" width="fill-parent">
                     {issue.description}
                 </Text>
-            )}
+            ) : null}
 
             {/* Student assignment display (read-only) */}
             <AutoLayout direction="horizontal" spacing={8} width="fill-parent" verticalAlignItems="center">
