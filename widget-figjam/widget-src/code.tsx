@@ -17,11 +17,9 @@ export function StudentProfile({ studentId = 0 }: { studentId?: number }) {
     'Rôdeur'
   );
 
-  // Read per-student XP and level
   const [xp] = useSyncedState(`student_${studentId}_xp`, 0);
   const [level] = useSyncedState(`student_${studentId}_level`, 1);
 
-  // UI state stored in a single synced object to reduce number of hooks
   const [uiState, setUiState] = useSyncedState(
     `student_${studentId}_ui`,
     {
@@ -135,7 +133,7 @@ export function StudentProfile({ studentId = 0 }: { studentId?: number }) {
             )}
           </AutoLayout>
 
-          {/* Static computed title (line below label, allow wrapping) */}
+          {/* Static computed title */}
           <AutoLayout direction="vertical" spacing={4} width="fill-parent">
             <Text fontSize={14}>Titre :</Text>
             <AutoLayout padding={{ vertical: 6, horizontal: 10 }} fill="#F5F5F5" stroke="#CCCCCC" cornerRadius={8} width="fill-parent">
@@ -149,7 +147,7 @@ export function StudentProfile({ studentId = 0 }: { studentId?: number }) {
         </>
       ) : (
         <>
-          <AutoLayout spacing={8} verticalAlignItems="center">
+          <AutoLayout spacing={8} verticalAlignItems="center" width="fill-parent">
             <Image src={getProfileImage(selectedClass as any, level)} width={48} height={48} cornerRadius={8} />
             <AutoLayout direction="vertical" width="fill-parent">
               <Text fontSize={16} fontWeight="bold">{name}</Text>
