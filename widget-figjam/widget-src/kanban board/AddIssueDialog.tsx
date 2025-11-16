@@ -40,11 +40,11 @@ export function AddIssueDialog({
             strokeWidth={2}
             width="fill-parent"
         >
-            <Text fontSize={14} fontWeight={600} fill="#374151">New Issue</Text>
+            <Text fontSize={14} fontWeight={600} fill="#374151">Nouveau Tâche</Text>
 
             {/* Title Input */}
             <AutoLayout direction="vertical" spacing={4} width="fill-parent">
-                <Text fontSize={12} fill="#6B7280">Title:</Text>
+                <Text fontSize={12} fill="#6B7280">Titre :</Text>
                 <AutoLayout
                     padding={8}
                     fill={{ type: "solid", color: { r: 0.98, g: 0.98, b: 0.98, a: 1 } }}
