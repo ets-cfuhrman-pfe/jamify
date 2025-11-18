@@ -36,7 +36,6 @@ export function KanbanColumn({
     setAddingToColumn: (status: string | null) => void;
     onAddIssue: (status: string, title: string, description: string, priority: "low" | "medium" | "high", assignedToId?: number) => void;
     studentNames?: string[];
-    // allow optional key when parent renders this component in a list
     key?: string;
 }) {
     const columnIssues = issues.filter((issue) => issue.status === column.status);

@@ -148,7 +148,7 @@ export function StudentProfile({ studentId = 0 }: { studentId?: number }) {
       ) : (
         <>
           <AutoLayout spacing={8} verticalAlignItems="center" width="fill-parent">
-            <Image src={getProfileImage(selectedClass as any, level)} width={48} height={48} cornerRadius={8} />
+            <Image src={getProfileImage(selectedClass as any, level)} width={40} height={40} cornerRadius={8} />
             <AutoLayout direction="vertical" width="fill-parent">
               <Text fontSize={16} fontWeight="bold">{name}</Text>
               <Text fontSize={12}>{selectedClass}</Text>

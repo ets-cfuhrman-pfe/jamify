@@ -1,18 +1,10 @@
 // Profile-related constants and helpers
 
-// Import all class images for levels 1-3 so esbuild bundles them as data-URIs
-import Ranger_1 from './img/Ranger_1.png';
-import Ranger_2 from './img/Ranger_2.png';
-import Ranger_3 from './img/Ranger_3.png';
-import Mage_1 from './img/Mage_1.png';
-import Mage_2 from './img/Mage_2.png';
-import Mage_3 from './img/Mage_3.png';
-import Bard_1 from './img/Bard_1.png';
-import Bard_2 from './img/Bard_2.png';
-import Bard_3 from './img/Bard_3.png';
-import Alchemist_1 from './img/Alchemist_1.png';
-import Alchemist_2 from './img/Alchemist_2.png';
-import Alchemist_3 from './img/Alchemist_3.png';
+// To keep the widget bundle lean and speed up startup, we load images
+// from GitHub raw URLs instead of inlining large data URIs.
+// If you change the branch or repo, update CDN_BASE accordingly.
+// Using jsDelivr CDN for GitHub avoids raw.githubusercontent rate limits and is cache-friendly.
+const CDN_BASE = 'https://cdn.jsdelivr.net/gh/ets-cfuhrman-pfe/jamify@UCE-01-Personnalisation-du-profil/widget-figjam/widget-src/img';
 
 export const CLASSES = ['Rôdeur', 'Mage', 'Barde', 'Alchimiste'] as const;
 export type ClassName = typeof CLASSES[number];
@@ -41,15 +33,31 @@ export const CLASS_TITLES: Record<ClassName, [string, string, string]> = {
 };
 
 export const CLASS_LEVEL_IMAGE_MAP: Record<ClassName, Record<1 | 2 | 3, string>> = {
-  'Rôdeur': { 1: Ranger_1, 2: Ranger_2, 3: Ranger_3 },
-  'Mage': { 1: Mage_1, 2: Mage_2, 3: Mage_3 },
-  'Barde': { 1: Bard_1, 2: Bard_2, 3: Bard_3 },
-  'Alchimiste': { 1: Alchemist_1, 2: Alchemist_2, 3: Alchemist_3 },
+  'Rôdeur': {
+    1: `${CDN_BASE}/Ranger_1.png`,
+    2: `${CDN_BASE}/Ranger_2.png`,
+    3: `${CDN_BASE}/Ranger_3.png`,
+  },
+  'Mage': {
+    1: `${CDN_BASE}/Mage_1.png`,
+    2: `${CDN_BASE}/Mage_2.png`,
+    3: `${CDN_BASE}/Mage_3.png`,
+  },
+  'Barde': {
+    1: `${CDN_BASE}/Bard_1.png`,
+    2: `${CDN_BASE}/Bard_2.png`,
+    3: `${CDN_BASE}/Bard_3.png`,
+  },
+  'Alchimiste': {
+    1: `${CDN_BASE}/Alchemist_1.png`,
+    2: `${CDN_BASE}/Alchemist_2.png`,
+    3: `${CDN_BASE}/Alchemist_3.png`,
+  },
 };
 
 export function getProfileImage(selectedClass: ClassName, level: number): string {
   const images = CLASS_LEVEL_IMAGE_MAP[selectedClass];
-  if (!images) return Ranger_1;
+  if (!images) return `${CDN_BASE}/Ranger_1.png`;
   if (level >= 3) return images[3];
   if (level === 2) return images[2];
   return images[1];
