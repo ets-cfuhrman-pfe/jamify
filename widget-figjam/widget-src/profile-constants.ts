@@ -4,7 +4,7 @@
 // from GitHub raw URLs instead of inlining large data URIs.
 // If you change the branch or repo, update CDN_BASE accordingly.
 // Using jsDelivr CDN for GitHub avoids raw.githubusercontent rate limits and is cache-friendly.
-const CDN_BASE = 'https://cdn.jsdelivr.net/gh/ets-cfuhrman-pfe/jamify@UCE-01-Personnalisation-du-profil/widget-figjam/widget-src/img';
+const CDN_BASE = 'https://cdn.jsdelivr.net/gh/ets-cfuhrman-pfe/jamify@gh-pages/img';
 
 export const CLASSES = ['Rôdeur', 'Mage', 'Barde', 'Alchimiste'] as const;
 export type ClassName = typeof CLASSES[number];
