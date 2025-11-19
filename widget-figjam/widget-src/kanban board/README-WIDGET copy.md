@@ -142,26 +142,40 @@ This widget was converted from a React webapp. Key differences:
 
 ### File Structure
 ```
-Kanban ludifier/
-├── manifest.json         # Widget configuration
-├── package.json          # Dependencies and build scripts
+widget-figjam/
+├── manifest.json           # Widget configuration
+├── package.json            # Dependencies and build scripts
 ├── widget-src/
-│   ├── code.tsx         # Main widget code
-│   └── tsconfig.json    # TypeScript configuration
-└── dist/
-    └── code.js          # Built widget (generated)
+│   ├── code.tsx            # Widget profile section
+│   ├── widget.tsx          # Main widget layout
+│   ├── postit.tsx          # Ideation Post-it component
+│   ├── teacher.tsx         # Professor configuration UI
+│   ├── profile-constants.ts# Student profile config file
+│   ├── tsconfig.json       # TypeScript configuration for widget-src
+│   └── kanban board/
+│       ├── AddIssueDialog.tsx
+│       ├── CharacterProfile.tsx
+│       ├── KanbanBoard.tsx
+│       ├── KanbanColumn.tsx
+│       ├── IssueCard.tsx
+│       ├── constants.ts
+│       ├── types.ts
+│       ├── tsconfig.json
+└── dist/                   # Built widget (generated)
+  └── code.js
 ```
 
 ### Building
 
 ```bash
 # Install dependencies
+cd widget-figjam
 npm install
 
 # Build once
 npm run build
 
-# Watch mode (auto-rebuild on changes)
+# Watch mode for developpement (auto-rebuild on changes)
 npm run watch
 ```
 
@@ -169,18 +183,26 @@ npm run watch
 
 Since widgets don't support HTML UI:
 - No drag-and-drop (replaced with click-to-cycle)
-- No input dialogs (new issues created with default values)
 - No hover effects
+- No progress bar
 - Must avoid ES6+ features like spread operators
+- No typical dropdown
+  
+Other limitation from figma:
+- Element can only be initiated at the beginning 
+- No way to dynamically track userSession due to Figma API limitation
+- Performance limited 
+  - Can not import many photo directly and need to get it externally
+  - Heavy use of useStateSync, request and complex algorithme will slowdown the widget
 
 ## Future Enhancements
 
 Potential improvements:
-- Custom issue titles/descriptions (requires UI input alternative)
 - Achievement badges
 - Streak tracking
 - Team leaderboards
 - Export progress data
+- Project Information set externally
 
 ## Support
 
