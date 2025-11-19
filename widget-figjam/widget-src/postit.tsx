@@ -15,12 +15,14 @@ export function PostItBoard() {
   // Store all post-its
   const [postIts, setPostIts] = useSyncedState<PostIt[]>("postIts", []);
 
-  // UI state for new post-it
   const [isCreating, setIsCreating] = useSyncedState("isCreatingPostIt", false);
   const [newPostItContent, setNewPostItContent] = useSyncedState(
     "newPostItContent",
     ""
   );
+
+  const [editingPostItId, setEditingPostItId] = useSyncedState<string | null>("editingPostItId", null);
+  const [editContents, setEditContents] = useSyncedState<Record<string, string>>("editContents", {});
 
   // Store current user info in synced state (set once when needed)
   const [currentUserId, setCurrentUserId] = useSyncedState<string>(
@@ -187,14 +189,8 @@ export function PostItBoard() {
           </Text>
         ) : (
           postIts.map((postIt) => {
-            const [isEditing, setIsEditing] = useSyncedState(
-              `editing_${postIt.id}`,
-              false
-            );
-            const [editContent, setEditContent] = useSyncedState(
-              `editContent_${postIt.id}`,
-              postIt.content
-            );
+            const isEditing = editingPostItId === postIt.id;
+            const editContent = editContents[postIt.id] !== undefined ? editContents[postIt.id] : postIt.content;
 
             return (
               <AutoLayout
@@ -220,7 +216,11 @@ export function PostItBoard() {
                         value={editContent}
                         fontSize={11}
                         width={"fill-parent"}
-                        onTextEditEnd={(e) => setEditContent(e.characters)}
+                        onTextEditEnd={(e) => {
+                          const newContents = { ...editContents };
+                          newContents[postIt.id] = e.characters;
+                          setEditContents(newContents);
+                        }}
                       />
                     </AutoLayout>
                     <AutoLayout direction="horizontal" spacing={4}>
@@ -232,7 +232,7 @@ export function PostItBoard() {
                           return new Promise<void>((resolve) => {
                             if (isCurrentUserAuthor(postIt.authorId)) {
                               editPostIt(postIt.id, editContent);
-                              setIsEditing(false);
+                              setEditingPostItId(null);
                             }
                             resolve();
                           });
@@ -247,8 +247,10 @@ export function PostItBoard() {
                         cornerRadius={4}
                         fill="#999999"
                         onClick={() => {
-                          setEditContent(postIt.content);
-                          setIsEditing(false);
+                          const newContents = { ...editContents };
+                          newContents[postIt.id] = postIt.content;
+                          setEditContents(newContents);
+                          setEditingPostItId(null);
                         }}
                       >
                         <Text fontSize={10} fill="#FFFFFF">
@@ -278,7 +280,10 @@ export function PostItBoard() {
                           onClick={() => {
                             return new Promise<void>((resolve) => {
                               if (isCurrentUserAuthor(postIt.authorId)) {
-                                setIsEditing(true);
+                                const newContents = { ...editContents };
+                                newContents[postIt.id] = postIt.content;
+                                setEditContents(newContents);
+                                setEditingPostItId(postIt.id);
                               } else {
                                 figma.notify(
                                   "⚠️ Vous ne pouvez modifier que vos propres post-its"

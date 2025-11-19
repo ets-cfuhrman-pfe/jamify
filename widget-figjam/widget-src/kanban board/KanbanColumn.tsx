@@ -36,6 +36,7 @@ export function KanbanColumn({
     setAddingToColumn: (status: string | null) => void;
     onAddIssue: (status: string, title: string, description: string, priority: "low" | "medium" | "high", assignedToId?: number) => void;
     studentNames?: string[];
+    key?: string;
 }) {
     const columnIssues = issues.filter((issue) => issue.status === column.status);
     const columnColor = hexToRgb(column.color);
@@ -86,6 +87,7 @@ export function KanbanColumn({
             >
                 {columnIssues.map((issue) => (
                     <IssueCard
+                        key={issue.id}
                         issue={issue}
                         onMove={(issueId: string, newStatus: string) => {
                             onMove(issueId);
@@ -116,7 +118,7 @@ export function KanbanColumn({
                         stroke={{ type: "solid", color: { r: 0.8, g: 0.8, b: 0.8, a: 1 } }}
                         strokeWidth={1}
                     >
-                        <Text fontSize={14} fill="#ffffffff">+ Add Issue</Text>
+                        <Text fontSize={14} fill="#ffffffff">+ Ajouter une tâche</Text>
                     </AutoLayout>
                 )}
             </AutoLayout>

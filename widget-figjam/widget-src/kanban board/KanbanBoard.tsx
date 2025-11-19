@@ -194,6 +194,7 @@ export function KanbanBoard() {
       <AutoLayout direction="horizontal" spacing={16}>
         {COLUMNS.map((column) => (
           <KanbanColumn
+            key={column.status}
             column={column}
             issues={issues}
             onMove={handleMove}

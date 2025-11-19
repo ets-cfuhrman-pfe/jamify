@@ -1,8 +1,8 @@
 // Constants
 export const COLUMNS = [
-  { status: "todo", title: "To Do", color: "#4B5563" },
-  { status: "in-progress", title: "In Progress", color: "#2563EB" },
-  { status: "done", title: "Done", color: "#16A34A" },
+  { status: "todo", title: "À faire", color: "#4B5563" },
+  { status: "in-progress", title: "En cours", color: "#2563EB" },
+  { status: "done", title: "Terminé", color: "#16A34A" },
 ];
 
 export const XP_REWARDS = {

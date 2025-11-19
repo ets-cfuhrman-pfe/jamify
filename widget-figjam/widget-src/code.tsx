@@ -1,61 +1,40 @@
-// Student profile component - can be imported and reused
+// Student profile component for FigJam widget
 const { widget } = figma;
 
 const { useSyncedState, AutoLayout, Text, Input, Image } = widget;
 
-// Reusable Student Profile Component
+// Profile constants and helpers
+import { CLASSES, getProfileImage, getTitleFor } from './profile-constants';
+
 export function StudentProfile({ studentId = 0 }: { studentId?: number }) {
   // Persistent synced states - unique per student using studentId
   const [name, setName] = useSyncedState(
     `student_${studentId}_name`,
     `Étudiant ${studentId + 1}`
   );
-  const [selectedAvatar, setSelectedAvatar] = useSyncedState(
-    `student_${studentId}_avatar`,
-    0
-  );
   const [selectedClass, setSelectedClass] = useSyncedState(
     `student_${studentId}_class`,
-    "Guerrier"
-  );
-  const [selectedTitle, setSelectedTitle] = useSyncedState(
-    `student_${studentId}_title`,
-    "Apprenti"
+    'Rôdeur'
   );
 
-  // Read per-student XP and level
   const [xp] = useSyncedState(`student_${studentId}_xp`, 0);
   const [level] = useSyncedState(`student_${studentId}_level`, 1);
 
-  // UI state - unique per student
-  const [showAvatarSelector, setShowAvatarSelector] = useSyncedState(
-    `student_${studentId}_showAvatarSelector`,
-    false
-  );
-  const [showClassDropdown, setShowClassDropdown] = useSyncedState(
-    `student_${studentId}_showClassDropdown`,
-    false
-  );
-  const [showTitleDropdown, setShowTitleDropdown] = useSyncedState(
-    `student_${studentId}_showTitleDropdown`,
-    false
+  const [uiState, setUiState] = useSyncedState(
+    `student_${studentId}_ui`,
+    {
+      showAvatarSelector: false,
+      showClassDropdown: false,
+      isEditing: true,
+    }
   );
 
-  const [isEditing, setIsEditing] = useSyncedState(
-    `student_${studentId}_isEditing`,
-    true
-  );
+  const classes = CLASSES;
 
-  const avatars = [
-    "https://picsum.photos/id/1/200/300",
-    "https://picsum.photos/id/2/200/300",
-    "https://picsum.photos/id/3/200/300",
-  ];
-  const classes = ["Guerrier", "Mage", "Archer", "Soigneur"];
-  const titles = ["Apprenti", "Aventurier", "Maître", "Légende"];
+  const xpToNextLevel = level * 100;
 
-  // Calculate XP to next level
-  const xpToNextLevel = (level) * 100; // XP_PER_LEVEL = 100
+  const firstRow = classes.slice(0, 3);
+  const secondRow = classes.slice(3);
 
   return (
     <AutoLayout
@@ -69,233 +48,120 @@ export function StudentProfile({ studentId = 0 }: { studentId?: number }) {
       stroke="#E6E6E6"
       width={280}
     >
-      {isEditing ? (
-        // EDIT MODE
+      {uiState.isEditing ? (
         <>
-          <Text fontSize={18} fontWeight="bold">
-            Profil de l'étudiant
-          </Text>
+          <Text fontSize={18} fontWeight="bold">Profil de l'étudiant</Text>
 
-          {/* Avatar selector */}
+          {/* Avatar */}
           <AutoLayout direction="vertical" spacing={8}>
             <Text fontSize={14}>Avatar :</Text>
-
-            {!showAvatarSelector && (
-              <AutoLayout
-                padding={4}
-                cornerRadius={8}
-                fill="#FFFFFF"
-                stroke="#CCCCCC"
-                onClick={() => setShowAvatarSelector(true)}
-              >
-                <Image
-                  src={avatars[selectedAvatar]}
-                  width={64}
-                  height={64}
-                  cornerRadius={8}
-                />
+            {!uiState.showAvatarSelector ? (
+              <AutoLayout padding={4} cornerRadius={8} fill="#FFFFFF" stroke="#CCCCCC" onClick={() => setUiState({ ...uiState, showAvatarSelector: true })}>
+                <Image src={getProfileImage(selectedClass as any, level)} width={64} height={64} cornerRadius={8} />
               </AutoLayout>
-            )}
-            {/* When selector is open -> show all avatars in a grid */}
-            {showAvatarSelector && (
-              <AutoLayout
-                direction="vertical"
-                spacing={8}
-                padding={8}
-                cornerRadius={12}
-                fill="#F9F9F9"
-                stroke="#DDDDDD"
-              >
-                <AutoLayout spacing={8}>
-                  {avatars.map((src, index) => (
-                    <AutoLayout
-                      key={index}
-                      padding={4}
-                      cornerRadius={8}
-                      fill={index === selectedAvatar ? "#CCE5FF" : "#FFFFFF"}
-                      stroke="#CCCCCC"
-                      onClick={() => {
-                        setSelectedAvatar(index);
-                        setShowAvatarSelector(false);
-                      }}
-                    >
-                      <Image
-                        src={src}
-                        width={64}
-                        height={64}
+            ) : (
+              <AutoLayout direction="vertical" spacing={8} padding={8} cornerRadius={12} fill="#F9F9F9" stroke="#DDDDDD">
+                <AutoLayout direction="vertical" spacing={8}>
+                  <AutoLayout spacing={8}>
+                    {firstRow.map((c) => (
+                      <AutoLayout
+                        key={c}
+                        padding={4}
                         cornerRadius={8}
-                      />
+                        fill={c === selectedClass ? '#CCE5FF' : '#FFFFFF'}
+                        stroke="#CCCCCC"
+                        onClick={() => {
+                          setSelectedClass(c);
+                          setUiState({ ...uiState, showAvatarSelector: false });
+                        }}
+                      >
+                        <Image src={getProfileImage(c as any, level)} width={64} height={64} cornerRadius={8} />
+                      </AutoLayout>
+                    ))}
+                  </AutoLayout>
+                  {secondRow.length > 0 && (
+                    <AutoLayout spacing={8}>
+                      {secondRow.map((c) => (
+                        <AutoLayout
+                          key={c}
+                          padding={4}
+                          cornerRadius={8}
+                          fill={c === selectedClass ? '#CCE5FF' : '#FFFFFF'}
+                          stroke="#CCCCCC"
+                          onClick={() => {
+                            setSelectedClass(c);
+                            setUiState({ ...uiState, showAvatarSelector: false });
+                          }}
+                        >
+                          <Image src={getProfileImage(c as any, level)} width={64} height={64} cornerRadius={8} />
+                        </AutoLayout>
+                      ))}
                     </AutoLayout>
-                  ))}
+                  )}
                 </AutoLayout>
-                {/* A small cancel button */}
-                <AutoLayout
-                  padding={{ vertical: 4, horizontal: 8 }}
-                  cornerRadius={6}
-                  fill="#E0E0E0"
-                  onClick={() => setShowAvatarSelector(false)}
-                >
+                <AutoLayout padding={{ vertical: 4, horizontal: 8 }} cornerRadius={6} fill="#E0E0E0" onClick={() => setUiState({ ...uiState, showAvatarSelector: false })}>
                   <Text fontSize={12}>Fermer</Text>
                 </AutoLayout>
               </AutoLayout>
             )}
+            <Text fontSize={11} fill="#6B7280">L'avatar est automatiquement choisi selon la classe.</Text>
           </AutoLayout>
 
           {/* Name input */}
           <AutoLayout direction="vertical" spacing={4}>
             <Text fontSize={14}>Nom :</Text>
-            <AutoLayout
-              padding={{ vertical: 6, horizontal: 8 }}
-              cornerRadius={6}
-              fill="#F5F5F5"
-              stroke="#CCCCCC"
-            >
-              <Input
-                value={name}
-                placeholder="Entrez votre nom"
-                fontSize={14}
-                onTextEditEnd={(e) => setName(e.characters)}
-              />
+            <AutoLayout padding={{ vertical: 6, horizontal: 8 }} cornerRadius={6} fill="#F5F5F5" stroke="#CCCCCC">
+              <Input value={name} placeholder="Entrez votre nom" fontSize={14} onTextEditEnd={(e) => setName(e.characters)} />
             </AutoLayout>
           </AutoLayout>
 
           {/* Class dropdown */}
           <AutoLayout direction="vertical" spacing={4}>
             <Text fontSize={14}>Classe :</Text>
-            {/* Compact dropdown button */}
-            <AutoLayout
-              padding={{ vertical: 6, horizontal: 10 }}
-              fill="#F5F5F5"
-              stroke="#CCCCCC"
-              cornerRadius={8}
-              spacing={4}
-              onClick={() => setShowClassDropdown(!showClassDropdown)}
-            >
+            <AutoLayout padding={{ vertical: 6, horizontal: 10 }} fill="#F5F5F5" stroke="#CCCCCC" cornerRadius={8} spacing={4} onClick={() => setUiState({ ...uiState, showClassDropdown: !uiState.showClassDropdown })}>
               <Text>{selectedClass}</Text>
-              <Text fontSize={10}>{showClassDropdown ? "▲" : "▼"}</Text>
+              <Text fontSize={10}>{uiState.showClassDropdown ? '▲' : '▼'}</Text>
             </AutoLayout>
-            {/* If dropdown is open, show all options */}
-            {showClassDropdown && (
-              <AutoLayout
-                direction="vertical"
-                fill="#FFFFFF"
-                stroke="#DDDDDD"
-                cornerRadius={8}
-                padding={6}
-                spacing={4}
-                width={100}
-              >
+            {uiState.showClassDropdown && (
+              <AutoLayout direction="vertical" fill="#FFFFFF" stroke="#DDDDDD" cornerRadius={8} padding={6} spacing={4} width={120}>
                 {classes.map((c) => (
-                  <AutoLayout
-                    key={c}
-                    padding={{ vertical: 4, horizontal: 8 }}
-                    cornerRadius={6}
-                    fill={selectedClass === c ? "#CCE5FF" : "#FFFFFF"}
-                    onClick={() => {
-                      setSelectedClass(c);
-                      setShowClassDropdown(false);
-                    }}
-                  >
+                  <AutoLayout key={c} padding={{ vertical: 4, horizontal: 8 }} cornerRadius={6} fill={selectedClass === c ? '#CCE5FF' : '#FFFFFF'} onClick={() => { setSelectedClass(c); setUiState({ ...uiState, showClassDropdown: false }); }}>
                     <Text>{c}</Text>
                   </AutoLayout>
                 ))}
               </AutoLayout>
             )}
           </AutoLayout>
-          {/*TODO later make the code more reusable as drop down and color are repeated. More modular*/}
 
-          {/* Title dropdown */}
-          <AutoLayout direction="vertical" spacing={4}>
+          {/* Static computed title */}
+          <AutoLayout direction="vertical" spacing={4} width="fill-parent">
             <Text fontSize={14}>Titre :</Text>
-            {/* Compact dropdown button */}
-            <AutoLayout
-              padding={{ vertical: 6, horizontal: 10 }}
-              fill="#F5F5F5"
-              stroke="#CCCCCC"
-              cornerRadius={8}
-              spacing={4}
-              onClick={() => setShowTitleDropdown(!showTitleDropdown)}
-            >
-              <Text>{selectedTitle}</Text>
-              <Text fontSize={10}>{showTitleDropdown ? "▲" : "▼"}</Text>
+            <AutoLayout padding={{ vertical: 6, horizontal: 10 }} fill="#F5F5F5" stroke="#CCCCCC" cornerRadius={8} width="fill-parent">
+              <Text width="fill-parent">{getTitleFor(selectedClass as any, level)}</Text>
             </AutoLayout>
-            {/* Expanded dropdown list */}
-            {showTitleDropdown && (
-              <AutoLayout
-                direction="vertical"
-                fill="#FFFFFF"
-                stroke="#DDDDDD"
-                cornerRadius={8}
-                padding={6}
-                spacing={4}
-                width={120}
-              >
-                {titles.map((t) => (
-                  <AutoLayout
-                    key={t}
-                    padding={{ vertical: 4, horizontal: 8 }}
-                    cornerRadius={6}
-                    fill={selectedTitle === t ? "#CCE5FF" : "#FFFFFF"}
-                    onClick={() => {
-                      setSelectedTitle(t);
-                      setShowTitleDropdown(false);
-                    }}
-                  >
-                    <Text>{t}</Text>
-                  </AutoLayout>
-                ))}
-              </AutoLayout>
-            )}
           </AutoLayout>
 
-          {/* Submit button */}
-          <AutoLayout
-            padding={{ vertical: 8, horizontal: 50 }}
-            fill="#CCE5FF"
-            cornerRadius={8}
-            horizontalAlignItems="center"
-            onClick={() => setIsEditing(false)}
-          >
-            <Text fontSize={14} fontWeight="bold">
-              Sauvegarder le profil
-            </Text>
+          <AutoLayout padding={{ vertical: 8, horizontal: 50 }} fill="#CCE5FF" cornerRadius={8} horizontalAlignItems="center" onClick={() => setUiState({ ...uiState, isEditing: false })}>
+            <Text fontSize={14} fontWeight="bold">Sauvegarder le profil</Text>
           </AutoLayout>
         </>
       ) : (
-        // VIEW MODE
         <>
-          <AutoLayout spacing={8} verticalAlignItems="center">
-            <Image
-              src={avatars[selectedAvatar]}
-              width={48}
-              height={48}
-              cornerRadius={8}
-            />
-            <AutoLayout direction="vertical">
-              <Text fontSize={16} fontWeight="bold">
-                {name}
-              </Text>
-              <Text fontSize={12}>
-                {selectedClass} • {selectedTitle}
-              </Text>
+          <AutoLayout spacing={8} verticalAlignItems="center" width="fill-parent">
+            <Image src={getProfileImage(selectedClass as any, level)} width={40} height={40} cornerRadius={8} />
+            <AutoLayout direction="vertical" width="fill-parent">
+              <Text fontSize={16} fontWeight="bold">{name}</Text>
+              <Text fontSize={12}>{selectedClass}</Text>
+              <Text fontSize={12} width="fill-parent">{getTitleFor(selectedClass as any, level)}</Text>
             </AutoLayout>
           </AutoLayout>
 
-          {/* XP Display */}
           <AutoLayout direction="vertical" spacing={4} width="fill-parent" horizontalAlignItems="center">
             <Text fontSize={14} fontWeight="bold">Level {level}</Text>
-            <Text fontSize={12} fill="#666666">
-              {xp} / {xpToNextLevel} XP
-            </Text>
+            <Text fontSize={12} fill="#666666">{xp} / {xpToNextLevel} XP</Text>
           </AutoLayout>
 
-          {/* Edit button */}
-          <AutoLayout
-            padding={{ vertical: 8, horizontal: 24 }}
-            cornerRadius={8}
-            fill="#F5F5F5"
-            onClick={() => setIsEditing(true)}
-          >
+          <AutoLayout padding={{ vertical: 8, horizontal: 24 }} cornerRadius={8} fill="#F5F5F5" onClick={() => setUiState({ ...uiState, isEditing: true })}>
             <Text fontSize={13}>Modifier</Text>
           </AutoLayout>
         </>
@@ -303,3 +169,4 @@ export function StudentProfile({ studentId = 0 }: { studentId?: number }) {
     </AutoLayout>
   );
 }
+ 

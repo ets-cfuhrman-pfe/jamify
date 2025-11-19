@@ -13,8 +13,11 @@ export function IssueCard({
     issue: Issue;
     onMove: (issueId: string, newStatus: string) => void;
     studentNames?: string[];
+    key?: string;
 }) {
     const priorityColor = PRIORITY_COLORS[issue.priority];
+
+    const getPriorityLabel = (p: 'low' | 'medium' | 'high') => (p === 'low' ? 'bas' : p === 'medium' ? 'moyen' : 'élevé')
 
     const getAssignedName = () => {
         if (issue.assignedToId === undefined) return "Non assigné";
@@ -45,11 +48,11 @@ export function IssueCard({
             </Text>
 
             {/* Description */}
-            {issue.description && (
+            {issue.description.trim().length > 0 ? (
                 <Text fontSize={12} fill="#6B7280" width="fill-parent">
                     {issue.description}
                 </Text>
-            )}
+            ) : null}
 
             {/* Student assignment display (read-only) */}
             <AutoLayout direction="horizontal" spacing={8} width="fill-parent" verticalAlignItems="center">
@@ -76,7 +79,7 @@ export function IssueCard({
                     strokeWidth={1}
                 >
                     <Text fontSize={11} fill={priorityColor.text}>
-                        {issue.priority}
+                        {getPriorityLabel(issue.priority)}
                     </Text>
                 </AutoLayout>
 

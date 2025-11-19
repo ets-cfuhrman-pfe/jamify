@@ -20,6 +20,67 @@
   };
   var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
 
+  // widget-src/profile-constants.ts
+  var CDN_BASE = "https://cdn.jsdelivr.net/gh/ets-cfuhrman-pfe/jamify@gh-pages/img";
+  var CLASSES = ["R\xF4deur", "Mage", "Barde", "Alchimiste"];
+  var CLASS_TITLES = {
+    "R\xF4deur": [
+      "Apprenti du Sablier",
+      "Ma\xEEtre des Horloges",
+      "Strat\xE8ge du Temps"
+    ],
+    "Mage": [
+      "\xC9veilleur des Murmures",
+      "Gardien des Voix",
+      "Chanteur des \xC2mes Unies"
+    ],
+    "Barde": [
+      "Copiste des Premiers Parchemins",
+      "Chroniqueur du Savoir",
+      "Scribe du Royaume"
+    ],
+    "Alchimiste": [
+      "Distillateur d'Exp\xE9riences",
+      "Sage des M\xE9tamorphoses",
+      "Alchimiste du Progr\xE8s"
+    ]
+  };
+  var CLASS_LEVEL_IMAGE_MAP = {
+    "R\xF4deur": {
+      1: `${CDN_BASE}/Ranger_1.png`,
+      2: `${CDN_BASE}/Ranger_2.png`,
+      3: `${CDN_BASE}/Ranger_3.png`
+    },
+    "Mage": {
+      1: `${CDN_BASE}/Mage_1.png`,
+      2: `${CDN_BASE}/Mage_2.png`,
+      3: `${CDN_BASE}/Mage_3.png`
+    },
+    "Barde": {
+      1: `${CDN_BASE}/Bard_1.png`,
+      2: `${CDN_BASE}/Bard_2.png`,
+      3: `${CDN_BASE}/Bard_3.png`
+    },
+    "Alchimiste": {
+      1: `${CDN_BASE}/Alchemist_1.png`,
+      2: `${CDN_BASE}/Alchemist_2.png`,
+      3: `${CDN_BASE}/Alchemist_3.png`
+    }
+  };
+  function getProfileImage(selectedClass, level) {
+    const images = CLASS_LEVEL_IMAGE_MAP[selectedClass];
+    if (!images) return `${CDN_BASE}/Ranger_1.png`;
+    if (level >= 3) return images[3];
+    if (level === 2) return images[2];
+    return images[1];
+  }
+  function getTitleFor(selectedClass, level) {
+    const titlesArr = CLASS_TITLES[selectedClass];
+    if (!titlesArr) return "Aventurier";
+    const idx = level >= 3 ? 2 : level === 2 ? 1 : 0;
+    return titlesArr[idx];
+  }
+
   // widget-src/code.tsx
   var { widget } = figma;
   var { useSyncedState, AutoLayout, Text, Input, Image } = widget;
@@ -28,44 +89,24 @@
       `student_${studentId}_name`,
       `\xC9tudiant ${studentId + 1}`
     );
-    const [selectedAvatar, setSelectedAvatar] = useSyncedState(
-      `student_${studentId}_avatar`,
-      0
-    );
     const [selectedClass, setSelectedClass] = useSyncedState(
       `student_${studentId}_class`,
-      "Guerrier"
-    );
-    const [selectedTitle, setSelectedTitle] = useSyncedState(
-      `student_${studentId}_title`,
-      "Apprenti"
+      "R\xF4deur"
     );
     const [xp] = useSyncedState(`student_${studentId}_xp`, 0);
     const [level] = useSyncedState(`student_${studentId}_level`, 1);
-    const [showAvatarSelector, setShowAvatarSelector] = useSyncedState(
-      `student_${studentId}_showAvatarSelector`,
-      false
+    const [uiState, setUiState] = useSyncedState(
+      `student_${studentId}_ui`,
+      {
+        showAvatarSelector: false,
+        showClassDropdown: false,
+        isEditing: true
+      }
     );
-    const [showClassDropdown, setShowClassDropdown] = useSyncedState(
-      `student_${studentId}_showClassDropdown`,
-      false
-    );
-    const [showTitleDropdown, setShowTitleDropdown] = useSyncedState(
-      `student_${studentId}_showTitleDropdown`,
-      false
-    );
-    const [isEditing, setIsEditing] = useSyncedState(
-      `student_${studentId}_isEditing`,
-      true
-    );
-    const avatars = [
-      "https://picsum.photos/id/1/200/300",
-      "https://picsum.photos/id/2/200/300",
-      "https://picsum.photos/id/3/200/300"
-    ];
-    const classes = ["Guerrier", "Mage", "Archer", "Soigneur"];
-    const titles = ["Apprenti", "Aventurier", "Ma\xEEtre", "L\xE9gende"];
+    const classes = CLASSES;
     const xpToNextLevel = level * 100;
+    const firstRow = classes.slice(0, 3);
+    const secondRow = classes.slice(3);
     return /* @__PURE__ */ figma.widget.h(
       AutoLayout,
       {
@@ -79,192 +120,38 @@
         stroke: "#E6E6E6",
         width: 280
       },
-      isEditing ? (
-        // EDIT MODE
-        /* @__PURE__ */ figma.widget.h(figma.widget.Fragment, null, /* @__PURE__ */ figma.widget.h(Text, { fontSize: 18, fontWeight: "bold" }, "Profil de l'\xE9tudiant"), /* @__PURE__ */ figma.widget.h(AutoLayout, { direction: "vertical", spacing: 8 }, /* @__PURE__ */ figma.widget.h(Text, { fontSize: 14 }, "Avatar :"), !showAvatarSelector && /* @__PURE__ */ figma.widget.h(
-          AutoLayout,
-          {
-            padding: 4,
-            cornerRadius: 8,
-            fill: "#FFFFFF",
-            stroke: "#CCCCCC",
-            onClick: () => setShowAvatarSelector(true)
-          },
-          /* @__PURE__ */ figma.widget.h(
-            Image,
-            {
-              src: avatars[selectedAvatar],
-              width: 64,
-              height: 64,
-              cornerRadius: 8
-            }
-          )
-        ), showAvatarSelector && /* @__PURE__ */ figma.widget.h(
-          AutoLayout,
-          {
-            direction: "vertical",
-            spacing: 8,
-            padding: 8,
-            cornerRadius: 12,
-            fill: "#F9F9F9",
-            stroke: "#DDDDDD"
-          },
-          /* @__PURE__ */ figma.widget.h(AutoLayout, { spacing: 8 }, avatars.map((src, index) => /* @__PURE__ */ figma.widget.h(
-            AutoLayout,
-            {
-              key: index,
-              padding: 4,
-              cornerRadius: 8,
-              fill: index === selectedAvatar ? "#CCE5FF" : "#FFFFFF",
-              stroke: "#CCCCCC",
-              onClick: () => {
-                setSelectedAvatar(index);
-                setShowAvatarSelector(false);
-              }
-            },
-            /* @__PURE__ */ figma.widget.h(
-              Image,
-              {
-                src,
-                width: 64,
-                height: 64,
-                cornerRadius: 8
-              }
-            )
-          ))),
-          /* @__PURE__ */ figma.widget.h(
-            AutoLayout,
-            {
-              padding: { vertical: 4, horizontal: 8 },
-              cornerRadius: 6,
-              fill: "#E0E0E0",
-              onClick: () => setShowAvatarSelector(false)
-            },
-            /* @__PURE__ */ figma.widget.h(Text, { fontSize: 12 }, "Fermer")
-          )
-        )), /* @__PURE__ */ figma.widget.h(AutoLayout, { direction: "vertical", spacing: 4 }, /* @__PURE__ */ figma.widget.h(Text, { fontSize: 14 }, "Nom :"), /* @__PURE__ */ figma.widget.h(
-          AutoLayout,
-          {
-            padding: { vertical: 6, horizontal: 8 },
-            cornerRadius: 6,
-            fill: "#F5F5F5",
-            stroke: "#CCCCCC"
-          },
-          /* @__PURE__ */ figma.widget.h(
-            Input,
-            {
-              value: name,
-              placeholder: "Entrez votre nom",
-              fontSize: 14,
-              onTextEditEnd: (e) => setName(e.characters)
-            }
-          )
-        )), /* @__PURE__ */ figma.widget.h(AutoLayout, { direction: "vertical", spacing: 4 }, /* @__PURE__ */ figma.widget.h(Text, { fontSize: 14 }, "Classe :"), /* @__PURE__ */ figma.widget.h(
-          AutoLayout,
-          {
-            padding: { vertical: 6, horizontal: 10 },
-            fill: "#F5F5F5",
-            stroke: "#CCCCCC",
-            cornerRadius: 8,
-            spacing: 4,
-            onClick: () => setShowClassDropdown(!showClassDropdown)
-          },
-          /* @__PURE__ */ figma.widget.h(Text, null, selectedClass),
-          /* @__PURE__ */ figma.widget.h(Text, { fontSize: 10 }, showClassDropdown ? "\u25B2" : "\u25BC")
-        ), showClassDropdown && /* @__PURE__ */ figma.widget.h(
-          AutoLayout,
-          {
-            direction: "vertical",
-            fill: "#FFFFFF",
-            stroke: "#DDDDDD",
-            cornerRadius: 8,
-            padding: 6,
-            spacing: 4,
-            width: 100
-          },
-          classes.map((c) => /* @__PURE__ */ figma.widget.h(
-            AutoLayout,
-            {
-              key: c,
-              padding: { vertical: 4, horizontal: 8 },
-              cornerRadius: 6,
-              fill: selectedClass === c ? "#CCE5FF" : "#FFFFFF",
-              onClick: () => {
-                setSelectedClass(c);
-                setShowClassDropdown(false);
-              }
-            },
-            /* @__PURE__ */ figma.widget.h(Text, null, c)
-          ))
-        )), /* @__PURE__ */ figma.widget.h(AutoLayout, { direction: "vertical", spacing: 4 }, /* @__PURE__ */ figma.widget.h(Text, { fontSize: 14 }, "Titre :"), /* @__PURE__ */ figma.widget.h(
-          AutoLayout,
-          {
-            padding: { vertical: 6, horizontal: 10 },
-            fill: "#F5F5F5",
-            stroke: "#CCCCCC",
-            cornerRadius: 8,
-            spacing: 4,
-            onClick: () => setShowTitleDropdown(!showTitleDropdown)
-          },
-          /* @__PURE__ */ figma.widget.h(Text, null, selectedTitle),
-          /* @__PURE__ */ figma.widget.h(Text, { fontSize: 10 }, showTitleDropdown ? "\u25B2" : "\u25BC")
-        ), showTitleDropdown && /* @__PURE__ */ figma.widget.h(
-          AutoLayout,
-          {
-            direction: "vertical",
-            fill: "#FFFFFF",
-            stroke: "#DDDDDD",
-            cornerRadius: 8,
-            padding: 6,
-            spacing: 4,
-            width: 120
-          },
-          titles.map((t) => /* @__PURE__ */ figma.widget.h(
-            AutoLayout,
-            {
-              key: t,
-              padding: { vertical: 4, horizontal: 8 },
-              cornerRadius: 6,
-              fill: selectedTitle === t ? "#CCE5FF" : "#FFFFFF",
-              onClick: () => {
-                setSelectedTitle(t);
-                setShowTitleDropdown(false);
-              }
-            },
-            /* @__PURE__ */ figma.widget.h(Text, null, t)
-          ))
-        )), /* @__PURE__ */ figma.widget.h(
-          AutoLayout,
-          {
-            padding: { vertical: 8, horizontal: 50 },
-            fill: "#CCE5FF",
-            cornerRadius: 8,
-            horizontalAlignItems: "center",
-            onClick: () => setIsEditing(false)
-          },
-          /* @__PURE__ */ figma.widget.h(Text, { fontSize: 14, fontWeight: "bold" }, "Sauvegarder le profil")
-        ))
-      ) : (
-        // VIEW MODE
-        /* @__PURE__ */ figma.widget.h(figma.widget.Fragment, null, /* @__PURE__ */ figma.widget.h(AutoLayout, { spacing: 8, verticalAlignItems: "center" }, /* @__PURE__ */ figma.widget.h(
-          Image,
-          {
-            src: avatars[selectedAvatar],
-            width: 48,
-            height: 48,
-            cornerRadius: 8
+      uiState.isEditing ? /* @__PURE__ */ figma.widget.h(figma.widget.Fragment, null, /* @__PURE__ */ figma.widget.h(Text, { fontSize: 18, fontWeight: "bold" }, "Profil de l'\xE9tudiant"), /* @__PURE__ */ figma.widget.h(AutoLayout, { direction: "vertical", spacing: 8 }, /* @__PURE__ */ figma.widget.h(Text, { fontSize: 14 }, "Avatar :"), !uiState.showAvatarSelector ? /* @__PURE__ */ figma.widget.h(AutoLayout, { padding: 4, cornerRadius: 8, fill: "#FFFFFF", stroke: "#CCCCCC", onClick: () => setUiState(__spreadProps(__spreadValues({}, uiState), { showAvatarSelector: true })) }, /* @__PURE__ */ figma.widget.h(Image, { src: getProfileImage(selectedClass, level), width: 64, height: 64, cornerRadius: 8 })) : /* @__PURE__ */ figma.widget.h(AutoLayout, { direction: "vertical", spacing: 8, padding: 8, cornerRadius: 12, fill: "#F9F9F9", stroke: "#DDDDDD" }, /* @__PURE__ */ figma.widget.h(AutoLayout, { direction: "vertical", spacing: 8 }, /* @__PURE__ */ figma.widget.h(AutoLayout, { spacing: 8 }, firstRow.map((c) => /* @__PURE__ */ figma.widget.h(
+        AutoLayout,
+        {
+          key: c,
+          padding: 4,
+          cornerRadius: 8,
+          fill: c === selectedClass ? "#CCE5FF" : "#FFFFFF",
+          stroke: "#CCCCCC",
+          onClick: () => {
+            setSelectedClass(c);
+            setUiState(__spreadProps(__spreadValues({}, uiState), { showAvatarSelector: false }));
           }
-        ), /* @__PURE__ */ figma.widget.h(AutoLayout, { direction: "vertical" }, /* @__PURE__ */ figma.widget.h(Text, { fontSize: 16, fontWeight: "bold" }, name), /* @__PURE__ */ figma.widget.h(Text, { fontSize: 12 }, selectedClass, " \u2022 ", selectedTitle))), /* @__PURE__ */ figma.widget.h(AutoLayout, { direction: "vertical", spacing: 4, width: "fill-parent", horizontalAlignItems: "center" }, /* @__PURE__ */ figma.widget.h(Text, { fontSize: 14, fontWeight: "bold" }, "Level ", level), /* @__PURE__ */ figma.widget.h(Text, { fontSize: 12, fill: "#666666" }, xp, " / ", xpToNextLevel, " XP")), /* @__PURE__ */ figma.widget.h(
-          AutoLayout,
-          {
-            padding: { vertical: 8, horizontal: 24 },
-            cornerRadius: 8,
-            fill: "#F5F5F5",
-            onClick: () => setIsEditing(true)
-          },
-          /* @__PURE__ */ figma.widget.h(Text, { fontSize: 13 }, "Modifier")
-        ))
-      )
+        },
+        /* @__PURE__ */ figma.widget.h(Image, { src: getProfileImage(c, level), width: 64, height: 64, cornerRadius: 8 })
+      ))), secondRow.length > 0 && /* @__PURE__ */ figma.widget.h(AutoLayout, { spacing: 8 }, secondRow.map((c) => /* @__PURE__ */ figma.widget.h(
+        AutoLayout,
+        {
+          key: c,
+          padding: 4,
+          cornerRadius: 8,
+          fill: c === selectedClass ? "#CCE5FF" : "#FFFFFF",
+          stroke: "#CCCCCC",
+          onClick: () => {
+            setSelectedClass(c);
+            setUiState(__spreadProps(__spreadValues({}, uiState), { showAvatarSelector: false }));
+          }
+        },
+        /* @__PURE__ */ figma.widget.h(Image, { src: getProfileImage(c, level), width: 64, height: 64, cornerRadius: 8 })
+      )))), /* @__PURE__ */ figma.widget.h(AutoLayout, { padding: { vertical: 4, horizontal: 8 }, cornerRadius: 6, fill: "#E0E0E0", onClick: () => setUiState(__spreadProps(__spreadValues({}, uiState), { showAvatarSelector: false })) }, /* @__PURE__ */ figma.widget.h(Text, { fontSize: 12 }, "Fermer"))), /* @__PURE__ */ figma.widget.h(Text, { fontSize: 11, fill: "#6B7280" }, "L'avatar est automatiquement choisi selon la classe.")), /* @__PURE__ */ figma.widget.h(AutoLayout, { direction: "vertical", spacing: 4 }, /* @__PURE__ */ figma.widget.h(Text, { fontSize: 14 }, "Nom :"), /* @__PURE__ */ figma.widget.h(AutoLayout, { padding: { vertical: 6, horizontal: 8 }, cornerRadius: 6, fill: "#F5F5F5", stroke: "#CCCCCC" }, /* @__PURE__ */ figma.widget.h(Input, { value: name, placeholder: "Entrez votre nom", fontSize: 14, onTextEditEnd: (e) => setName(e.characters) }))), /* @__PURE__ */ figma.widget.h(AutoLayout, { direction: "vertical", spacing: 4 }, /* @__PURE__ */ figma.widget.h(Text, { fontSize: 14 }, "Classe :"), /* @__PURE__ */ figma.widget.h(AutoLayout, { padding: { vertical: 6, horizontal: 10 }, fill: "#F5F5F5", stroke: "#CCCCCC", cornerRadius: 8, spacing: 4, onClick: () => setUiState(__spreadProps(__spreadValues({}, uiState), { showClassDropdown: !uiState.showClassDropdown })) }, /* @__PURE__ */ figma.widget.h(Text, null, selectedClass), /* @__PURE__ */ figma.widget.h(Text, { fontSize: 10 }, uiState.showClassDropdown ? "\u25B2" : "\u25BC")), uiState.showClassDropdown && /* @__PURE__ */ figma.widget.h(AutoLayout, { direction: "vertical", fill: "#FFFFFF", stroke: "#DDDDDD", cornerRadius: 8, padding: 6, spacing: 4, width: 120 }, classes.map((c) => /* @__PURE__ */ figma.widget.h(AutoLayout, { key: c, padding: { vertical: 4, horizontal: 8 }, cornerRadius: 6, fill: selectedClass === c ? "#CCE5FF" : "#FFFFFF", onClick: () => {
+        setSelectedClass(c);
+        setUiState(__spreadProps(__spreadValues({}, uiState), { showClassDropdown: false }));
+      } }, /* @__PURE__ */ figma.widget.h(Text, null, c))))), /* @__PURE__ */ figma.widget.h(AutoLayout, { direction: "vertical", spacing: 4, width: "fill-parent" }, /* @__PURE__ */ figma.widget.h(Text, { fontSize: 14 }, "Titre :"), /* @__PURE__ */ figma.widget.h(AutoLayout, { padding: { vertical: 6, horizontal: 10 }, fill: "#F5F5F5", stroke: "#CCCCCC", cornerRadius: 8, width: "fill-parent" }, /* @__PURE__ */ figma.widget.h(Text, { width: "fill-parent" }, getTitleFor(selectedClass, level)))), /* @__PURE__ */ figma.widget.h(AutoLayout, { padding: { vertical: 8, horizontal: 50 }, fill: "#CCE5FF", cornerRadius: 8, horizontalAlignItems: "center", onClick: () => setUiState(__spreadProps(__spreadValues({}, uiState), { isEditing: false })) }, /* @__PURE__ */ figma.widget.h(Text, { fontSize: 14, fontWeight: "bold" }, "Sauvegarder le profil"))) : /* @__PURE__ */ figma.widget.h(figma.widget.Fragment, null, /* @__PURE__ */ figma.widget.h(AutoLayout, { spacing: 8, verticalAlignItems: "center", width: "fill-parent" }, /* @__PURE__ */ figma.widget.h(Image, { src: getProfileImage(selectedClass, level), width: 40, height: 40, cornerRadius: 8 }), /* @__PURE__ */ figma.widget.h(AutoLayout, { direction: "vertical", width: "fill-parent" }, /* @__PURE__ */ figma.widget.h(Text, { fontSize: 16, fontWeight: "bold" }, name), /* @__PURE__ */ figma.widget.h(Text, { fontSize: 12 }, selectedClass), /* @__PURE__ */ figma.widget.h(Text, { fontSize: 12, width: "fill-parent" }, getTitleFor(selectedClass, level)))), /* @__PURE__ */ figma.widget.h(AutoLayout, { direction: "vertical", spacing: 4, width: "fill-parent", horizontalAlignItems: "center" }, /* @__PURE__ */ figma.widget.h(Text, { fontSize: 14, fontWeight: "bold" }, "Level ", level), /* @__PURE__ */ figma.widget.h(Text, { fontSize: 12, fill: "#666666" }, xp, " / ", xpToNextLevel, " XP")), /* @__PURE__ */ figma.widget.h(AutoLayout, { padding: { vertical: 8, horizontal: 24 }, cornerRadius: 8, fill: "#F5F5F5", onClick: () => setUiState(__spreadProps(__spreadValues({}, uiState), { isEditing: true })) }, /* @__PURE__ */ figma.widget.h(Text, { fontSize: 13 }, "Modifier")))
     );
   }
 
@@ -495,9 +382,9 @@
 
   // widget-src/kanban board/constants.ts
   var COLUMNS = [
-    { status: "todo", title: "To Do", color: "#4B5563" },
-    { status: "in-progress", title: "In Progress", color: "#2563EB" },
-    { status: "done", title: "Done", color: "#16A34A" }
+    { status: "todo", title: "\xC0 faire", color: "#4B5563" },
+    { status: "in-progress", title: "En cours", color: "#2563EB" },
+    { status: "done", title: "Termin\xE9", color: "#16A34A" }
   ];
   var XP_REWARDS = {
     ADD_ISSUE: 10,
@@ -520,6 +407,7 @@
     studentNames = []
   }) {
     const priorityColor = PRIORITY_COLORS[issue.priority];
+    const getPriorityLabel = (p) => p === "low" ? "bas" : p === "medium" ? "moyen" : "\xE9lev\xE9";
     const getAssignedName = () => {
       if (issue.assignedToId === void 0) return "Non assign\xE9";
       return studentNames[issue.assignedToId] || "\xC9tudiant";
@@ -543,7 +431,7 @@
         }
       },
       /* @__PURE__ */ figma.widget.h(Text3, { fontSize: 14, fontWeight: 600, fill: "#111827", width: "fill-parent" }, issue.title),
-      issue.description && /* @__PURE__ */ figma.widget.h(Text3, { fontSize: 12, fill: "#6B7280", width: "fill-parent" }, issue.description),
+      issue.description.trim().length > 0 ? /* @__PURE__ */ figma.widget.h(Text3, { fontSize: 12, fill: "#6B7280", width: "fill-parent" }, issue.description) : null,
       /* @__PURE__ */ figma.widget.h(AutoLayout3, { direction: "horizontal", spacing: 8, width: "fill-parent", verticalAlignItems: "center" }, /* @__PURE__ */ figma.widget.h(
         AutoLayout3,
         {
@@ -564,7 +452,7 @@
           stroke: priorityColor.border,
           strokeWidth: 1
         },
-        /* @__PURE__ */ figma.widget.h(Text3, { fontSize: 11, fill: priorityColor.text }, issue.priority)
+        /* @__PURE__ */ figma.widget.h(Text3, { fontSize: 11, fill: priorityColor.text }, getPriorityLabel(issue.priority))
       ), /* @__PURE__ */ figma.widget.h(AutoLayout3, { width: "fill-parent" }), /* @__PURE__ */ figma.widget.h(Text3, { fontSize: 10, fill: "#9CA3AF" }, new Date(issue.createdAt).toLocaleDateString()))
     );
   }
@@ -582,11 +470,12 @@
     const [description, setDescription] = useSyncedState4(`newIssueDesc_${status}`, "");
     const [priority, setPriority] = useSyncedState4(`newIssuePriority_${status}`, "medium");
     const [showPriorityDropdown, setShowPriorityDropdown] = useSyncedState4(`showPriorityDropdown_${status}`, false);
-    const [assignedToId, setAssignedToId] = useSyncedState4(`newIssueAssignedTo_${status}`, void 0);
+    const [assignedToId, setAssignedToId] = useSyncedState4(`newIssueAssignedTo_${status}`, null);
     const [showStudentDropdown, setShowStudentDropdown] = useSyncedState4(`showStudentDropdown_${status}`, false);
     const priorities = ["low", "medium", "high"];
+    const getPriorityLabel = (p) => p === "low" ? "bas" : p === "medium" ? "moyen" : "\xE9lev\xE9";
     const getAssignedName = () => {
-      if (assignedToId === void 0) return "Non assign\xE9";
+      if (assignedToId == null) return "Non assign\xE9";
       return studentNames[assignedToId] || "\xC9tudiant";
     };
     return /* @__PURE__ */ figma.widget.h(
@@ -601,8 +490,8 @@
         strokeWidth: 2,
         width: "fill-parent"
       },
-      /* @__PURE__ */ figma.widget.h(Text4, { fontSize: 14, fontWeight: 600, fill: "#374151" }, "New Issue"),
-      /* @__PURE__ */ figma.widget.h(AutoLayout4, { direction: "vertical", spacing: 4, width: "fill-parent" }, /* @__PURE__ */ figma.widget.h(Text4, { fontSize: 12, fill: "#6B7280" }, "Title:"), /* @__PURE__ */ figma.widget.h(
+      /* @__PURE__ */ figma.widget.h(Text4, { fontSize: 14, fontWeight: 600, fill: "#374151" }, "Nouveau T\xE2che"),
+      /* @__PURE__ */ figma.widget.h(AutoLayout4, { direction: "vertical", spacing: 4, width: "fill-parent" }, /* @__PURE__ */ figma.widget.h(Text4, { fontSize: 12, fill: "#6B7280" }, "Titre :"), /* @__PURE__ */ figma.widget.h(
         AutoLayout4,
         {
           padding: 8,
@@ -615,7 +504,7 @@
           Input3,
           {
             value: title,
-            placeholder: "Enter issue title",
+            placeholder: "Entrer le titre de la t\xE2che",
             onTextEditEnd: (e) => setTitle(e.characters),
             fontSize: 12,
             width: "fill-parent"
@@ -635,14 +524,14 @@
           Input3,
           {
             value: description,
-            placeholder: "Enter description",
+            placeholder: "Entrer la description",
             onTextEditEnd: (e) => setDescription(e.characters),
             fontSize: 12,
             width: "fill-parent"
           }
         )
       )),
-      /* @__PURE__ */ figma.widget.h(AutoLayout4, { direction: "vertical", spacing: 4, width: "fill-parent" }, /* @__PURE__ */ figma.widget.h(Text4, { fontSize: 12, fill: "#6B7280" }, "Priority:"), /* @__PURE__ */ figma.widget.h(
+      /* @__PURE__ */ figma.widget.h(AutoLayout4, { direction: "vertical", spacing: 4, width: "fill-parent" }, /* @__PURE__ */ figma.widget.h(Text4, { fontSize: 12, fill: "#6B7280" }, "Priorit\xE9:"), /* @__PURE__ */ figma.widget.h(
         AutoLayout4,
         {
           padding: 8,
@@ -652,7 +541,7 @@
           spacing: 4,
           onClick: () => setShowPriorityDropdown(!showPriorityDropdown)
         },
-        /* @__PURE__ */ figma.widget.h(Text4, { fontSize: 12 }, priority),
+        /* @__PURE__ */ figma.widget.h(Text4, { fontSize: 12 }, getPriorityLabel(priority)),
         /* @__PURE__ */ figma.widget.h(Text4, { fontSize: 10 }, showPriorityDropdown ? "\u25B2" : "\u25BC")
       ), showPriorityDropdown && /* @__PURE__ */ figma.widget.h(
         AutoLayout4,
@@ -678,10 +567,10 @@
             },
             width: "fill-parent"
           },
-          /* @__PURE__ */ figma.widget.h(Text4, { fontSize: 12 }, p)
+          /* @__PURE__ */ figma.widget.h(Text4, { fontSize: 12 }, getPriorityLabel(p))
         ))
       )),
-      /* @__PURE__ */ figma.widget.h(AutoLayout4, { direction: "vertical", spacing: 4, width: "fill-parent" }, /* @__PURE__ */ figma.widget.h(Text4, { fontSize: 12, fill: "#6B7280" }, "Assign to:"), /* @__PURE__ */ figma.widget.h(
+      /* @__PURE__ */ figma.widget.h(AutoLayout4, { direction: "vertical", spacing: 4, width: "fill-parent" }, /* @__PURE__ */ figma.widget.h(Text4, { fontSize: 12, fill: "#6B7280" }, "Attribuer \xE0 :"), /* @__PURE__ */ figma.widget.h(
         AutoLayout4,
         {
           padding: 8,
@@ -708,10 +597,10 @@
           AutoLayout4,
           {
             padding: 6,
-            fill: assignedToId === void 0 ? { type: "solid", color: { r: 0.8, g: 0.9, b: 1, a: 1 } } : "#FFFFFF",
+            fill: assignedToId == null ? { type: "solid", color: { r: 0.8, g: 0.9, b: 1, a: 1 } } : "#FFFFFF",
             cornerRadius: 4,
             onClick: () => {
-              setAssignedToId(void 0);
+              setAssignedToId(null);
               setShowStudentDropdown(false);
             },
             width: "fill-parent"
@@ -744,7 +633,7 @@
           width: "fill-parent",
           horizontalAlignItems: "center"
         },
-        /* @__PURE__ */ figma.widget.h(Text4, { fontSize: 12, fontWeight: 600, fill: "#374151" }, "Cancel")
+        /* @__PURE__ */ figma.widget.h(Text4, { fontSize: 12, fontWeight: 600, fill: "#374151" }, "Annuler")
       ), /* @__PURE__ */ figma.widget.h(
         AutoLayout4,
         {
@@ -753,11 +642,11 @@
           cornerRadius: 6,
           onClick: () => {
             if (title.trim()) {
-              onAdd(title, description, priority, assignedToId);
+              onAdd(title, description, priority, assignedToId == null ? void 0 : assignedToId);
               setTitle("");
               setDescription("");
               setPriority("medium");
-              setAssignedToId(void 0);
+              setAssignedToId(null);
             } else {
               figma.notify("Please enter a title");
             }
@@ -765,7 +654,7 @@
           width: "fill-parent",
           horizontalAlignItems: "center"
         },
-        /* @__PURE__ */ figma.widget.h(Text4, { fontSize: 12, fontWeight: 600, fill: "#FFFFFF" }, "Add Issue")
+        /* @__PURE__ */ figma.widget.h(Text4, { fontSize: 12, fontWeight: 600, fill: "#FFFFFF" }, "Ajouter une t\xE2che")
       ))
     );
   }
@@ -843,6 +732,7 @@
         columnIssues.map((issue) => /* @__PURE__ */ figma.widget.h(
           IssueCard,
           {
+            key: issue.id,
             issue,
             onMove: (issueId, newStatus) => {
               onMove(issueId);
@@ -873,7 +763,7 @@
             stroke: { type: "solid", color: { r: 0.8, g: 0.8, b: 0.8, a: 1 } },
             strokeWidth: 1
           },
-          /* @__PURE__ */ figma.widget.h(Text5, { fontSize: 14, fill: "#ffffffff" }, "+ Add Issue")
+          /* @__PURE__ */ figma.widget.h(Text5, { fontSize: 14, fill: "#ffffffff" }, "+ Ajouter une t\xE2che")
         )
       )
     );
@@ -1024,6 +914,7 @@
       /* @__PURE__ */ figma.widget.h(AutoLayout6, { direction: "horizontal", spacing: 16 }, COLUMNS.map((column) => /* @__PURE__ */ figma.widget.h(
         KanbanColumn,
         {
+          key: column.status,
           column,
           issues,
           onMove: handleMove,
@@ -1046,6 +937,8 @@
       "newPostItContent",
       ""
     );
+    const [editingPostItId, setEditingPostItId] = useSyncedState6("editingPostItId", null);
+    const [editContents, setEditContents] = useSyncedState6("editContents", {});
     const [currentUserId, setCurrentUserId] = useSyncedState6(
       "currentUserId",
       ""
@@ -1191,14 +1084,8 @@
           width: "fill-parent"
         },
         postIts.length === 0 ? /* @__PURE__ */ figma.widget.h(Text7, { fontSize: 12, fill: "#999" }, 'Aucun post-it pour le moment. Cliquez sur "+ Nouveau post-it" pour commencer !') : postIts.map((postIt) => {
-          const [isEditing, setIsEditing] = useSyncedState6(
-            `editing_${postIt.id}`,
-            false
-          );
-          const [editContent, setEditContent] = useSyncedState6(
-            `editContent_${postIt.id}`,
-            postIt.content
-          );
+          const isEditing = editingPostItId === postIt.id;
+          const editContent = editContents[postIt.id] !== void 0 ? editContents[postIt.id] : postIt.content;
           return /* @__PURE__ */ figma.widget.h(
             AutoLayout7,
             {
@@ -1227,7 +1114,11 @@
                     value: editContent,
                     fontSize: 11,
                     width: "fill-parent",
-                    onTextEditEnd: (e) => setEditContent(e.characters)
+                    onTextEditEnd: (e) => {
+                      const newContents = __spreadValues({}, editContents);
+                      newContents[postIt.id] = e.characters;
+                      setEditContents(newContents);
+                    }
                   }
                 )
               ), /* @__PURE__ */ figma.widget.h(AutoLayout7, { direction: "horizontal", spacing: 4 }, /* @__PURE__ */ figma.widget.h(
@@ -1240,7 +1131,7 @@
                     return new Promise((resolve) => {
                       if (isCurrentUserAuthor(postIt.authorId)) {
                         editPostIt(postIt.id, editContent);
-                        setIsEditing(false);
+                        setEditingPostItId(null);
                       }
                       resolve();
                     });
@@ -1254,8 +1145,10 @@
                   cornerRadius: 4,
                   fill: "#999999",
                   onClick: () => {
-                    setEditContent(postIt.content);
-                    setIsEditing(false);
+                    const newContents = __spreadValues({}, editContents);
+                    newContents[postIt.id] = postIt.content;
+                    setEditContents(newContents);
+                    setEditingPostItId(null);
                   }
                 },
                 /* @__PURE__ */ figma.widget.h(Text7, { fontSize: 10, fill: "#FFFFFF" }, "Annuler")
@@ -1279,7 +1172,10 @@
                     onClick: () => {
                       return new Promise((resolve) => {
                         if (isCurrentUserAuthor(postIt.authorId)) {
-                          setIsEditing(true);
+                          const newContents = __spreadValues({}, editContents);
+                          newContents[postIt.id] = postIt.content;
+                          setEditContents(newContents);
+                          setEditingPostItId(postIt.id);
                         } else {
                           figma.notify(
                             "\u26A0\uFE0F Vous ne pouvez modifier que vos propres post-its"
