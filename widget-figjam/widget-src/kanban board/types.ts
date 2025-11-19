@@ -6,6 +6,7 @@ export interface Issue {
   status: string;
   priority: "low" | "medium" | "high";
   createdAt: string;
+  questId: string | null;
   assignedToId?: number; // Index of the assigned student
 }
 

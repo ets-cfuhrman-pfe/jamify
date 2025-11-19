@@ -17,6 +17,9 @@ export function IssueCard({
 }) {
     const priorityColor = PRIORITY_COLORS[issue.priority];
 
+    const [quests] = useSyncedState("teacherQuests", []);
+    const questName = quests.find((q: any) => q.id === issue.questId)?.name || "Aucune";
+
     const getPriorityLabel = (p: 'low' | 'medium' | 'high') => (p === 'low' ? 'bas' : p === 'medium' ? 'moyen' : 'élevé')
 
     const getAssignedName = () => {
@@ -67,6 +70,20 @@ export function IssueCard({
                         {getAssignedName()}
                     </Text>
                 </AutoLayout>
+            </AutoLayout>
+
+            <AutoLayout
+                padding={{ vertical: 2, horizontal: 8 }}
+                fill={"#80a7f6ba"}
+                cornerRadius={4}
+                stroke={"#153089ff"}
+                strokeWidth={1}
+            >
+                {questName && (
+                    <Text fontSize={10} fill="#153089ff">
+                        Quête: {questName}
+                    </Text>
+                )}
             </AutoLayout>
 
             {/* Footer with priority and date */}

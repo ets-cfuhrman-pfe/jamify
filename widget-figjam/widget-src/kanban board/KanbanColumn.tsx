@@ -34,7 +34,7 @@ export function KanbanColumn({
     onMove: (issueId: string) => void;
     addingToColumn: string | null;
     setAddingToColumn: (status: string | null) => void;
-    onAddIssue: (status: string, title: string, description: string, priority: "low" | "medium" | "high", assignedToId?: number) => void;
+    onAddIssue: (status: string, title: string, description: string, priority: "low" | "medium" | "high", selectedQuest: string, assignedToId?: number) => void;
     studentNames?: string[];
     key?: string;
 }) {
@@ -100,8 +100,8 @@ export function KanbanColumn({
                 {addingToColumn === column.status ? (
                     <AddIssueDialog
                         status={column.status}
-                        onAdd={(title, description, priority, assignedToId) => {
-                            onAddIssue(column.status, title, description, priority, assignedToId);
+                        onAdd={(title, description, priority, selectedQuest, assignedToId) => {
+                            onAddIssue(column.status, title, description, priority, selectedQuest, assignedToId);
                             setAddingToColumn(null);
                         }}
                         onCancel={() => setAddingToColumn(null)}

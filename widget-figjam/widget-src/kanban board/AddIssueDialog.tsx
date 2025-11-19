@@ -1,7 +1,6 @@
 const { widget } = figma;
 const { useSyncedState, AutoLayout, Text, Input } = widget;
 
-// Add Issue Dialog Component
 export function AddIssueDialog({
     status,
     onAdd,
@@ -9,25 +8,30 @@ export function AddIssueDialog({
     studentNames = []
 }: {
     status: string;
-    onAdd: (title: string, description: string, priority: "low" | "medium" | "high", assignedToId?: number) => void;
+    onAdd: (title: string, description: string, priority: "low" | "medium" | "high", selectedQuest: string, assignedToId?: number) => void;
     onCancel: () => void;
     studentNames?: string[];
 }) {
-    const [title, setTitle] = useSyncedState(`newIssueTitle_${status}`, "");
-    const [description, setDescription] = useSyncedState(`newIssueDesc_${status}`, "");
-    const [priority, setPriority] = useSyncedState<"low" | "medium" | "high">(`newIssuePriority_${status}`, "medium");
-    const [showPriorityDropdown, setShowPriorityDropdown] = useSyncedState(`showPriorityDropdown_${status}`, false);
-    const [assignedToId, setAssignedToId] = useSyncedState<number | null>(`newIssueAssignedTo_${status}`, null);
-    const [showStudentDropdown, setShowStudentDropdown] = useSyncedState(`showStudentDropdown_${status}`, false);
+  const [title, setTitle] = useSyncedState(`newIssueTitle_${status}`, "");
+  const [description, setDescription] = useSyncedState(`newIssueDesc_${status}`, "");
+  const [priority, setPriority] = useSyncedState<"low" | "medium" | "high">(`newIssuePriority_${status}`, "medium");
+  const [showPriorityDropdown, setShowPriorityDropdown] = useSyncedState(`showPriorityDropdown_${status}`, false);
 
-    const priorities: ("low" | "medium" | "high")[] = ["low", "medium", "high"];
+  // 🆕 Quest selection
+  const [quests] = useSyncedState("teacherQuests", []); // shared from teacher section
+  const [selectedQuest, setSelectedQuest] = useSyncedState(`selectedQuest_${status}`, "");
+  const [showQuestDropdown, setShowQuestDropdown] = useSyncedState(`showQuestDropdown_${status}`, false);
+  const [assignedToId, setAssignedToId] = useSyncedState<number | null>(`newIssueAssignedTo_${status}`, null);
+  const [showStudentDropdown, setShowStudentDropdown] = useSyncedState(`showStudentDropdown_${status}`, false);
 
-    const getPriorityLabel = (p: "low" | "medium" | "high") => (p === 'low' ? 'bas' : p === 'medium' ? 'moyen' : 'élevé')
+  const priorities: ("low" | "medium" | "high")[] = ["low", "medium", "high"];
 
-    const getAssignedName = () => {
-        if (assignedToId == null) return "Non assigné";
-        return studentNames[assignedToId] || "Étudiant";
-    };
+  const getPriorityLabel = (p: "low" | "medium" | "high") => (p === 'low' ? 'bas' : p === 'medium' ? 'moyen' : 'élevé')
+
+  const getAssignedName = () => {
+      if (assignedToId == null) return "Non assigné";
+      return studentNames[assignedToId] || "Étudiant";
+  };
 
     return (
         <AutoLayout
@@ -62,25 +66,79 @@ export function AddIssueDialog({
                 </AutoLayout>
             </AutoLayout>
 
-            {/* Description Input */}
-            <AutoLayout direction="vertical" spacing={4} width="fill-parent">
-                <Text fontSize={12} fill="#6B7280">Description:</Text>
-                <AutoLayout
-                    padding={8}
-                    fill={{ type: "solid", color: { r: 0.98, g: 0.98, b: 0.98, a: 1 } }}
-                    cornerRadius={4}
-                    stroke={{ type: "solid", color: { r: 0.9, g: 0.9, b: 0.9, a: 1 } }}
-                    width="fill-parent"
-                >
-                    <Input
-                        value={description}
-                        placeholder="Entrer la description"
-                        onTextEditEnd={(e) => setDescription(e.characters)}
-                        fontSize={12}
-                        width="fill-parent"
-                    />
-                </AutoLayout>
-            </AutoLayout>
+      {/* Description */}
+      <AutoLayout direction="vertical" spacing={4} width="fill-parent">
+        <Text fontSize={12} fill="#6B7280">Description:</Text>
+        <AutoLayout
+          padding={8}
+          fill="#FAFAFA"
+          cornerRadius={4}
+          stroke={{ type: "solid", color: { r: 0.9, g: 0.9, b: 0.9, a: 1 } }}
+          width="fill-parent"
+        >
+          <Input
+            value={description}
+            placeholder="Entrer la description"
+            onTextEditEnd={(e) => setDescription(e.characters)}
+            fontSize={12}
+            width="fill-parent"
+          />
+        </AutoLayout>
+      </AutoLayout>
+
+      {/* 🆕 Quest Dropdown */}
+      <AutoLayout direction="vertical" spacing={4} width="fill-parent">
+        <Text fontSize={12} fill="#6B7280">Quest:</Text>
+        <AutoLayout
+          padding={8}
+          fill="#FAFAFA"
+          cornerRadius={4}
+          stroke={{ type: "solid", color: { r: 0.9, g: 0.9, b: 0.9, a: 1 } }}
+          spacing={4}
+          onClick={() => setShowQuestDropdown(!showQuestDropdown)}
+        >
+          <Text fontSize={12}>
+            {selectedQuest
+              ? quests.find((q) => q.id === selectedQuest)?.name || "Unknown Quest"
+              : "Select a quest"}
+          </Text>
+          <Text fontSize={10}>{showQuestDropdown ? "▲" : "▼"}</Text>
+        </AutoLayout>
+
+        {showQuestDropdown && quests.length > 0 && (
+          <AutoLayout
+            direction="vertical"
+            spacing={4}
+            padding={8}
+            fill="#FFFFFF"
+            cornerRadius={4}
+            stroke={{ type: "solid", color: { r: 0.9, g: 0.9, b: 0.9, a: 1 } }}
+            width="fill-parent"
+          >
+            {quests.map((q) => (
+              <AutoLayout
+                key={q.id}
+                padding={6}
+                fill={selectedQuest === q.id ? "#E0ECFF" : "#FFFFFF"}
+                cornerRadius={4}
+                onClick={() => {
+                  setSelectedQuest(q.id);
+                  setShowQuestDropdown(false);
+                }}
+                width="fill-parent"
+              >
+                <Text fontSize={12}>{q.name || "Unnamed Quest"}</Text>
+              </AutoLayout>
+            ))}
+          </AutoLayout>
+        )}
+
+        {showQuestDropdown && quests.length === 0 && (
+          <Text fontSize={12} fill="#999">
+            No quests available.
+          </Text>
+        )}
+      </AutoLayout>
 
             {/* Priority Dropdown */}
             <AutoLayout direction="vertical" spacing={4} width="fill-parent">
@@ -204,11 +262,12 @@ export function AddIssueDialog({
                     cornerRadius={6}
                     onClick={() => {
                         if (title.trim()) {
-                            onAdd(title, description, priority, assignedToId == null ? undefined : assignedToId);
+                            onAdd(title, description, priority, selectedQuest, assignedToId == null ? undefined : assignedToId);
                             setTitle("");
                             setDescription("");
                             setPriority("medium");
                             setAssignedToId(null);
+                            setSelectedQuest("");
                         } else {
                             figma.notify("Please enter a title");
                         }
