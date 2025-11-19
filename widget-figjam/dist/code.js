@@ -470,7 +470,7 @@
             )
           },
           /* @__PURE__ */ figma.widget.h(AutoLayout2, { width: "fill-parent", horizontalAlignItems: "start" }, /* @__PURE__ */ figma.widget.h(Text2, { fontWeight: "bold", fontSize: 13 }, quest.name || "Sans titre")),
-          /* @__PURE__ */ figma.widget.h(AutoLayout2, { width: "fill-parent", horizontalAlignItems: "end" }, /* @__PURE__ */ figma.widget.h(Text2, { fontSize: 12, fill: "#667" }, expandedQuest === quest.id ? "\u25B2" : "\u25BC"))
+          /* @__PURE__ */ figma.widget.h(AutoLayout2, { horizontalAlignItems: "end" }, /* @__PURE__ */ figma.widget.h(Text2, { fontSize: 12, fill: "#667" }, expandedQuest === quest.id ? "\u25B2" : "\u25BC"))
         ),
         expandedQuest === quest.id && /* @__PURE__ */ figma.widget.h(AutoLayout2, { direction: "vertical", spacing: 4, width: "fill-parent" }, /* @__PURE__ */ figma.widget.h(Text2, { fontSize: 12 }, "Nom :"), /* @__PURE__ */ figma.widget.h(
           AutoLayout2,
@@ -595,7 +595,7 @@
             expandedQuest === quest.id ? null : quest.id
           )
         },
-        /* @__PURE__ */ figma.widget.h(AutoLayout2, { width: "fill-parent" }, /* @__PURE__ */ figma.widget.h(AutoLayout2, { width: "fill-parent", horizontalAlignItems: "start" }, /* @__PURE__ */ figma.widget.h(Text2, { fontWeight: "bold", fontSize: 13 }, quest.name || "Sans titre")), /* @__PURE__ */ figma.widget.h(AutoLayout2, { width: "fill-parent", horizontalAlignItems: "end" }, /* @__PURE__ */ figma.widget.h(Text2, { fontSize: 12, fill: "#667" }, expandedQuest === quest.id ? "\u25B2" : "\u25BC"))),
+        /* @__PURE__ */ figma.widget.h(AutoLayout2, { width: "fill-parent" }, /* @__PURE__ */ figma.widget.h(AutoLayout2, { width: "fill-parent", horizontalAlignItems: "start" }, /* @__PURE__ */ figma.widget.h(Text2, { fontWeight: "bold", fontSize: 13 }, quest.name || "Sans titre")), /* @__PURE__ */ figma.widget.h(AutoLayout2, { horizontalAlignItems: "end" }, /* @__PURE__ */ figma.widget.h(Text2, { fontSize: 12, fill: "#667" }, expandedQuest === quest.id ? "\u25B2" : "\u25BC"))),
         expandedQuest === quest.id && /* @__PURE__ */ figma.widget.h(AutoLayout2, { direction: "vertical", spacing: 2, width: "fill-parent" }, /* @__PURE__ */ figma.widget.h(Text2, { fontSize: 12 }, "Description : ", quest.description || "\u2014"), /* @__PURE__ */ figma.widget.h(Text2, { fontSize: 12 }, "Difficult\xE9 : ", quest.difficulty || "\u2014"), /* @__PURE__ */ figma.widget.h(Text2, { fontSize: 12 }, "XP : ", quest.xp || "\u2014"))
       )))), isCreator && /* @__PURE__ */ figma.widget.h(AutoLayout2, { direction: "vertical", spacing: 8, width: "fill-parent" }, /* @__PURE__ */ figma.widget.h(
         AutoLayout2,

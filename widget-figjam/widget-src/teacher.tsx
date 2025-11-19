@@ -230,7 +230,7 @@ export function TeacherProfile() {
                       {quest.name || "Sans titre"}
                     </Text>
                   </AutoLayout>
-                  <AutoLayout width={"fill-parent"} horizontalAlignItems={"end"}>
+                  <AutoLayout horizontalAlignItems={"end"}>
                     <Text fontSize={12} fill="#667">
                       {expandedQuest === quest.id ? "▲" : "▼"}
                     </Text>
@@ -422,7 +422,7 @@ export function TeacherProfile() {
                         {quest.name || "Sans titre"}
                       </Text>
                     </AutoLayout>
-                    <AutoLayout width={"fill-parent"} horizontalAlignItems={"end"}>
+                    <AutoLayout horizontalAlignItems={"end"}>
                       <Text fontSize={12} fill="#667">
                         {expandedQuest === quest.id ? "▲" : "▼"}
                       </Text>
