@@ -13,44 +13,7 @@ import { KanbanColumn } from "./KanbanColumn";
 
 // Exported Kanban board component to embed inside main widget
 export function KanbanBoard() {
-  const [issues, setIssues] = useSyncedState<Issue[]>("issues", [
-    {
-      id: "1",
-      title: "Setup project repository",
-      description: "Initialize the project with all necessary dependencies",
-      status: "done",
-      priority: "high",
-      createdAt: new Date("2025-01-19").toISOString(),
-      questId: null,
-    },
-    {
-      id: "2",
-      title: "Design database schema",
-      description: "Create the initial database design for the application",
-      status: "in-progress",
-      priority: "high",
-      createdAt: new Date("2025-01-20").toISOString(),
-      questId: null,
-    },
-    {
-      id: "3",
-      title: "Implement user authentication",
-      description: "Add login and registration functionality",
-      status: "todo",
-      priority: "medium",
-      createdAt: new Date("2025-01-21").toISOString(),
-      questId: null,
-    },
-    {
-      id: "4",
-      title: "Write unit tests",
-      description: "Add test coverage for core components",
-      status: "todo",
-      priority: "low",
-      createdAt: new Date("2025-01-21").toISOString(),
-      questId: null,
-    },
-  ]);
+  const [issues, setIssues] = useSyncedState<Issue[]>("issues", []);
 
   // Read the number of students from teacher profile
   const [numberOfStudentsStr] = useSyncedState("teacherNumStudents", "0");

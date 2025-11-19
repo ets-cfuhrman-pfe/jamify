@@ -8,7 +8,7 @@ export function AddIssueDialog({
     studentNames = []
 }: {
     status: string;
-    onAdd: (title: string, description: string, priority: "low" | "medium" | "high", assignedToId?: number) => void;
+    onAdd: (title: string, description: string, priority: "low" | "medium" | "high", selectedQuest: string, assignedToId?: number) => void;
     onCancel: () => void;
     studentNames?: string[];
 }) {
@@ -262,7 +262,7 @@ export function AddIssueDialog({
                     cornerRadius={6}
                     onClick={() => {
                         if (title.trim()) {
-                            onAdd(title, description, priority, assignedToId == null ? undefined : assignedToId);
+                            onAdd(title, description, priority, selectedQuest, assignedToId == null ? undefined : assignedToId);
                             setTitle("");
                             setDescription("");
                             setPriority("medium");
