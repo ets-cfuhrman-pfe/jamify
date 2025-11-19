@@ -26,14 +26,17 @@ export function KanbanColumn({
     onMove,
     addingToColumn,
     setAddingToColumn,
-    onAddIssue
+    onAddIssue,
+    studentNames = [],
 }: {
     column: Column;
     issues: Issue[];
     onMove: (issueId: string) => void;
     addingToColumn: string | null;
     setAddingToColumn: (status: string | null) => void;
-    onAddIssue: (status: string, title: string, description: string, priority: "low" | "medium" | "high", selectedQuest: string) => void;
+    onAddIssue: (status: string, title: string, description: string, priority: "low" | "medium" | "high", selectedQuest: string, assignedToId?: number) => void;
+    studentNames?: string[];
+    key?: string;
 }) {
     const columnIssues = issues.filter((issue) => issue.status === column.status);
     const columnColor = hexToRgb(column.color);
@@ -86,7 +89,10 @@ export function KanbanColumn({
                     <IssueCard
                         key={issue.id}
                         issue={issue}
-                        onMove={() => onMove(issue.id)}
+                        onMove={(issueId: string, newStatus: string) => {
+                            onMove(issueId);
+                        }}
+                        studentNames={studentNames}
                     />
                 ))}
 
@@ -94,11 +100,12 @@ export function KanbanColumn({
                 {addingToColumn === column.status ? (
                     <AddIssueDialog
                         status={column.status}
-                        onAdd={(title, description, priority, selectedQuest) => {
-                            onAddIssue(column.status, title, description, priority, selectedQuest);
+                        onAdd={(title, description, priority, selectedQuest, assignedToId) => {
+                            onAddIssue(column.status, title, description, priority, selectedQuest, assignedToId);
                             setAddingToColumn(null);
                         }}
                         onCancel={() => setAddingToColumn(null)}
+                        studentNames={studentNames}
                     />
                 ) : (
                     <AutoLayout
@@ -111,7 +118,7 @@ export function KanbanColumn({
                         stroke={{ type: "solid", color: { r: 0.8, g: 0.8, b: 0.8, a: 1 } }}
                         strokeWidth={1}
                     >
-                        <Text fontSize={14} fill="#ffffffff">+ Add Issue</Text>
+                        <Text fontSize={14} fill="#ffffffff">+ Ajouter une tâche</Text>
                     </AutoLayout>
                 )}
             </AutoLayout>

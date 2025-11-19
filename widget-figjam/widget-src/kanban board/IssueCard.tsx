@@ -1,14 +1,31 @@
-const { widget } = figma;
-const { AutoLayout, useSyncedState, Text } = widget;
 import { Issue } from './types';
 import { PRIORITY_COLORS } from './constants';
 
+const { widget } = figma;
+const { AutoLayout, Text, useSyncedState } = widget;
+
 // Issue Card Component
-export function IssueCard({ issue, onMove }: { issue: Issue; onMove: (issueId: string, newStatus: string) => void }) {
+export function IssueCard({
+    issue,
+    onMove,
+    studentNames = [],
+}: {
+    issue: Issue;
+    onMove: (issueId: string, newStatus: string) => void;
+    studentNames?: string[];
+    key?: string;
+}) {
     const priorityColor = PRIORITY_COLORS[issue.priority];
 
     const [quests] = useSyncedState("teacherQuests", []);
     const questName = quests.find((q: any) => q.id === issue.questId)?.name || "Aucune";
+
+    const getPriorityLabel = (p: 'low' | 'medium' | 'high') => (p === 'low' ? 'bas' : p === 'medium' ? 'moyen' : 'élevé')
+
+    const getAssignedName = () => {
+        if (issue.assignedToId === undefined) return "Non assigné";
+        return studentNames[issue.assignedToId] || "Étudiant";
+    };
 
     return (
         <AutoLayout
@@ -29,12 +46,31 @@ export function IssueCard({ issue, onMove }: { issue: Issue; onMove: (issueId: s
             }}
         >
             {/* Title */}
-            <Text fontSize={14} fontWeight={600} fill="#111827" width="fill-parent">{issue.title}</Text>
+            <Text fontSize={14} fontWeight={600} fill="#111827" width="fill-parent">
+                {issue.title}
+            </Text>
 
             {/* Description */}
-            {issue.description && (
-                <Text fontSize={12} fill="#6B7280" width="fill-parent">{issue.description}</Text>
-            )}
+            {issue.description.trim().length > 0 ? (
+                <Text fontSize={12} fill="#6B7280" width="fill-parent">
+                    {issue.description}
+                </Text>
+            ) : null}
+
+            {/* Student assignment display (read-only) */}
+            <AutoLayout direction="horizontal" spacing={8} width="fill-parent" verticalAlignItems="center">
+                <AutoLayout
+                    padding={{ vertical: 4, horizontal: 8 }}
+                    fill="#F0F9FF"
+                    cornerRadius={4}
+                    stroke={{ type: "solid", color: { r: 0.7, g: 0.85, b: 1, a: 1 } }}
+                    strokeWidth={1}
+                >
+                    <Text fontSize={11} fill="#0369A1">
+                        {getAssignedName()}
+                    </Text>
+                </AutoLayout>
+            </AutoLayout>
 
             <AutoLayout
                 padding={{ vertical: 2, horizontal: 8 }}
@@ -59,7 +95,9 @@ export function IssueCard({ issue, onMove }: { issue: Issue; onMove: (issueId: s
                     stroke={priorityColor.border}
                     strokeWidth={1}
                 >
-                    <Text fontSize={11} fill={priorityColor.text}>{issue.priority}</Text>
+                    <Text fontSize={11} fill={priorityColor.text}>
+                        {getPriorityLabel(issue.priority)}
+                    </Text>
                 </AutoLayout>
 
                 <AutoLayout width="fill-parent" />

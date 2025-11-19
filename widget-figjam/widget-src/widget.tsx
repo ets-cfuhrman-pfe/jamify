@@ -7,7 +7,7 @@ import { PostItBoard } from "./postit";
 const { widget } = figma;
 const { AutoLayout, Text, useSyncedState } = widget;
 
-// Main Widget Container - Add your other functionalities here!
+// Main Widget Container
 function Widget() {
   // Get the number of students from synced state (shared with TeacherProfile)
   const [numberOfStudents] = useSyncedState("teacherNumStudents", "");
