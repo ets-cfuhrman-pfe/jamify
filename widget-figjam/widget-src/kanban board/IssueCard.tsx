@@ -1,5 +1,5 @@
 const { widget } = figma;
-const { AutoLayout, Text } = widget;
+const { AutoLayout, useSyncedState, Text } = widget;
 import { Issue } from './types';
 import { PRIORITY_COLORS } from './constants';
 
@@ -7,7 +7,8 @@ import { PRIORITY_COLORS } from './constants';
 export function IssueCard({ issue, onMove }: { issue: Issue; onMove: (issueId: string, newStatus: string) => void }) {
     const priorityColor = PRIORITY_COLORS[issue.priority];
 
-    console.log("Rendering IssueCard for issue:", issue);
+    const [quests] = useSyncedState("teacherQuests", []);
+    const questName = quests.find((q: any) => q.id === issue.questId)?.name || "Aucune";
 
     return (
         <AutoLayout
@@ -42,9 +43,9 @@ export function IssueCard({ issue, onMove }: { issue: Issue; onMove: (issueId: s
                 stroke={"#153089ff"}
                 strokeWidth={1}
             >
-                {issue.questName && (
+                {questName && (
                     <Text fontSize={10} fill="#153089ff">
-                        Quête: {issue.questName}
+                        Quête: {questName}
                     </Text>
                 )}
             </AutoLayout>

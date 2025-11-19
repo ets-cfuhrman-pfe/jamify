@@ -632,10 +632,12 @@
 
   // widget-src/kanban board/IssueCard.tsx
   var { widget: widget3 } = figma;
-  var { AutoLayout: AutoLayout3, Text: Text3 } = widget3;
+  var { AutoLayout: AutoLayout3, useSyncedState: useSyncedState3, Text: Text3 } = widget3;
   function IssueCard({ issue, onMove }) {
+    var _a;
     const priorityColor = PRIORITY_COLORS[issue.priority];
-    console.log("Rendering IssueCard for issue:", issue);
+    const [quests] = useSyncedState3("teacherQuests", []);
+    const questName = ((_a = quests.find((q) => q.id === issue.questId)) == null ? void 0 : _a.name) || "Aucune";
     return /* @__PURE__ */ figma.widget.h(
       AutoLayout3,
       {
@@ -665,7 +667,7 @@
           stroke: "#153089ff",
           strokeWidth: 1
         },
-        issue.questName && /* @__PURE__ */ figma.widget.h(Text3, { fontSize: 10, fill: "#153089ff" }, "Qu\xEAte: ", issue.questName)
+        questName && /* @__PURE__ */ figma.widget.h(Text3, { fontSize: 10, fill: "#153089ff" }, "Qu\xEAte: ", questName)
       ),
       /* @__PURE__ */ figma.widget.h(AutoLayout3, { direction: "horizontal", spacing: 8, width: "fill-parent", verticalAlignItems: "center" }, /* @__PURE__ */ figma.widget.h(
         AutoLayout3,
@@ -683,22 +685,20 @@
 
   // widget-src/kanban board/AddIssueDialog.tsx
   var { widget: widget4 } = figma;
-  var { useSyncedState: useSyncedState3, AutoLayout: AutoLayout4, Text: Text4, Input: Input3 } = widget4;
+  var { useSyncedState: useSyncedState4, AutoLayout: AutoLayout4, Text: Text4, Input: Input3 } = widget4;
   function AddIssueDialog({
     status,
     onAdd,
     onCancel
   }) {
     var _a;
-    const [title, setTitle] = useSyncedState3(`newIssueTitle_${status}`, "");
-    const [description, setDescription] = useSyncedState3(`newIssueDesc_${status}`, "");
-    const [priority, setPriority] = useSyncedState3(`newIssuePriority_${status}`, "medium");
-    const [showPriorityDropdown, setShowPriorityDropdown] = useSyncedState3(`showPriorityDropdown_${status}`, false);
-    const [quests] = useSyncedState3("teacherQuests", []);
-    console.log("Available quests in AddIssueDialog:", quests);
-    const [selectedQuest, setSelectedQuest] = useSyncedState3(`selectedQuest_${status}`, "");
-    const [questName, setQuestName] = useSyncedState3(`questName_${status}`, "");
-    const [showQuestDropdown, setShowQuestDropdown] = useSyncedState3(`showQuestDropdown_${status}`, false);
+    const [title, setTitle] = useSyncedState4(`newIssueTitle_${status}`, "");
+    const [description, setDescription] = useSyncedState4(`newIssueDesc_${status}`, "");
+    const [priority, setPriority] = useSyncedState4(`newIssuePriority_${status}`, "medium");
+    const [showPriorityDropdown, setShowPriorityDropdown] = useSyncedState4(`showPriorityDropdown_${status}`, false);
+    const [quests] = useSyncedState4("teacherQuests", []);
+    const [selectedQuest, setSelectedQuest] = useSyncedState4(`selectedQuest_${status}`, "");
+    const [showQuestDropdown, setShowQuestDropdown] = useSyncedState4(`showQuestDropdown_${status}`, false);
     const priorities = ["low", "medium", "high"];
     return /* @__PURE__ */ figma.widget.h(
       AutoLayout4,
@@ -785,7 +785,6 @@
             cornerRadius: 4,
             onClick: () => {
               setSelectedQuest(q.id);
-              setQuestName(q.name);
               setShowQuestDropdown(false);
             },
             width: "fill-parent"
@@ -850,15 +849,12 @@
           fill: { type: "solid", color: { r: 0.37, g: 0.51, b: 0.82, a: 1 } },
           cornerRadius: 6,
           onClick: () => {
-            if (questName === "" || questName === null) {
-              figma.notify("Veuillez s\xE9lectionner une qu\xEAte");
-            } else if (title.trim()) {
-              onAdd(title, description, priority, questName);
+            if (title.trim()) {
+              onAdd(title, description, priority, selectedQuest);
               setTitle("");
               setDescription("");
               setPriority("medium");
               setSelectedQuest("");
-              setQuestName("");
             } else {
               figma.notify("Please enter a title");
             }
@@ -978,9 +974,9 @@
 
   // widget-src/kanban board/KanbanBoard.tsx
   var { widget: widget6 } = figma;
-  var { useSyncedState: useSyncedState4, useEffect, AutoLayout: AutoLayout6, Text: Text6 } = widget6;
+  var { useSyncedState: useSyncedState5, useEffect, AutoLayout: AutoLayout6, Text: Text6 } = widget6;
   function KanbanBoard() {
-    const [issues, setIssues] = useSyncedState4("issues", [
+    const [issues, setIssues] = useSyncedState5("issues", [
       {
         id: "1",
         title: "Setup project repository",
@@ -988,7 +984,7 @@
         status: "done",
         priority: "high",
         createdAt: (/* @__PURE__ */ new Date("2025-01-19")).toISOString(),
-        questName: "Aucune"
+        questId: null
       },
       {
         id: "2",
@@ -997,7 +993,7 @@
         status: "in-progress",
         priority: "high",
         createdAt: (/* @__PURE__ */ new Date("2025-01-20")).toISOString(),
-        questName: "Aucune"
+        questId: null
       },
       {
         id: "3",
@@ -1006,7 +1002,7 @@
         status: "todo",
         priority: "medium",
         createdAt: (/* @__PURE__ */ new Date("2025-01-21")).toISOString(),
-        questName: "Aucune"
+        questId: null
       },
       {
         id: "4",
@@ -1015,12 +1011,12 @@
         status: "todo",
         priority: "low",
         createdAt: (/* @__PURE__ */ new Date("2025-01-21")).toISOString(),
-        questName: "Aucune"
+        questId: null
       }
     ]);
-    const [xp, setXp] = useSyncedState4("xp", 45);
-    const [level, setLevel] = useSyncedState4("level", 1);
-    const [addingToColumn, setAddingToColumn] = useSyncedState4(
+    const [xp, setXp] = useSyncedState5("xp", 45);
+    const [level, setLevel] = useSyncedState5("level", 1);
+    const [addingToColumn, setAddingToColumn] = useSyncedState5(
       "addingToColumn",
       null
     );
@@ -1061,7 +1057,6 @@
       }
     };
     const handleAddIssue = (status, title, description, priority, selectedQuest) => {
-      console.log("Adding issue with quest:", selectedQuest);
       const newIssue = {
         id: Date.now().toString(),
         title,
@@ -1069,7 +1064,7 @@
         status,
         priority,
         createdAt: (/* @__PURE__ */ new Date()).toISOString(),
-        questName: selectedQuest || "Aucune"
+        questId: selectedQuest || "Aucune"
       };
       setIssues(issues.concat([newIssue]));
       addXP(XP_REWARDS.ADD_ISSUE, "Issue created");
@@ -1103,19 +1098,19 @@
 
   // widget-src/postit.tsx
   var { widget: widget7 } = figma;
-  var { useSyncedState: useSyncedState5, AutoLayout: AutoLayout7, Text: Text7, Input: Input4 } = widget7;
+  var { useSyncedState: useSyncedState6, AutoLayout: AutoLayout7, Text: Text7, Input: Input4 } = widget7;
   function PostItBoard() {
-    const [postIts, setPostIts] = useSyncedState5("postIts", []);
-    const [isCreating, setIsCreating] = useSyncedState5("isCreatingPostIt", false);
-    const [newPostItContent, setNewPostItContent] = useSyncedState5(
+    const [postIts, setPostIts] = useSyncedState6("postIts", []);
+    const [isCreating, setIsCreating] = useSyncedState6("isCreatingPostIt", false);
+    const [newPostItContent, setNewPostItContent] = useSyncedState6(
       "newPostItContent",
       ""
     );
-    const [currentUserId, setCurrentUserId] = useSyncedState5(
+    const [currentUserId, setCurrentUserId] = useSyncedState6(
       "currentUserId",
       ""
     );
-    const [currentUserName, setCurrentUserName] = useSyncedState5(
+    const [currentUserName, setCurrentUserName] = useSyncedState6(
       "currentUserName",
       "Anonyme"
     );
@@ -1256,11 +1251,11 @@
           width: "fill-parent"
         },
         postIts.length === 0 ? /* @__PURE__ */ figma.widget.h(Text7, { fontSize: 12, fill: "#999" }, 'Aucun post-it pour le moment. Cliquez sur "+ Nouveau post-it" pour commencer !') : postIts.map((postIt) => {
-          const [isEditing, setIsEditing] = useSyncedState5(
+          const [isEditing, setIsEditing] = useSyncedState6(
             `editing_${postIt.id}`,
             false
           );
-          const [editContent, setEditContent] = useSyncedState5(
+          const [editContent, setEditContent] = useSyncedState6(
             `editContent_${postIt.id}`,
             postIt.content
           );
@@ -1375,9 +1370,9 @@
 
   // widget-src/widget.tsx
   var { widget: widget8 } = figma;
-  var { AutoLayout: AutoLayout8, Text: Text8, useSyncedState: useSyncedState6 } = widget8;
+  var { AutoLayout: AutoLayout8, Text: Text8, useSyncedState: useSyncedState7 } = widget8;
   function Widget() {
-    const [numberOfStudents] = useSyncedState6("teacherNumStudents", "");
+    const [numberOfStudents] = useSyncedState7("teacherNumStudents", "");
     const numStudents = parseInt(numberOfStudents) || 0;
     const studentIndices = Array.from({ length: numStudents }, (_, i) => i);
     return /* @__PURE__ */ figma.widget.h(

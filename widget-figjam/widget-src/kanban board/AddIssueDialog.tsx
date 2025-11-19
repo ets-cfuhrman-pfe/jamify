@@ -7,7 +7,7 @@ export function AddIssueDialog({
   onCancel,
 }: {
   status: string;
-  onAdd: (title: string, description: string, priority: "low" | "medium" | "high", questName: string | null) => void;
+  onAdd: (title: string, description: string, priority: "low" | "medium" | "high", questId: string | null) => void;
   onCancel: () => void;
 }) {
   const [title, setTitle] = useSyncedState(`newIssueTitle_${status}`, "");
@@ -17,9 +17,7 @@ export function AddIssueDialog({
 
   // 🆕 Quest selection
   const [quests] = useSyncedState("teacherQuests", []); // shared from teacher section
-  console.log("Available quests in AddIssueDialog:", quests);
   const [selectedQuest, setSelectedQuest] = useSyncedState(`selectedQuest_${status}`, "");
-  const [questName, setQuestName] = useSyncedState(`questName_${status}`, "");
   const [showQuestDropdown, setShowQuestDropdown] = useSyncedState(`showQuestDropdown_${status}`, false);
 
   const priorities: ("low" | "medium" | "high")[] = ["low", "medium", "high"];
@@ -116,7 +114,6 @@ export function AddIssueDialog({
                 cornerRadius={4}
                 onClick={() => {
                   setSelectedQuest(q.id);
-                  setQuestName(q.name);
                   setShowQuestDropdown(false);
                 }}
                 width="fill-parent"
@@ -196,15 +193,12 @@ export function AddIssueDialog({
           fill={{ type: "solid", color: { r: 0.37, g: 0.51, b: 0.82, a: 1 } }}
           cornerRadius={6}
           onClick={() => {
-            if (questName === "" || questName === null) {
-              figma.notify("Veuillez sélectionner une quête");
-            } else if (title.trim()) {
-              onAdd(title, description, priority, questName);
+            if (title.trim()) {
+              onAdd(title, description, priority, selectedQuest);
               setTitle("");
               setDescription("");
               setPriority("medium");
               setSelectedQuest("");
-              setQuestName("");
             } else {
               figma.notify("Please enter a title");
             }
