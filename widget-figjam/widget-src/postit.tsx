@@ -9,6 +9,7 @@ interface PostIt {
   authorName: string;
   color: string;
   timestamp: number;
+  likes: string[]; // Array of user IDs who liked this post-it
 }
 
 export function PostItBoard() {
@@ -21,8 +22,13 @@ export function PostItBoard() {
     ""
   );
 
-  const [editingPostItId, setEditingPostItId] = useSyncedState<string | null>("editingPostItId", null);
-  const [editContents, setEditContents] = useSyncedState<Record<string, string>>("editContents", {});
+  const [editingPostItId, setEditingPostItId] = useSyncedState<string | null>(
+    "editingPostItId",
+    null
+  );
+  const [editContents, setEditContents] = useSyncedState<
+    Record<string, string>
+  >("editContents", {});
 
   // Store current user info in synced state (set once when needed)
   const [currentUserId, setCurrentUserId] = useSyncedState<string>(
@@ -66,6 +72,7 @@ export function PostItBoard() {
           authorName: userName,
           color: colors[Math.floor(Math.random() * colors.length)],
           timestamp: Date.now(),
+          likes: [],
         };
         setPostIts([...postIts, newPostIt]);
         setNewPostItContent("");
@@ -99,6 +106,38 @@ export function PostItBoard() {
     setPostIts(
       postIts.map((p) => (p.id === id ? { ...p, content: newContent } : p))
     );
+  };
+
+  // Toggle like on a post-it
+  const toggleLike = (postItId: string) => {
+    return new Promise<void>((resolve) => {
+      const user = figma.currentUser;
+      const userId = user?.id || "anonymous";
+
+      // Update stored user info if needed
+      if (!currentUserId) {
+        setCurrentUserId(userId);
+        setCurrentUserName(user?.name || "Anonyme");
+      }
+
+      setPostIts(
+        postIts.map((p) => {
+          if (p.id === postItId) {
+            // Initialize likes array if it doesn't exist (backward compatibility)
+            const currentLikes = p.likes || [];
+            const hasLiked = currentLikes.includes(userId);
+            return {
+              ...p,
+              likes: hasLiked
+                ? currentLikes.filter((id) => id !== userId)
+                : [...currentLikes, userId],
+            };
+          }
+          return p;
+        })
+      );
+      resolve();
+    });
   };
 
   return (
@@ -190,7 +229,15 @@ export function PostItBoard() {
         ) : (
           postIts.map((postIt) => {
             const isEditing = editingPostItId === postIt.id;
-            const editContent = editContents[postIt.id] !== undefined ? editContents[postIt.id] : postIt.content;
+            const editContent =
+              editContents[postIt.id] !== undefined
+                ? editContents[postIt.id]
+                : postIt.content;
+
+            // Get current user ID for this post-it (safe in map context)
+            const currentUserLiked = (postIt.likes || []).includes(
+              currentUserId || "anonymous"
+            );
 
             return (
               <AutoLayout
@@ -271,6 +318,22 @@ export function PostItBoard() {
                       <Text fontSize={9} fill="#666">
                         — {postIt.authorName}
                       </Text>
+                      {/* Like button */}
+                      <AutoLayout
+                        padding={{ vertical: 3, horizontal: 6 }}
+                        cornerRadius={4}
+                        fill={currentUserLiked ? "#FF69B4" : "#E0E0E0"}
+                        onClick={() => toggleLike(postIt.id)}
+                        spacing={4}
+                        verticalAlignItems="center"
+                      >
+                        <Text fontSize={10} fill="#FFFFFF">
+                          ❤️
+                        </Text>
+                        <Text fontSize={9} fill="#FFFFFF" fontWeight="bold">
+                          {(postIt.likes || []).length}
+                        </Text>
+                      </AutoLayout>
                       {/* Always show buttons, but check author on click */}
                       <AutoLayout direction="horizontal" spacing={4}>
                         <AutoLayout

@@ -1157,7 +1157,10 @@
       "newPostItContent",
       ""
     );
-    const [editingPostItId, setEditingPostItId] = useSyncedState6("editingPostItId", null);
+    const [editingPostItId, setEditingPostItId] = useSyncedState6(
+      "editingPostItId",
+      null
+    );
     const [editContents, setEditContents] = useSyncedState6("editContents", {});
     const [currentUserId, setCurrentUserId] = useSyncedState6(
       "currentUserId",
@@ -1191,7 +1194,8 @@
             authorId: userId,
             authorName: userName,
             color: colors[Math.floor(Math.random() * colors.length)],
-            timestamp: Date.now()
+            timestamp: Date.now(),
+            likes: []
           };
           setPostIts([...postIts, newPostIt]);
           setNewPostItContent("");
@@ -1219,6 +1223,29 @@
       setPostIts(
         postIts.map((p) => p.id === id ? __spreadProps(__spreadValues({}, p), { content: newContent }) : p)
       );
+    };
+    const toggleLike = (postItId) => {
+      return new Promise((resolve) => {
+        const user = figma.currentUser;
+        const userId = (user == null ? void 0 : user.id) || "anonymous";
+        if (!currentUserId) {
+          setCurrentUserId(userId);
+          setCurrentUserName((user == null ? void 0 : user.name) || "Anonyme");
+        }
+        setPostIts(
+          postIts.map((p) => {
+            if (p.id === postItId) {
+              const currentLikes = p.likes || [];
+              const hasLiked = currentLikes.includes(userId);
+              return __spreadProps(__spreadValues({}, p), {
+                likes: hasLiked ? currentLikes.filter((id) => id !== userId) : [...currentLikes, userId]
+              });
+            }
+            return p;
+          })
+        );
+        resolve();
+      });
     };
     return /* @__PURE__ */ figma.widget.h(
       AutoLayout7,
@@ -1306,6 +1333,9 @@
         postIts.length === 0 ? /* @__PURE__ */ figma.widget.h(Text7, { fontSize: 12, fill: "#999" }, 'Aucun post-it pour le moment. Cliquez sur "+ Nouveau post-it" pour commencer !') : postIts.map((postIt) => {
           const isEditing = editingPostItId === postIt.id;
           const editContent = editContents[postIt.id] !== void 0 ? editContents[postIt.id] : postIt.content;
+          const currentUserLiked = (postIt.likes || []).includes(
+            currentUserId || "anonymous"
+          );
           return /* @__PURE__ */ figma.widget.h(
             AutoLayout7,
             {
@@ -1383,6 +1413,19 @@
                   width: "fill-parent"
                 },
                 /* @__PURE__ */ figma.widget.h(Text7, { fontSize: 9, fill: "#666" }, "\u2014 ", postIt.authorName),
+                /* @__PURE__ */ figma.widget.h(
+                  AutoLayout7,
+                  {
+                    padding: { vertical: 3, horizontal: 6 },
+                    cornerRadius: 4,
+                    fill: currentUserLiked ? "#FF69B4" : "#E0E0E0",
+                    onClick: () => toggleLike(postIt.id),
+                    spacing: 4,
+                    verticalAlignItems: "center"
+                  },
+                  /* @__PURE__ */ figma.widget.h(Text7, { fontSize: 10, fill: "#FFFFFF" }, "\u2764\uFE0F"),
+                  /* @__PURE__ */ figma.widget.h(Text7, { fontSize: 9, fill: "#FFFFFF", fontWeight: "bold" }, (postIt.likes || []).length)
+                ),
                 /* @__PURE__ */ figma.widget.h(AutoLayout7, { direction: "horizontal", spacing: 4 }, /* @__PURE__ */ figma.widget.h(
                   AutoLayout7,
                   {
