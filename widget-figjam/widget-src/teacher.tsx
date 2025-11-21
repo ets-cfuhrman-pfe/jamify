@@ -7,7 +7,10 @@ export function TeacherProfile() {
     "teacherClaimed",
     false
   );
-  const [canEdit, setCanEdit] = useSyncedState<boolean>("teacherCanEdit", false);
+  const [canEdit, setCanEdit] = useSyncedState<boolean>(
+    "teacherCanEdit",
+    false
+  );
   const [numberOfStudents, setNumberOfStudents] = useSyncedState(
     "teacherNumStudents",
     ""
@@ -26,7 +29,10 @@ export function TeacherProfile() {
 
   // NEW STATE: Quests list
   const [quests, setQuests] = useSyncedState<Quest[]>("teacherQuests", []);
-  const [expandedQuest, setExpandedQuest] = useSyncedState<string | null>("expandedQuest", null);
+  const [expandedQuest, setExpandedQuest] = useSyncedState<string | null>(
+    "expandedQuest",
+    null
+  );
 
   const claimTeacherRole = () => {
     if (!teacherClaimed) {
@@ -64,7 +70,6 @@ export function TeacherProfile() {
   const deleteQuest = (id: string) => {
     setQuests(quests.filter((q) => q.id !== id));
   };
-
 
   return (
     <AutoLayout
@@ -225,7 +230,10 @@ export function TeacherProfile() {
                     )
                   }
                 >
-                  <AutoLayout width={"fill-parent"} horizontalAlignItems={"start"}>
+                  <AutoLayout
+                    width={"fill-parent"}
+                    horizontalAlignItems={"start"}
+                  >
                     <Text fontWeight="bold" fontSize={13}>
                       {quest.name || "Sans titre"}
                     </Text>
@@ -238,7 +246,11 @@ export function TeacherProfile() {
                 </AutoLayout>
 
                 {expandedQuest === quest.id && (
-                  <AutoLayout direction="vertical" spacing={4} width={"fill-parent"}>
+                  <AutoLayout
+                    direction="vertical"
+                    spacing={4}
+                    width={"fill-parent"}
+                  >
                     <Text fontSize={12}>Nom :</Text>
                     <AutoLayout
                       padding={{ vertical: 6, horizontal: 8 }}
@@ -417,7 +429,10 @@ export function TeacherProfile() {
                   }
                 >
                   <AutoLayout width={"fill-parent"}>
-                    <AutoLayout width={"fill-parent"} horizontalAlignItems={"start"}>
+                    <AutoLayout
+                      width={"fill-parent"}
+                      horizontalAlignItems={"start"}
+                    >
                       <Text fontWeight="bold" fontSize={13}>
                         {quest.name || "Sans titre"}
                       </Text>
@@ -430,9 +445,17 @@ export function TeacherProfile() {
                   </AutoLayout>
 
                   {expandedQuest === quest.id && (
-                    <AutoLayout direction="vertical" spacing={2} width={"fill-parent"}>
-                      <Text fontSize={12}>Description : {quest.description || "—"}</Text>
-                      <Text fontSize={12}>Difficulté : {quest.difficulty || "—"}</Text>
+                    <AutoLayout
+                      direction="vertical"
+                      spacing={2}
+                      width={"fill-parent"}
+                    >
+                      <Text fontSize={12}>
+                        Description : {quest.description || "—"}
+                      </Text>
+                      <Text fontSize={12}>
+                        Difficulté : {quest.difficulty || "—"}
+                      </Text>
                       <Text fontSize={12}>XP : {quest.xp || "—"}</Text>
                     </AutoLayout>
                   )}
@@ -442,8 +465,67 @@ export function TeacherProfile() {
             {/* --- END VIEW QUESTS --- */}
           </AutoLayout>
 
+          {/* Teacher action buttons */}
           {isCreator && (
             <AutoLayout direction="vertical" spacing={8} width={"fill-parent"}>
+              {/* Download Excel button */}
+              <AutoLayout
+                padding={{ vertical: 8, horizontal: 24 }}
+                cornerRadius={8}
+                fill="#28A745"
+                horizontalAlignItems="center"
+                width={"fill-parent"}
+                onClick={() => {
+                  return new Promise<void>((resolve) => {
+                    const csvContent =
+                      "Nom,Classe,Titre,Nombre_Etudiants,Contexte,Regles\n";
+                    const csvData = `"Données","du","projet","${numberOfStudents}","${context}","${rules}"\n`;
+                    const fullCsv = csvContent + csvData;
+
+                    // Use figma.showUI to access browser APIs for download
+                    figma.showUI(
+                      `
+                      <!DOCTYPE html>
+                      <html>
+                        <body>
+                          <script>
+                            const csvData = ${JSON.stringify(fullCsv)};
+                            const blob = new Blob([csvData], { type: 'text/csv;charset=utf-8;' });
+                            const url = URL.createObjectURL(blob);
+                            const link = document.createElement('a');
+                            link.href = url;
+                            link.download = 'donnees_projet.csv';
+                            document.body.appendChild(link);
+                            link.click();
+                            document.body.removeChild(link);
+                            URL.revokeObjectURL(url);
+                            
+                            setTimeout(() => {
+                              parent.postMessage({ pluginMessage: { type: 'download-complete' } }, '*');
+                            }, 500);
+                          </script>
+                        </body>
+                      </html>
+                    `,
+                      { visible: false, width: 1, height: 1 }
+                    );
+
+                    figma.ui.onmessage = (msg) => {
+                      if (msg.type === "download-complete") {
+                        figma.closePlugin();
+                        resolve();
+                      }
+                    };
+
+                    figma.notify("📊 Téléchargement du fichier en cours...");
+                  });
+                }}
+              >
+                <Text fontSize={13} fill="#FFFFFF" fontWeight="bold">
+                  📊 Télécharger données Excel
+                </Text>
+              </AutoLayout>
+
               <AutoLayout
                 padding={{ vertical: 8, horizontal: 24 }}
                 cornerRadius={8}

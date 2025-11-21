@@ -2,6 +2,14 @@
 const { widget } = figma;
 const { useSyncedState, AutoLayout, Text, Input } = widget;
 
+interface Comment {
+  id: string;
+  authorId: string;
+  authorName: string;
+  content: string;
+  timestamp: number;
+}
+
 interface PostIt {
   id: string;
   content: string;
@@ -9,6 +17,8 @@ interface PostIt {
   authorName: string;
   color: string;
   timestamp: number;
+  likes: string[]; // Array of user IDs who liked this post-it
+  comments?: Comment[]; // Optional array of comments for backward compatibility
 }
 
 export function PostItBoard() {
@@ -21,8 +31,13 @@ export function PostItBoard() {
     ""
   );
 
-  const [editingPostItId, setEditingPostItId] = useSyncedState<string | null>("editingPostItId", null);
-  const [editContents, setEditContents] = useSyncedState<Record<string, string>>("editContents", {});
+  const [editingPostItId, setEditingPostItId] = useSyncedState<string | null>(
+    "editingPostItId",
+    null
+  );
+  const [editContents, setEditContents] = useSyncedState<
+    Record<string, string>
+  >("editContents", {});
 
   // Store current user info in synced state (set once when needed)
   const [currentUserId, setCurrentUserId] = useSyncedState<string>(
@@ -33,6 +48,14 @@ export function PostItBoard() {
     "currentUserName",
     "Anonyme"
   );
+
+  // Comment UI state maps
+  const [openComments, setOpenComments] = useSyncedState<
+    Record<string, boolean>
+  >("openComments", {});
+  const [newCommentTexts, setNewCommentTexts] = useSyncedState<
+    Record<string, string>
+  >("newCommentTexts", {});
 
   // Available colors for post-its
   const colors = [
@@ -66,6 +89,8 @@ export function PostItBoard() {
           authorName: userName,
           color: colors[Math.floor(Math.random() * colors.length)],
           timestamp: Date.now(),
+          likes: [],
+          comments: [],
         };
         setPostIts([...postIts, newPostIt]);
         setNewPostItContent("");
@@ -99,6 +124,76 @@ export function PostItBoard() {
     setPostIts(
       postIts.map((p) => (p.id === id ? { ...p, content: newContent } : p))
     );
+  };
+
+  // Toggle like on a post-it
+  const toggleLike = (postItId: string) => {
+    return new Promise<void>((resolve) => {
+      const user = figma.currentUser;
+      const userId = user?.id || "anonymous";
+
+      // Update stored user info if needed
+      if (!currentUserId) {
+        setCurrentUserId(userId);
+        setCurrentUserName(user?.name || "Anonyme");
+      }
+
+      setPostIts(
+        postIts.map((p) => {
+          if (p.id === postItId) {
+            // Initialize likes array if it doesn't exist (backward compatibility)
+            const currentLikes = p.likes || [];
+            const hasLiked = currentLikes.includes(userId);
+            return {
+              ...p,
+              likes: hasLiked
+                ? currentLikes.filter((id) => id !== userId)
+                : [...currentLikes, userId],
+            };
+          }
+          return p;
+        })
+      );
+      resolve();
+    });
+  };
+
+  // Toggle comments section visibility
+  const toggleComments = (postItId: string) => {
+    setOpenComments({ ...openComments, [postItId]: !openComments[postItId] });
+  };
+
+  // Add a comment to a post-it
+  const addComment = (postItId: string) => {
+    return new Promise<void>((resolve) => {
+      const user = figma.currentUser;
+      const userId = user?.id || "anonymous";
+      const userName = user?.name || "Anonyme";
+      const draft = (newCommentTexts[postItId] || "").trim();
+
+      if (draft) {
+        setPostIts(
+          postIts.map((p) => {
+            if (p.id === postItId) {
+              const existingComments = p.comments || [];
+              const newComment: Comment = {
+                id: `comment_${Date.now()}_${Math.random()}`,
+                authorId: userId,
+                authorName: userName,
+                content: draft,
+                timestamp: Date.now(),
+              };
+              return { ...p, comments: [...existingComments, newComment] };
+            }
+            return p;
+          })
+        );
+        const updatedDrafts = { ...newCommentTexts };
+        updatedDrafts[postItId] = "";
+        setNewCommentTexts(updatedDrafts);
+      }
+      resolve();
+    });
   };
 
   return (
@@ -190,7 +285,15 @@ export function PostItBoard() {
         ) : (
           postIts.map((postIt) => {
             const isEditing = editingPostItId === postIt.id;
-            const editContent = editContents[postIt.id] !== undefined ? editContents[postIt.id] : postIt.content;
+            const editContent =
+              editContents[postIt.id] !== undefined
+                ? editContents[postIt.id]
+                : postIt.content;
+
+            // Get current user ID for this post-it (safe in map context)
+            const currentUserLiked = (postIt.likes || []).includes(
+              currentUserId || "anonymous"
+            );
 
             return (
               <AutoLayout
@@ -271,6 +374,103 @@ export function PostItBoard() {
                       <Text fontSize={9} fill="#666">
                         — {postIt.authorName}
                       </Text>
+                      {/* Like button */}
+                      <AutoLayout
+                        padding={{ vertical: 3, horizontal: 6 }}
+                        cornerRadius={4}
+                        fill={currentUserLiked ? "#FF69B4" : "#E0E0E0"}
+                        onClick={() => toggleLike(postIt.id)}
+                        spacing={4}
+                        verticalAlignItems="center"
+                      >
+                        <Text fontSize={10} fill="#FFFFFF">
+                          ❤️
+                        </Text>
+                        <Text fontSize={9} fill="#FFFFFF" fontWeight="bold">
+                          {(postIt.likes || []).length}
+                        </Text>
+                      </AutoLayout>
+
+                      {/* Comments toggle button */}
+                      <AutoLayout
+                        padding={{ vertical: 3, horizontal: 6 }}
+                        cornerRadius={4}
+                        fill={openComments[postIt.id] ? "#CCE5FF" : "#F0F0F0"}
+                        onClick={() => toggleComments(postIt.id)}
+                        spacing={4}
+                        verticalAlignItems="center"
+                        width={"fill-parent"}
+                      >
+                        <Text fontSize={9}>
+                          {openComments[postIt.id]
+                            ? "▼ Masquer commentaires"
+                            : `💬 Commentaires (${
+                                (postIt.comments || []).length
+                              })`}
+                        </Text>
+                      </AutoLayout>
+
+                      {openComments[postIt.id] && (
+                        <AutoLayout
+                          direction="vertical"
+                          spacing={6}
+                          width={"fill-parent"}
+                          fill="#F9F9F9"
+                          stroke="#DDDDDD"
+                          cornerRadius={6}
+                          padding={8}
+                        >
+                          {(postIt.comments || []).length === 0 ? (
+                            <Text fontSize={10} fill="#666">
+                              Aucun commentaire.
+                            </Text>
+                          ) : (
+                            (postIt.comments || []).map((c) => (
+                              <AutoLayout
+                                key={c.id}
+                                direction="vertical"
+                                spacing={2}
+                                width={"fill-parent"}
+                              >
+                                <Text fontSize={10} fontWeight="bold">
+                                  {c.authorName}
+                                </Text>
+                                <Text fontSize={10}>{c.content}</Text>
+                              </AutoLayout>
+                            ))
+                          )}
+                          {/* New comment input */}
+                          <AutoLayout
+                            padding={{ vertical: 4, horizontal: 6 }}
+                            cornerRadius={4}
+                            fill="#FFFFFF"
+                            stroke="#CCCCCC"
+                            width={"fill-parent"}
+                          >
+                            <Input
+                              value={newCommentTexts[postIt.id] || ""}
+                              placeholder="Nouveau commentaire..."
+                              fontSize={10}
+                              width={"fill-parent"}
+                              onTextEditEnd={(e) => {
+                                const drafts = { ...newCommentTexts };
+                                drafts[postIt.id] = e.characters;
+                                setNewCommentTexts(drafts);
+                              }}
+                            />
+                          </AutoLayout>
+                          <AutoLayout
+                            padding={{ vertical: 4, horizontal: 8 }}
+                            cornerRadius={4}
+                            fill="#4CAF50"
+                            onClick={() => addComment(postIt.id)}
+                          >
+                            <Text fontSize={10} fill="#FFFFFF">
+                              Ajouter
+                            </Text>
+                          </AutoLayout>
+                        </AutoLayout>
+                      )}
                       {/* Always show buttons, but check author on click */}
                       <AutoLayout direction="horizontal" spacing={4}>
                         <AutoLayout
