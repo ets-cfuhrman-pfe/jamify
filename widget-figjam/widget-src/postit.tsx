@@ -2,6 +2,14 @@
 const { widget } = figma;
 const { useSyncedState, AutoLayout, Text, Input } = widget;
 
+interface Comment {
+  id: string;
+  authorId: string;
+  authorName: string;
+  content: string;
+  timestamp: number;
+}
+
 interface PostIt {
   id: string;
   content: string;
@@ -10,6 +18,7 @@ interface PostIt {
   color: string;
   timestamp: number;
   likes: string[]; // Array of user IDs who liked this post-it
+  comments?: Comment[]; // Optional array of comments for backward compatibility
 }
 
 export function PostItBoard() {
@@ -39,6 +48,14 @@ export function PostItBoard() {
     "currentUserName",
     "Anonyme"
   );
+
+  // Comment UI state maps
+  const [openComments, setOpenComments] = useSyncedState<
+    Record<string, boolean>
+  >("openComments", {});
+  const [newCommentTexts, setNewCommentTexts] = useSyncedState<
+    Record<string, string>
+  >("newCommentTexts", {});
 
   // Available colors for post-its
   const colors = [
@@ -73,6 +90,7 @@ export function PostItBoard() {
           color: colors[Math.floor(Math.random() * colors.length)],
           timestamp: Date.now(),
           likes: [],
+          comments: [],
         };
         setPostIts([...postIts, newPostIt]);
         setNewPostItContent("");
@@ -136,6 +154,44 @@ export function PostItBoard() {
           return p;
         })
       );
+      resolve();
+    });
+  };
+
+  // Toggle comments section visibility
+  const toggleComments = (postItId: string) => {
+    setOpenComments({ ...openComments, [postItId]: !openComments[postItId] });
+  };
+
+  // Add a comment to a post-it
+  const addComment = (postItId: string) => {
+    return new Promise<void>((resolve) => {
+      const user = figma.currentUser;
+      const userId = user?.id || "anonymous";
+      const userName = user?.name || "Anonyme";
+      const draft = (newCommentTexts[postItId] || "").trim();
+
+      if (draft) {
+        setPostIts(
+          postIts.map((p) => {
+            if (p.id === postItId) {
+              const existingComments = p.comments || [];
+              const newComment: Comment = {
+                id: `comment_${Date.now()}_${Math.random()}`,
+                authorId: userId,
+                authorName: userName,
+                content: draft,
+                timestamp: Date.now(),
+              };
+              return { ...p, comments: [...existingComments, newComment] };
+            }
+            return p;
+          })
+        );
+        const updatedDrafts = { ...newCommentTexts };
+        updatedDrafts[postItId] = "";
+        setNewCommentTexts(updatedDrafts);
+      }
       resolve();
     });
   };
@@ -334,6 +390,87 @@ export function PostItBoard() {
                           {(postIt.likes || []).length}
                         </Text>
                       </AutoLayout>
+
+                      {/* Comments toggle button */}
+                      <AutoLayout
+                        padding={{ vertical: 3, horizontal: 6 }}
+                        cornerRadius={4}
+                        fill={openComments[postIt.id] ? "#CCE5FF" : "#F0F0F0"}
+                        onClick={() => toggleComments(postIt.id)}
+                        spacing={4}
+                        verticalAlignItems="center"
+                        width={"fill-parent"}
+                      >
+                        <Text fontSize={9}>
+                          {openComments[postIt.id]
+                            ? "▼ Masquer commentaires"
+                            : `💬 Commentaires (${
+                                (postIt.comments || []).length
+                              })`}
+                        </Text>
+                      </AutoLayout>
+
+                      {openComments[postIt.id] && (
+                        <AutoLayout
+                          direction="vertical"
+                          spacing={6}
+                          width={"fill-parent"}
+                          fill="#F9F9F9"
+                          stroke="#DDDDDD"
+                          cornerRadius={6}
+                          padding={8}
+                        >
+                          {(postIt.comments || []).length === 0 ? (
+                            <Text fontSize={10} fill="#666">
+                              Aucun commentaire.
+                            </Text>
+                          ) : (
+                            (postIt.comments || []).map((c) => (
+                              <AutoLayout
+                                key={c.id}
+                                direction="vertical"
+                                spacing={2}
+                                width={"fill-parent"}
+                              >
+                                <Text fontSize={10} fontWeight="bold">
+                                  {c.authorName}
+                                </Text>
+                                <Text fontSize={10}>{c.content}</Text>
+                              </AutoLayout>
+                            ))
+                          )}
+                          {/* New comment input */}
+                          <AutoLayout
+                            padding={{ vertical: 4, horizontal: 6 }}
+                            cornerRadius={4}
+                            fill="#FFFFFF"
+                            stroke="#CCCCCC"
+                            width={"fill-parent"}
+                          >
+                            <Input
+                              value={newCommentTexts[postIt.id] || ""}
+                              placeholder="Nouveau commentaire..."
+                              fontSize={10}
+                              width={"fill-parent"}
+                              onTextEditEnd={(e) => {
+                                const drafts = { ...newCommentTexts };
+                                drafts[postIt.id] = e.characters;
+                                setNewCommentTexts(drafts);
+                              }}
+                            />
+                          </AutoLayout>
+                          <AutoLayout
+                            padding={{ vertical: 4, horizontal: 8 }}
+                            cornerRadius={4}
+                            fill="#4CAF50"
+                            onClick={() => addComment(postIt.id)}
+                          >
+                            <Text fontSize={10} fill="#FFFFFF">
+                              Ajouter
+                            </Text>
+                          </AutoLayout>
+                        </AutoLayout>
+                      )}
                       {/* Always show buttons, but check author on click */}
                       <AutoLayout direction="horizontal" spacing={4}>
                         <AutoLayout

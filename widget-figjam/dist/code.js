@@ -1170,6 +1170,8 @@
       "currentUserName",
       "Anonyme"
     );
+    const [openComments, setOpenComments] = useSyncedState6("openComments", {});
+    const [newCommentTexts, setNewCommentTexts] = useSyncedState6("newCommentTexts", {});
     const colors = [
       "#FFE5B4",
       "#FFB6C1",
@@ -1195,7 +1197,8 @@
             authorName: userName,
             color: colors[Math.floor(Math.random() * colors.length)],
             timestamp: Date.now(),
-            likes: []
+            likes: [],
+            comments: []
           };
           setPostIts([...postIts, newPostIt]);
           setNewPostItContent("");
@@ -1244,6 +1247,39 @@
             return p;
           })
         );
+        resolve();
+      });
+    };
+    const toggleComments = (postItId) => {
+      setOpenComments(__spreadProps(__spreadValues({}, openComments), { [postItId]: !openComments[postItId] }));
+    };
+    const addComment = (postItId) => {
+      return new Promise((resolve) => {
+        const user = figma.currentUser;
+        const userId = (user == null ? void 0 : user.id) || "anonymous";
+        const userName = (user == null ? void 0 : user.name) || "Anonyme";
+        const draft = (newCommentTexts[postItId] || "").trim();
+        if (draft) {
+          setPostIts(
+            postIts.map((p) => {
+              if (p.id === postItId) {
+                const existingComments = p.comments || [];
+                const newComment = {
+                  id: `comment_${Date.now()}_${Math.random()}`,
+                  authorId: userId,
+                  authorName: userName,
+                  content: draft,
+                  timestamp: Date.now()
+                };
+                return __spreadProps(__spreadValues({}, p), { comments: [...existingComments, newComment] });
+              }
+              return p;
+            })
+          );
+          const updatedDrafts = __spreadValues({}, newCommentTexts);
+          updatedDrafts[postItId] = "";
+          setNewCommentTexts(updatedDrafts);
+        }
         resolve();
       });
     };
@@ -1425,6 +1461,76 @@
                   },
                   /* @__PURE__ */ figma.widget.h(Text7, { fontSize: 10, fill: "#FFFFFF" }, "\u2764\uFE0F"),
                   /* @__PURE__ */ figma.widget.h(Text7, { fontSize: 9, fill: "#FFFFFF", fontWeight: "bold" }, (postIt.likes || []).length)
+                ),
+                /* @__PURE__ */ figma.widget.h(
+                  AutoLayout7,
+                  {
+                    padding: { vertical: 3, horizontal: 6 },
+                    cornerRadius: 4,
+                    fill: openComments[postIt.id] ? "#CCE5FF" : "#F0F0F0",
+                    onClick: () => toggleComments(postIt.id),
+                    spacing: 4,
+                    verticalAlignItems: "center",
+                    width: "fill-parent"
+                  },
+                  /* @__PURE__ */ figma.widget.h(Text7, { fontSize: 9 }, openComments[postIt.id] ? "\u25BC Masquer commentaires" : `\u{1F4AC} Commentaires (${(postIt.comments || []).length})`)
+                ),
+                openComments[postIt.id] && /* @__PURE__ */ figma.widget.h(
+                  AutoLayout7,
+                  {
+                    direction: "vertical",
+                    spacing: 6,
+                    width: "fill-parent",
+                    fill: "#F9F9F9",
+                    stroke: "#DDDDDD",
+                    cornerRadius: 6,
+                    padding: 8
+                  },
+                  (postIt.comments || []).length === 0 ? /* @__PURE__ */ figma.widget.h(Text7, { fontSize: 10, fill: "#666" }, "Aucun commentaire.") : (postIt.comments || []).map((c) => /* @__PURE__ */ figma.widget.h(
+                    AutoLayout7,
+                    {
+                      key: c.id,
+                      direction: "vertical",
+                      spacing: 2,
+                      width: "fill-parent"
+                    },
+                    /* @__PURE__ */ figma.widget.h(Text7, { fontSize: 10, fontWeight: "bold" }, c.authorName),
+                    /* @__PURE__ */ figma.widget.h(Text7, { fontSize: 10 }, c.content)
+                  )),
+                  /* @__PURE__ */ figma.widget.h(
+                    AutoLayout7,
+                    {
+                      padding: { vertical: 4, horizontal: 6 },
+                      cornerRadius: 4,
+                      fill: "#FFFFFF",
+                      stroke: "#CCCCCC",
+                      width: "fill-parent"
+                    },
+                    /* @__PURE__ */ figma.widget.h(
+                      Input4,
+                      {
+                        value: newCommentTexts[postIt.id] || "",
+                        placeholder: "Nouveau commentaire...",
+                        fontSize: 10,
+                        width: "fill-parent",
+                        onTextEditEnd: (e) => {
+                          const drafts = __spreadValues({}, newCommentTexts);
+                          drafts[postIt.id] = e.characters;
+                          setNewCommentTexts(drafts);
+                        }
+                      }
+                    )
+                  ),
+                  /* @__PURE__ */ figma.widget.h(
+                    AutoLayout7,
+                    {
+                      padding: { vertical: 4, horizontal: 8 },
+                      cornerRadius: 4,
+                      fill: "#4CAF50",
+                      onClick: () => addComment(postIt.id)
+                    },
+                    /* @__PURE__ */ figma.widget.h(Text7, { fontSize: 10, fill: "#FFFFFF" }, "Ajouter")
+                  )
                 ),
                 /* @__PURE__ */ figma.widget.h(AutoLayout7, { direction: "horizontal", spacing: 4 }, /* @__PURE__ */ figma.widget.h(
                   AutoLayout7,
