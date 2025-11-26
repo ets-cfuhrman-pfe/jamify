@@ -102,7 +102,10 @@ export function KanbanBoard() {
     if (issue.status === newStatus) return;
 
     const updatedIssues = issues.map((i) =>
-      i.id === issueId ? Object.assign({}, i, { status: newStatus }) : i
+      i.id === issueId ? Object.assign({}, i, {
+        status: newStatus,
+        completedAt: newStatus === "done" ? new Date().toISOString() : undefined
+      }) : i
     );
     setIssues(updatedIssues);
 

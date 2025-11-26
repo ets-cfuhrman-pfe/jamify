@@ -656,8 +656,8 @@
           strokeWidth: 1
         },
         /* @__PURE__ */ figma.widget.h(Text3, { fontSize: 11, fill: priorityColor.text }, getPriorityLabel(issue.priority))
-      ), /* @__PURE__ */ figma.widget.h(AutoLayout3, { width: "fill-parent" }), /* @__PURE__ */ figma.widget.h(Text3, { fontSize: 10, fill: "#9CA3AF" }, new Date(issue.createdAt).toLocaleDateString())),
-      /* @__PURE__ */ figma.widget.h(AutoLayout3, { direction: "horizontal", spacing: 8, width: "fill-parent", verticalAlignItems: "center" }, /* @__PURE__ */ figma.widget.h(
+      )),
+      /* @__PURE__ */ figma.widget.h(AutoLayout3, { direction: "vertical", spacing: 4, width: "fill-parent" }, /* @__PURE__ */ figma.widget.h(AutoLayout3, { direction: "horizontal", spacing: 8, width: "fill-parent", verticalAlignItems: "center" }, /* @__PURE__ */ figma.widget.h(
         AutoLayout3,
         {
           padding: { vertical: 6, horizontal: 12 },
@@ -682,7 +682,7 @@
           }
         },
         /* @__PURE__ */ figma.widget.h(Text3, { fontSize: 11, fill: "#FFFFFF", fontWeight: 600 }, "Avancer \u2192")
-      ))
+      )), /* @__PURE__ */ figma.widget.h(AutoLayout3, { direction: "horizontal", spacing: 8, width: "fill-parent", verticalAlignItems: "center" }, /* @__PURE__ */ figma.widget.h(Text3, { fontSize: 10, fill: "#9CA3AF" }, "Cr\xE9ation: ", new Date(issue.createdAt).toLocaleDateString()), /* @__PURE__ */ figma.widget.h(AutoLayout3, { width: "fill-parent" }), issue.status === "done" && issue.completedAt ? /* @__PURE__ */ figma.widget.h(Text3, { fontSize: 10, fill: "#10B981" }, "Compl\xE9t\xE9: ", new Date(issue.completedAt).toLocaleDateString()) : null))
     );
   }
 
@@ -1115,7 +1115,10 @@
       const newStatus = statusOrder[(currentIndex + 1) % statusOrder.length];
       if (issue.status === newStatus) return;
       const updatedIssues = issues.map(
-        (i) => i.id === issueId ? Object.assign({}, i, { status: newStatus }) : i
+        (i) => i.id === issueId ? Object.assign({}, i, {
+          status: newStatus,
+          completedAt: newStatus === "done" ? (/* @__PURE__ */ new Date()).toISOString() : void 0
+        }) : i
       );
       setIssues(updatedIssues);
       if (newStatus === "done") {
