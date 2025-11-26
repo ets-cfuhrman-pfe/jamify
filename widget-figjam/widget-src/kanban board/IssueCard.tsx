@@ -9,13 +9,11 @@ export function IssueCard({
     issue,
     onMove,
     onDelete,
-    onModify,
     studentNames = [],
 }: {
     issue: Issue;
     onMove: (issueId: string, newStatus: string) => void;
     onDelete: (issueId: string) => void;
-    onModify: (issueId: string, updates: Partial<Issue>) => void;
     studentNames?: string[];
     key?: string;
 }) {
@@ -40,12 +38,6 @@ export function IssueCard({
             stroke={{ type: "solid", color: { r: 0.9, g: 0.9, b: 0.9, a: 1 } }}
             width="fill-parent"
             strokeWidth={1}
-            onClick={() => {
-                const statusOrder = ["todo", "in-progress", "done"];
-                const currentIndex = statusOrder.indexOf(issue.status);
-                const nextStatus = statusOrder[(currentIndex + 1) % statusOrder.length];
-                onMove(issue.id, nextStatus);
-            }}
         >
             {/* Title */}
             <Text fontSize={14} fontWeight={600} fill="#111827" width="fill-parent">
@@ -122,6 +114,25 @@ export function IssueCard({
                 >
                     <Text fontSize={11} fill="#FFFFFF" fontWeight={600}>
                         🗑️ Supprimer
+                    </Text>
+                </AutoLayout>
+
+                <AutoLayout width="fill-parent" />
+
+                {/* Move button (on the right) */}
+                <AutoLayout
+                    padding={{ vertical: 6, horizontal: 12 }}
+                    fill={{ type: "solid", color: { r: 0.37, g: 0.51, b: 0.82, a: 1 } }}
+                    cornerRadius={6}
+                    onClick={() => {
+                        const statusOrder = ["todo", "in-progress", "done"];
+                        const currentIndex = statusOrder.indexOf(issue.status);
+                        const nextStatus = statusOrder[(currentIndex + 1) % statusOrder.length];
+                        onMove(issue.id, nextStatus);
+                    }}
+                >
+                    <Text fontSize={11} fill="#FFFFFF" fontWeight={600}>
+                        Avancer →
                     </Text>
                 </AutoLayout>
             </AutoLayout>

@@ -147,16 +147,6 @@ export function KanbanBoard() {
     } catch (_) { }
   };
 
-  const handleModify = (issueId: string, updates: Partial<Issue>) => {
-    const updatedIssues = issues.map((i) =>
-      i.id === issueId ? Object.assign({}, i, updates) : i
-    );
-    setIssues(updatedIssues);
-    try {
-      figma.notify("✏️ Tâche modifiée");
-    } catch (_) { }
-  };
-
   return (
     <AutoLayout
       direction="vertical"
@@ -186,7 +176,6 @@ export function KanbanBoard() {
             issues={issues}
             onMove={handleMove}
             onDelete={handleDelete}
-            onModify={handleModify}
             addingToColumn={addingToColumn}
             setAddingToColumn={setAddingToColumn}
             onAddIssue={handleAddIssue}

@@ -599,7 +599,6 @@
     issue,
     onMove,
     onDelete,
-    onModify,
     studentNames = []
   }) {
     var _a;
@@ -621,13 +620,7 @@
         cornerRadius: 8,
         stroke: { type: "solid", color: { r: 0.9, g: 0.9, b: 0.9, a: 1 } },
         width: "fill-parent",
-        strokeWidth: 1,
-        onClick: () => {
-          const statusOrder = ["todo", "in-progress", "done"];
-          const currentIndex = statusOrder.indexOf(issue.status);
-          const nextStatus = statusOrder[(currentIndex + 1) % statusOrder.length];
-          onMove(issue.id, nextStatus);
-        }
+        strokeWidth: 1
       },
       /* @__PURE__ */ figma.widget.h(Text3, { fontSize: 14, fontWeight: 600, fill: "#111827", width: "fill-parent" }, issue.title),
       issue.description.trim().length > 0 ? /* @__PURE__ */ figma.widget.h(Text3, { fontSize: 12, fill: "#6B7280", width: "fill-parent" }, issue.description) : null,
@@ -675,6 +668,20 @@
           }
         },
         /* @__PURE__ */ figma.widget.h(Text3, { fontSize: 11, fill: "#FFFFFF", fontWeight: 600 }, "\u{1F5D1}\uFE0F Supprimer")
+      ), /* @__PURE__ */ figma.widget.h(AutoLayout3, { width: "fill-parent" }), /* @__PURE__ */ figma.widget.h(
+        AutoLayout3,
+        {
+          padding: { vertical: 6, horizontal: 12 },
+          fill: { type: "solid", color: { r: 0.37, g: 0.51, b: 0.82, a: 1 } },
+          cornerRadius: 6,
+          onClick: () => {
+            const statusOrder = ["todo", "in-progress", "done"];
+            const currentIndex = statusOrder.indexOf(issue.status);
+            const nextStatus = statusOrder[(currentIndex + 1) % statusOrder.length];
+            onMove(issue.id, nextStatus);
+          }
+        },
+        /* @__PURE__ */ figma.widget.h(Text3, { fontSize: 11, fill: "#FFFFFF", fontWeight: 600 }, "Avancer \u2192")
       ))
     );
   }
@@ -942,7 +949,6 @@
     issues,
     onMove,
     onDelete,
-    onModify,
     addingToColumn,
     setAddingToColumn,
     onAddIssue,
@@ -1006,7 +1012,6 @@
               onMove(issueId);
             },
             onDelete,
-            onModify,
             studentNames
           }
         )),
@@ -1145,16 +1150,6 @@
       } catch (_) {
       }
     };
-    const handleModify = (issueId, updates) => {
-      const updatedIssues = issues.map(
-        (i) => i.id === issueId ? Object.assign({}, i, updates) : i
-      );
-      setIssues(updatedIssues);
-      try {
-        figma.notify("\u270F\uFE0F T\xE2che modifi\xE9e");
-      } catch (_) {
-      }
-    };
     return /* @__PURE__ */ figma.widget.h(
       AutoLayout6,
       {
@@ -1175,7 +1170,6 @@
           issues,
           onMove: handleMove,
           onDelete: handleDelete,
-          onModify: handleModify,
           addingToColumn,
           setAddingToColumn,
           onAddIssue: handleAddIssue,
