@@ -598,6 +598,8 @@
   function IssueCard({
     issue,
     onMove,
+    onDelete,
+    onModify,
     studentNames = []
   }) {
     var _a;
@@ -661,7 +663,30 @@
           strokeWidth: 1
         },
         /* @__PURE__ */ figma.widget.h(Text3, { fontSize: 11, fill: priorityColor.text }, getPriorityLabel(issue.priority))
-      ), /* @__PURE__ */ figma.widget.h(AutoLayout3, { width: "fill-parent" }), /* @__PURE__ */ figma.widget.h(Text3, { fontSize: 10, fill: "#9CA3AF" }, new Date(issue.createdAt).toLocaleDateString()))
+      ), /* @__PURE__ */ figma.widget.h(AutoLayout3, { width: "fill-parent" }), /* @__PURE__ */ figma.widget.h(Text3, { fontSize: 10, fill: "#9CA3AF" }, new Date(issue.createdAt).toLocaleDateString())),
+      /* @__PURE__ */ figma.widget.h(AutoLayout3, { direction: "horizontal", spacing: 8, width: "fill-parent", verticalAlignItems: "center" }, /* @__PURE__ */ figma.widget.h(
+        AutoLayout3,
+        {
+          padding: { vertical: 6, horizontal: 12 },
+          fill: { type: "solid", color: { r: 0.85, g: 0.7, b: 0.3, a: 1 } },
+          cornerRadius: 6,
+          onClick: () => {
+            figma.notify("\u270F\uFE0F Modification de la t\xE2che (bient\xF4t disponible)");
+          }
+        },
+        /* @__PURE__ */ figma.widget.h(Text3, { fontSize: 11, fill: "#FFFFFF", fontWeight: 600 }, "\u270F\uFE0F Modifier")
+      ), /* @__PURE__ */ figma.widget.h(
+        AutoLayout3,
+        {
+          padding: { vertical: 6, horizontal: 12 },
+          fill: { type: "solid", color: { r: 0.92, g: 0.3, b: 0.3, a: 1 } },
+          cornerRadius: 6,
+          onClick: () => {
+            onDelete(issue.id);
+          }
+        },
+        /* @__PURE__ */ figma.widget.h(Text3, { fontSize: 11, fill: "#FFFFFF", fontWeight: 600 }, "\u{1F5D1}\uFE0F Supprimer")
+      ))
     );
   }
 
@@ -927,6 +952,8 @@
     column,
     issues,
     onMove,
+    onDelete,
+    onModify,
     addingToColumn,
     setAddingToColumn,
     onAddIssue,
@@ -989,6 +1016,8 @@
             onMove: (issueId, newStatus) => {
               onMove(issueId);
             },
+            onDelete,
+            onModify,
             studentNames
           }
         )),
@@ -1119,6 +1148,24 @@
       addXP(XP_REWARDS.ADD_ISSUE, "Issue created");
       addStudentXP(assignedToId, XP_REWARDS.ADD_ISSUE);
     };
+    const handleDelete = (issueId) => {
+      const updatedIssues = issues.filter((i) => i.id !== issueId);
+      setIssues(updatedIssues);
+      try {
+        figma.notify("\u2705 T\xE2che supprim\xE9e");
+      } catch (_) {
+      }
+    };
+    const handleModify = (issueId, updates) => {
+      const updatedIssues = issues.map(
+        (i) => i.id === issueId ? Object.assign({}, i, updates) : i
+      );
+      setIssues(updatedIssues);
+      try {
+        figma.notify("\u270F\uFE0F T\xE2che modifi\xE9e");
+      } catch (_) {
+      }
+    };
     return /* @__PURE__ */ figma.widget.h(
       AutoLayout6,
       {
@@ -1138,6 +1185,8 @@
           column,
           issues,
           onMove: handleMove,
+          onDelete: handleDelete,
+          onModify: handleModify,
           addingToColumn,
           setAddingToColumn,
           onAddIssue: handleAddIssue,

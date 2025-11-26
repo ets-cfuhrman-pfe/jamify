@@ -8,10 +8,14 @@ const { AutoLayout, Text, useSyncedState } = widget;
 export function IssueCard({
     issue,
     onMove,
+    onDelete,
+    onModify,
     studentNames = [],
 }: {
     issue: Issue;
     onMove: (issueId: string, newStatus: string) => void;
+    onDelete: (issueId: string) => void;
+    onModify: (issueId: string, updates: Partial<Issue>) => void;
     studentNames?: string[];
     key?: string;
 }) {
@@ -21,7 +25,6 @@ export function IssueCard({
     const questName = quests.find((q: any) => q.id === issue.questId)?.name || "Aucune";
 
     const getPriorityLabel = (p: 'low' | 'medium' | 'high') => (p === 'low' ? 'bas' : p === 'medium' ? 'moyen' : 'élevé')
-
     const getAssignedName = () => {
         if (issue.assignedToId === undefined) return "Non assigné";
         return studentNames[issue.assignedToId] || "Étudiant";
@@ -38,7 +41,6 @@ export function IssueCard({
             width="fill-parent"
             strokeWidth={1}
             onClick={() => {
-                // Cycle through statuses: todo -> in-progress -> done -> todo
                 const statusOrder = ["todo", "in-progress", "done"];
                 const currentIndex = statusOrder.indexOf(issue.status);
                 const nextStatus = statusOrder[(currentIndex + 1) % statusOrder.length];
@@ -105,6 +107,38 @@ export function IssueCard({
                 <Text fontSize={10} fill="#9CA3AF">
                     {new Date(issue.createdAt).toLocaleDateString()}
                 </Text>
+            </AutoLayout>
+
+            {/* Action Buttons */}
+            <AutoLayout direction="horizontal" spacing={8} width="fill-parent" verticalAlignItems="center">
+                {/* Modify button */}
+                <AutoLayout
+                    padding={{ vertical: 6, horizontal: 12 }}
+                    fill={{ type: "solid", color: { r: 0.85, g: 0.7, b: 0.3, a: 1 } }}
+                    cornerRadius={6}
+                    onClick={() => {
+                        // Placeholder: could open a modal to edit the issue
+                        figma.notify("✏️ Modification de la tâche (bientôt disponible)");
+                    }}
+                >
+                    <Text fontSize={11} fill="#FFFFFF" fontWeight={600}>
+                        ✏️ Modifier
+                    </Text>
+                </AutoLayout>
+
+                {/* Delete button */}
+                <AutoLayout
+                    padding={{ vertical: 6, horizontal: 12 }}
+                    fill={{ type: "solid", color: { r: 0.92, g: 0.3, b: 0.3, a: 1 } }}
+                    cornerRadius={6}
+                    onClick={() => {
+                        onDelete(issue.id);
+                    }}
+                >
+                    <Text fontSize={11} fill="#FFFFFF" fontWeight={600}>
+                        🗑️ Supprimer
+                    </Text>
+                </AutoLayout>
             </AutoLayout>
         </AutoLayout>
     );

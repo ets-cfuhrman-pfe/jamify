@@ -25,7 +25,7 @@ export function KanbanBoard() {
   const studentLevels: number[] = [];
   const setStudentXP: ((value: number) => void)[] = [];
   const setStudentLevels: ((value: number) => void)[] = [];
-  
+
   for (let i = 0; i < numberOfStudents; i++) {
     const [studentName] = useSyncedState(`student_${i}_name`, `Étudiant ${i + 1}`);
     const [xp, setXp] = useSyncedState(`student_${i}_xp`, 0);
@@ -63,14 +63,14 @@ export function KanbanBoard() {
   // Add XP to a specific student
   const addStudentXP = (studentId: number | undefined, amount: number) => {
     if (studentId === undefined) return; // No student assigned
-    
+
     const currentXP = studentXP[studentId];
     const currentLevel = studentLevels[studentId];
     const xpToNextLevel = currentLevel * XP_PER_LEVEL;
-    
+
     const newXP = currentXP + amount;
     setStudentXP[studentId](newXP);
-    
+
     // Check for level up
     if (newXP >= xpToNextLevel) {
       setStudentLevels[studentId](currentLevel + 1);
@@ -139,6 +139,24 @@ export function KanbanBoard() {
     addStudentXP(assignedToId, XP_REWARDS.ADD_ISSUE);
   };
 
+  const handleDelete = (issueId: string) => {
+    const updatedIssues = issues.filter((i) => i.id !== issueId);
+    setIssues(updatedIssues);
+    try {
+      figma.notify("✅ Tâche supprimée");
+    } catch (_) { }
+  };
+
+  const handleModify = (issueId: string, updates: Partial<Issue>) => {
+    const updatedIssues = issues.map((i) =>
+      i.id === issueId ? Object.assign({}, i, updates) : i
+    );
+    setIssues(updatedIssues);
+    try {
+      figma.notify("✏️ Tâche modifiée");
+    } catch (_) { }
+  };
+
   return (
     <AutoLayout
       direction="vertical"
@@ -167,6 +185,8 @@ export function KanbanBoard() {
             column={column}
             issues={issues}
             onMove={handleMove}
+            onDelete={handleDelete}
+            onModify={handleModify}
             addingToColumn={addingToColumn}
             setAddingToColumn={setAddingToColumn}
             onAddIssue={handleAddIssue}
