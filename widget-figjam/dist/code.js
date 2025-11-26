@@ -668,17 +668,6 @@
         AutoLayout3,
         {
           padding: { vertical: 6, horizontal: 12 },
-          fill: { type: "solid", color: { r: 0.85, g: 0.7, b: 0.3, a: 1 } },
-          cornerRadius: 6,
-          onClick: () => {
-            figma.notify("\u270F\uFE0F Modification de la t\xE2che (bient\xF4t disponible)");
-          }
-        },
-        /* @__PURE__ */ figma.widget.h(Text3, { fontSize: 11, fill: "#FFFFFF", fontWeight: 600 }, "\u270F\uFE0F Modifier")
-      ), /* @__PURE__ */ figma.widget.h(
-        AutoLayout3,
-        {
-          padding: { vertical: 6, horizontal: 12 },
           fill: { type: "solid", color: { r: 0.92, g: 0.3, b: 0.3, a: 1 } },
           cornerRadius: 6,
           onClick: () => {

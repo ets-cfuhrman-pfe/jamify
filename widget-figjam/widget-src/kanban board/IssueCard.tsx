@@ -111,21 +111,6 @@ export function IssueCard({
 
             {/* Action Buttons */}
             <AutoLayout direction="horizontal" spacing={8} width="fill-parent" verticalAlignItems="center">
-                {/* Modify button */}
-                <AutoLayout
-                    padding={{ vertical: 6, horizontal: 12 }}
-                    fill={{ type: "solid", color: { r: 0.85, g: 0.7, b: 0.3, a: 1 } }}
-                    cornerRadius={6}
-                    onClick={() => {
-                        // Placeholder: could open a modal to edit the issue
-                        figma.notify("✏️ Modification de la tâche (bientôt disponible)");
-                    }}
-                >
-                    <Text fontSize={11} fill="#FFFFFF" fontWeight={600}>
-                        ✏️ Modifier
-                    </Text>
-                </AutoLayout>
-
                 {/* Delete button */}
                 <AutoLayout
                     padding={{ vertical: 6, horizontal: 12 }}
