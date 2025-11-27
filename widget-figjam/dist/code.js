@@ -598,6 +598,7 @@
   function IssueCard({
     issue,
     onMove,
+    onDelete,
     studentNames = []
   }) {
     var _a;
@@ -619,13 +620,7 @@
         cornerRadius: 8,
         stroke: { type: "solid", color: { r: 0.9, g: 0.9, b: 0.9, a: 1 } },
         width: "fill-parent",
-        strokeWidth: 1,
-        onClick: () => {
-          const statusOrder = ["todo", "in-progress", "done"];
-          const currentIndex = statusOrder.indexOf(issue.status);
-          const nextStatus = statusOrder[(currentIndex + 1) % statusOrder.length];
-          onMove(issue.id, nextStatus);
-        }
+        strokeWidth: 1
       },
       /* @__PURE__ */ figma.widget.h(Text3, { fontSize: 14, fontWeight: 600, fill: "#111827", width: "fill-parent" }, issue.title),
       issue.description.trim().length > 0 ? /* @__PURE__ */ figma.widget.h(Text3, { fontSize: 12, fill: "#6B7280", width: "fill-parent" }, issue.description) : null,
@@ -661,7 +656,33 @@
           strokeWidth: 1
         },
         /* @__PURE__ */ figma.widget.h(Text3, { fontSize: 11, fill: priorityColor.text }, getPriorityLabel(issue.priority))
-      ), /* @__PURE__ */ figma.widget.h(AutoLayout3, { width: "fill-parent" }), /* @__PURE__ */ figma.widget.h(Text3, { fontSize: 10, fill: "#9CA3AF" }, new Date(issue.createdAt).toLocaleDateString()))
+      )),
+      /* @__PURE__ */ figma.widget.h(AutoLayout3, { direction: "vertical", spacing: 4, width: "fill-parent" }, /* @__PURE__ */ figma.widget.h(AutoLayout3, { direction: "horizontal", spacing: 8, width: "fill-parent", verticalAlignItems: "center" }, /* @__PURE__ */ figma.widget.h(
+        AutoLayout3,
+        {
+          padding: { vertical: 6, horizontal: 12 },
+          fill: { type: "solid", color: { r: 0.92, g: 0.3, b: 0.3, a: 1 } },
+          cornerRadius: 6,
+          onClick: () => {
+            onDelete(issue.id);
+          }
+        },
+        /* @__PURE__ */ figma.widget.h(Text3, { fontSize: 11, fill: "#FFFFFF", fontWeight: 600 }, "\u{1F5D1}\uFE0F Supprimer")
+      ), /* @__PURE__ */ figma.widget.h(AutoLayout3, { width: "fill-parent" }), /* @__PURE__ */ figma.widget.h(
+        AutoLayout3,
+        {
+          padding: { vertical: 6, horizontal: 12 },
+          fill: { type: "solid", color: { r: 0.37, g: 0.51, b: 0.82, a: 1 } },
+          cornerRadius: 6,
+          onClick: () => {
+            const statusOrder = ["todo", "in-progress", "done"];
+            const currentIndex = statusOrder.indexOf(issue.status);
+            const nextStatus = statusOrder[(currentIndex + 1) % statusOrder.length];
+            onMove(issue.id, nextStatus);
+          }
+        },
+        /* @__PURE__ */ figma.widget.h(Text3, { fontSize: 11, fill: "#FFFFFF", fontWeight: 600 }, "Avancer \u2192")
+      )), /* @__PURE__ */ figma.widget.h(AutoLayout3, { direction: "horizontal", spacing: 8, width: "fill-parent", verticalAlignItems: "center" }, /* @__PURE__ */ figma.widget.h(Text3, { fontSize: 10, fill: "#9CA3AF" }, "Cr\xE9ation: ", new Date(issue.createdAt).toLocaleDateString()), /* @__PURE__ */ figma.widget.h(AutoLayout3, { width: "fill-parent" }), issue.status === "done" && issue.completedAt ? /* @__PURE__ */ figma.widget.h(Text3, { fontSize: 10, fill: "#10B981" }, "Compl\xE9t\xE9: ", new Date(issue.completedAt).toLocaleDateString()) : null))
     );
   }
 
@@ -927,6 +948,7 @@
     column,
     issues,
     onMove,
+    onDelete,
     addingToColumn,
     setAddingToColumn,
     onAddIssue,
@@ -989,6 +1011,7 @@
             onMove: (issueId, newStatus) => {
               onMove(issueId);
             },
+            onDelete,
             studentNames
           }
         )),
@@ -1092,7 +1115,10 @@
       const newStatus = statusOrder[(currentIndex + 1) % statusOrder.length];
       if (issue.status === newStatus) return;
       const updatedIssues = issues.map(
-        (i) => i.id === issueId ? Object.assign({}, i, { status: newStatus }) : i
+        (i) => i.id === issueId ? Object.assign({}, i, {
+          status: newStatus,
+          completedAt: newStatus === "done" ? (/* @__PURE__ */ new Date()).toISOString() : void 0
+        }) : i
       );
       setIssues(updatedIssues);
       if (newStatus === "done") {
@@ -1119,6 +1145,14 @@
       addXP(XP_REWARDS.ADD_ISSUE, "Issue created");
       addStudentXP(assignedToId, XP_REWARDS.ADD_ISSUE);
     };
+    const handleDelete = (issueId) => {
+      const updatedIssues = issues.filter((i) => i.id !== issueId);
+      setIssues(updatedIssues);
+      try {
+        figma.notify("\u2705 T\xE2che supprim\xE9e");
+      } catch (_) {
+      }
+    };
     return /* @__PURE__ */ figma.widget.h(
       AutoLayout6,
       {
@@ -1138,6 +1172,7 @@
           column,
           issues,
           onMove: handleMove,
+          onDelete: handleDelete,
           addingToColumn,
           setAddingToColumn,
           onAddIssue: handleAddIssue,

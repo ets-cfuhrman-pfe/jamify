@@ -24,6 +24,7 @@ export function KanbanColumn({
     column,
     issues,
     onMove,
+    onDelete,
     addingToColumn,
     setAddingToColumn,
     onAddIssue,
@@ -32,6 +33,7 @@ export function KanbanColumn({
     column: Column;
     issues: Issue[];
     onMove: (issueId: string) => void;
+    onDelete: (issueId: string) => void;
     addingToColumn: string | null;
     setAddingToColumn: (status: string | null) => void;
     onAddIssue: (status: string, title: string, description: string, priority: "low" | "medium" | "high", selectedQuest: string, assignedToId?: number) => void;
@@ -92,6 +94,7 @@ export function KanbanColumn({
                         onMove={(issueId: string, newStatus: string) => {
                             onMove(issueId);
                         }}
+                        onDelete={onDelete}
                         studentNames={studentNames}
                     />
                 ))}

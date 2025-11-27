@@ -8,10 +8,12 @@ const { AutoLayout, Text, useSyncedState } = widget;
 export function IssueCard({
     issue,
     onMove,
+    onDelete,
     studentNames = [],
 }: {
     issue: Issue;
     onMove: (issueId: string, newStatus: string) => void;
+    onDelete: (issueId: string) => void;
     studentNames?: string[];
     key?: string;
 }) {
@@ -21,7 +23,6 @@ export function IssueCard({
     const questName = quests.find((q: any) => q.id === issue.questId)?.name || "Aucune";
 
     const getPriorityLabel = (p: 'low' | 'medium' | 'high') => (p === 'low' ? 'bas' : p === 'medium' ? 'moyen' : 'élevé')
-
     const getAssignedName = () => {
         if (issue.assignedToId === undefined) return "Non assigné";
         return studentNames[issue.assignedToId] || "Étudiant";
@@ -37,13 +38,6 @@ export function IssueCard({
             stroke={{ type: "solid", color: { r: 0.9, g: 0.9, b: 0.9, a: 1 } }}
             width="fill-parent"
             strokeWidth={1}
-            onClick={() => {
-                // Cycle through statuses: todo -> in-progress -> done -> todo
-                const statusOrder = ["todo", "in-progress", "done"];
-                const currentIndex = statusOrder.indexOf(issue.status);
-                const nextStatus = statusOrder[(currentIndex + 1) % statusOrder.length];
-                onMove(issue.id, nextStatus);
-            }}
         >
             {/* Title */}
             <Text fontSize={14} fontWeight={600} fill="#111827" width="fill-parent">
@@ -86,7 +80,7 @@ export function IssueCard({
                 )}
             </AutoLayout>
 
-            {/* Footer with priority and date */}
+            {/* Footer with priority */}
             <AutoLayout direction="horizontal" spacing={8} width="fill-parent" verticalAlignItems="center">
                 <AutoLayout
                     padding={{ vertical: 2, horizontal: 8 }}
@@ -100,11 +94,61 @@ export function IssueCard({
                     </Text>
                 </AutoLayout>
 
-                <AutoLayout width="fill-parent" />
+            </AutoLayout>
 
-                <Text fontSize={10} fill="#9CA3AF">
-                    {new Date(issue.createdAt).toLocaleDateString()}
-                </Text>
+            {/* Action Buttons and Dates Container */}
+            <AutoLayout direction="vertical" spacing={4} width="fill-parent">
+                {/* Buttons */}
+                <AutoLayout direction="horizontal" spacing={8} width="fill-parent" verticalAlignItems="center">
+                    {/* Delete button */}
+                    <AutoLayout
+                        padding={{ vertical: 6, horizontal: 12 }}
+                        fill={{ type: "solid", color: { r: 0.92, g: 0.3, b: 0.3, a: 1 } }}
+                        cornerRadius={6}
+                        onClick={() => {
+                            onDelete(issue.id);
+                        }}
+                    >
+                        <Text fontSize={11} fill="#FFFFFF" fontWeight={600}>
+                            🗑️ Supprimer
+                        </Text>
+                    </AutoLayout>
+
+                    <AutoLayout width="fill-parent" />
+
+                    {/* Move button (on the right) */}
+                    <AutoLayout
+                        padding={{ vertical: 6, horizontal: 12 }}
+                        fill={{ type: "solid", color: { r: 0.37, g: 0.51, b: 0.82, a: 1 } }}
+                        cornerRadius={6}
+                        onClick={() => {
+                            const statusOrder = ["todo", "in-progress", "done"];
+                            const currentIndex = statusOrder.indexOf(issue.status);
+                            const nextStatus = statusOrder[(currentIndex + 1) % statusOrder.length];
+                            onMove(issue.id, nextStatus);
+                        }}
+                    >
+                        <Text fontSize={11} fill="#FFFFFF" fontWeight={600}>
+                            Avancer →
+                        </Text>
+                    </AutoLayout>
+                </AutoLayout>
+
+                {/* Dates row inside buttons container */}
+                <AutoLayout direction="horizontal" spacing={8} width="fill-parent" verticalAlignItems="center">
+                    <Text fontSize={10} fill="#9CA3AF">
+                        Création: {new Date(issue.createdAt).toLocaleDateString()}
+                    </Text>
+
+                    <AutoLayout width="fill-parent" />
+
+                    {/* Completion date (only if done) */}
+                    {issue.status === "done" && issue.completedAt ? (
+                        <Text fontSize={10} fill="#10B981">
+                            Complété: {new Date(issue.completedAt).toLocaleDateString()}
+                        </Text>
+                    ) : null}
+                </AutoLayout>
             </AutoLayout>
         </AutoLayout>
     );
