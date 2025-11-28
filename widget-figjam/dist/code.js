@@ -155,6 +155,26 @@
     );
   }
 
+  // widget-src/teacher-logic.ts
+  function newQuest() {
+    return {
+      id: `${Date.now()}_${Math.random()}`,
+      name: "Nouvelle mission",
+      description: "",
+      difficulty: "",
+      xp: ""
+    };
+  }
+  function addQuest(list) {
+    return [...list, newQuest()];
+  }
+  function updateQuest(list, id, field, value) {
+    return list.map((q) => q.id === id ? __spreadProps(__spreadValues({}, q), { [field]: value }) : q);
+  }
+  function deleteQuest(list, id) {
+    return list.filter((q) => q.id !== id);
+  }
+
   // widget-src/teacher.tsx
   var { widget: widget2 } = figma;
   var { useSyncedState: useSyncedState2, AutoLayout: AutoLayout2, Text: Text2, Input: Input2 } = widget2;
@@ -186,28 +206,14 @@
       }
     };
     const isCreator = canEdit;
-    const updateQuest = (id, field, value) => {
-      const updated = quests.map((q) => {
-        if (q.id === id) {
-          return __spreadProps(__spreadValues({}, q), { [field]: value });
-        }
-        return q;
-      });
-      setQuests(updated);
+    const updateQuest2 = (id, field, value) => {
+      setQuests(updateQuest(quests, id, field, value));
     };
-    const addQuest = () => {
-      const newQuest = {
-        id: Date.now().toString(),
-        name: "Nouvelle mission",
-        description: "",
-        difficulty: "",
-        xp: ""
-      };
-      quests.push(newQuest);
-      setQuests(quests);
+    const addQuest2 = () => {
+      setQuests(addQuest(quests));
     };
-    const deleteQuest = (id) => {
-      setQuests(quests.filter((q) => q.id !== id));
+    const deleteQuest2 = (id) => {
+      setQuests(deleteQuest(quests, id));
     };
     return /* @__PURE__ */ figma.widget.h(
       AutoLayout2,
@@ -374,7 +380,7 @@
                 placeholder: "Nom de la mission",
                 fontSize: 12,
                 width: "fill-parent",
-                onTextEditEnd: (e) => updateQuest(quest.id, "name", e.characters)
+                onTextEditEnd: (e) => updateQuest2(quest.id, "name", e.characters)
               }
             )
           ),
@@ -395,7 +401,7 @@
                 placeholder: "D\xE9crivez la mission...",
                 fontSize: 12,
                 width: "fill-parent",
-                onTextEditEnd: (e) => updateQuest(quest.id, "description", e.characters)
+                onTextEditEnd: (e) => updateQuest2(quest.id, "description", e.characters)
               }
             )
           ),
@@ -416,7 +422,7 @@
                 placeholder: "Facile / Moyenne / Difficile",
                 fontSize: 12,
                 width: "fill-parent",
-                onTextEditEnd: (e) => updateQuest(quest.id, "difficulty", e.characters)
+                onTextEditEnd: (e) => updateQuest2(quest.id, "difficulty", e.characters)
               }
             )
           ),
@@ -437,7 +443,7 @@
                 placeholder: "Ex: 100",
                 fontSize: 12,
                 width: "fill-parent",
-                onTextEditEnd: (e) => updateQuest(quest.id, "xp", e.characters)
+                onTextEditEnd: (e) => updateQuest2(quest.id, "xp", e.characters)
               }
             )
           ),
@@ -448,7 +454,7 @@
               cornerRadius: 6,
               padding: { vertical: 4, horizontal: 8 },
               horizontalAlignItems: "center",
-              onClick: () => deleteQuest(quest.id)
+              onClick: () => deleteQuest2(quest.id)
             },
             /* @__PURE__ */ figma.widget.h(Text2, { fontSize: 12, fill: "#CC0000" }, "Supprimer \u{1F5D1}\uFE0F")
           )
@@ -461,7 +467,7 @@
           padding: { vertical: 6, horizontal: 12 },
           horizontalAlignItems: "center",
           width: "fill-parent",
-          onClick: addQuest
+          onClick: addQuest2
         },
         /* @__PURE__ */ figma.widget.h(Text2, { fontSize: 13, fontWeight: "bold" }, "\u2795 Ajouter une mission")
       )), isCreator && /* @__PURE__ */ figma.widget.h(
@@ -591,6 +597,33 @@
     medium: { bg: "#FEF3C7", text: "#92400E", border: "#FDE68A" },
     high: { bg: "#FEE2E2", text: "#991B1B", border: "#FCA5A5" }
   };
+
+  // widget-src/kanban board/kanban-logic.ts
+  var STATUS_ORDER = ["todo", "in-progress", "done"];
+  function cycleStatus(status) {
+    const idx = STATUS_ORDER.indexOf(status);
+    return STATUS_ORDER[(idx + 1) % STATUS_ORDER.length];
+  }
+  function moveIssue(issue) {
+    const newStatus = cycleStatus(issue.status);
+    return __spreadProps(__spreadValues({}, issue), {
+      status: newStatus,
+      completedAt: newStatus === "done" ? (/* @__PURE__ */ new Date()).toISOString() : void 0
+    });
+  }
+  function awardXP(currentXP, amount) {
+    return currentXP + amount;
+  }
+  function checkLevelUp(xp, level, xpPerLevel) {
+    const threshold = level * xpPerLevel;
+    if (xp >= threshold) {
+      return { xp: xp - threshold, level: level + 1, leveledUp: true };
+    }
+    return { xp, level, leveledUp: false };
+  }
+  function safeAssignedStudentId(id) {
+    return typeof id === "number" && id >= 0 ? id : void 0;
+  }
 
   // widget-src/kanban board/IssueCard.tsx
   var { widget: widget3 } = figma;
@@ -1074,33 +1107,42 @@
     );
     const xpToNextLevel = level * XP_PER_LEVEL;
     useEffect(() => {
-      if (xp >= xpToNextLevel) {
-        setLevel(level + 1);
-        setXp(xp - xpToNextLevel);
-        figma.notify(`\uFFFD\uFFFD Level Up! You're now Level ${level + 1}!`);
+      const res = checkLevelUp(xp, level, XP_PER_LEVEL);
+      if (res.leveledUp) {
+        setLevel(res.level);
+        setXp(res.xp);
+        try {
+          figma.notify(`\u{1F389} Level Up! You're now Level ${res.level}!`);
+        } catch (_) {
+        }
       }
     });
     const addXP = (amount, reason) => {
-      setXp(xp + amount);
-      figma.notify(`+${amount} XP - ${reason}`);
+      setXp(awardXP(xp, amount));
+      try {
+        figma.notify(`+${amount} XP - ${reason}`);
+      } catch (_) {
+      }
     };
     const addStudentXP = (studentId, amount) => {
-      if (studentId === void 0) return;
-      const currentXP = studentXP[studentId];
-      const currentLevel = studentLevels[studentId];
+      const sid = safeAssignedStudentId(studentId);
+      if (sid === void 0) return;
+      const currentXP = studentXP[sid];
+      const currentLevel = studentLevels[sid];
       const xpToNextLevel2 = currentLevel * XP_PER_LEVEL;
-      const newXP = currentXP + amount;
-      setStudentXP[studentId](newXP);
+      const newXP = awardXP(currentXP, amount);
+      setStudentXP[sid](newXP);
       if (newXP >= xpToNextLevel2) {
-        setStudentLevels[studentId](currentLevel + 1);
-        setStudentXP[studentId](newXP - xpToNextLevel2);
+        setStudentLevels[sid](currentLevel + 1);
+        setStudentXP[sid](newXP - xpToNextLevel2);
         try {
-          figma.notify(`\u{1F389} ${studentNames[studentId]} leveled up to level ${currentLevel + 1}!`);
+          figma.notify(`\u{1F389} ${studentNames[sid]} leveled up to level ${currentLevel + 1}!`);
         } catch (_) {
         }
       }
     };
     const handleMove = (issueId) => {
+      var _a;
       const issue = issues.find((i) => i.id === issueId);
       if (!issue) return;
       if (issue.status === "done") {
@@ -1110,17 +1152,9 @@
         }
         return;
       }
-      const statusOrder = ["todo", "in-progress", "done"];
-      const currentIndex = statusOrder.indexOf(issue.status);
-      const newStatus = statusOrder[(currentIndex + 1) % statusOrder.length];
-      if (issue.status === newStatus) return;
-      const updatedIssues = issues.map(
-        (i) => i.id === issueId ? Object.assign({}, i, {
-          status: newStatus,
-          completedAt: newStatus === "done" ? (/* @__PURE__ */ new Date()).toISOString() : void 0
-        }) : i
-      );
+      const updatedIssues = issues.map((i) => i.id === issueId ? moveIssue(i) : i);
       setIssues(updatedIssues);
+      const newStatus = (_a = updatedIssues.find((i) => i.id === issueId)) == null ? void 0 : _a.status;
       if (newStatus === "done") {
         addXP(XP_REWARDS.COMPLETE_ISSUE, "Issue completed");
         addStudentXP(issue.assignedToId, XP_REWARDS.COMPLETE_ISSUE);
@@ -1180,6 +1214,28 @@
         }
       )))
     );
+  }
+
+  // widget-src/postit-logic.ts
+  function toggleLike(postIts, postItId, userId) {
+    return postIts.map((p) => {
+      if (p.id !== postItId) return p;
+      const likes = p.likes || [];
+      const hasLiked = likes.includes(userId);
+      return __spreadProps(__spreadValues({}, p), { likes: hasLiked ? likes.filter((id) => id !== userId) : [...likes, userId] });
+    });
+  }
+  function addComment(postIts, postItId, authorId, authorName, content) {
+    const draft = (content || "").trim();
+    if (!draft) return postIts;
+    const newComment = {
+      id: `comment_${Date.now()}_${Math.random()}`,
+      authorId,
+      authorName,
+      content: draft,
+      timestamp: Date.now()
+    };
+    return postIts.map((p) => p.id === postItId ? __spreadProps(__spreadValues({}, p), { comments: [...p.comments || [], newComment] }) : p);
   }
 
   // widget-src/postit.tsx
@@ -1262,7 +1318,7 @@
         postIts.map((p) => p.id === id ? __spreadProps(__spreadValues({}, p), { content: newContent }) : p)
       );
     };
-    const toggleLike = (postItId) => {
+    const toggleLike2 = (postItId) => {
       return new Promise((resolve) => {
         const user = figma.currentUser;
         const userId = (user == null ? void 0 : user.id) || "anonymous";
@@ -1270,47 +1326,22 @@
           setCurrentUserId(userId);
           setCurrentUserName((user == null ? void 0 : user.name) || "Anonyme");
         }
-        setPostIts(
-          postIts.map((p) => {
-            if (p.id === postItId) {
-              const currentLikes = p.likes || [];
-              const hasLiked = currentLikes.includes(userId);
-              return __spreadProps(__spreadValues({}, p), {
-                likes: hasLiked ? currentLikes.filter((id) => id !== userId) : [...currentLikes, userId]
-              });
-            }
-            return p;
-          })
-        );
+        setPostIts(toggleLike(postIts, postItId, userId));
         resolve();
       });
     };
     const toggleComments = (postItId) => {
       setOpenComments(__spreadProps(__spreadValues({}, openComments), { [postItId]: !openComments[postItId] }));
     };
-    const addComment = (postItId) => {
+    const addComment2 = (postItId) => {
       return new Promise((resolve) => {
         const user = figma.currentUser;
         const userId = (user == null ? void 0 : user.id) || "anonymous";
         const userName = (user == null ? void 0 : user.name) || "Anonyme";
-        const draft = (newCommentTexts[postItId] || "").trim();
-        if (draft) {
-          setPostIts(
-            postIts.map((p) => {
-              if (p.id === postItId) {
-                const existingComments = p.comments || [];
-                const newComment = {
-                  id: `comment_${Date.now()}_${Math.random()}`,
-                  authorId: userId,
-                  authorName: userName,
-                  content: draft,
-                  timestamp: Date.now()
-                };
-                return __spreadProps(__spreadValues({}, p), { comments: [...existingComments, newComment] });
-              }
-              return p;
-            })
-          );
+        const draft = newCommentTexts[postItId] || "";
+        const updated = addComment(postIts, postItId, userId, userName, draft);
+        if (updated !== postIts) {
+          setPostIts(updated);
           const updatedDrafts = __spreadValues({}, newCommentTexts);
           updatedDrafts[postItId] = "";
           setNewCommentTexts(updatedDrafts);
@@ -1490,7 +1521,7 @@
                     padding: { vertical: 3, horizontal: 6 },
                     cornerRadius: 4,
                     fill: currentUserLiked ? "#FF69B4" : "#E0E0E0",
-                    onClick: () => toggleLike(postIt.id),
+                    onClick: () => toggleLike2(postIt.id),
                     spacing: 4,
                     verticalAlignItems: "center"
                   },
@@ -1562,7 +1593,7 @@
                       padding: { vertical: 4, horizontal: 8 },
                       cornerRadius: 4,
                       fill: "#4CAF50",
-                      onClick: () => addComment(postIt.id)
+                      onClick: () => addComment2(postIt.id)
                     },
                     /* @__PURE__ */ figma.widget.h(Text7, { fontSize: 10, fill: "#FFFFFF" }, "Ajouter")
                   )

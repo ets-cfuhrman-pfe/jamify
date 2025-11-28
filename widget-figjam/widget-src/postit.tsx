@@ -2,6 +2,8 @@
 const { widget } = figma;
 const { useSyncedState, AutoLayout, Text, Input } = widget;
 
+import { toggleLike as toggleLikeLogic, addComment as addCommentLogic, type PostIt as PostItLogic } from './postit-logic';
+
 interface Comment {
   id: string;
   authorId: string;
@@ -132,28 +134,12 @@ export function PostItBoard() {
       const user = figma.currentUser;
       const userId = user?.id || "anonymous";
 
-      // Update stored user info if needed
       if (!currentUserId) {
         setCurrentUserId(userId);
         setCurrentUserName(user?.name || "Anonyme");
       }
 
-      setPostIts(
-        postIts.map((p) => {
-          if (p.id === postItId) {
-            // Initialize likes array if it doesn't exist (backward compatibility)
-            const currentLikes = p.likes || [];
-            const hasLiked = currentLikes.includes(userId);
-            return {
-              ...p,
-              likes: hasLiked
-                ? currentLikes.filter((id) => id !== userId)
-                : [...currentLikes, userId],
-            };
-          }
-          return p;
-        })
-      );
+      setPostIts(toggleLikeLogic(postIts as unknown as PostItLogic[], postItId, userId) as unknown as PostIt[]);
       resolve();
     });
   };
@@ -169,25 +155,11 @@ export function PostItBoard() {
       const user = figma.currentUser;
       const userId = user?.id || "anonymous";
       const userName = user?.name || "Anonyme";
-      const draft = (newCommentTexts[postItId] || "").trim();
+      const draft = (newCommentTexts[postItId] || "");
 
-      if (draft) {
-        setPostIts(
-          postIts.map((p) => {
-            if (p.id === postItId) {
-              const existingComments = p.comments || [];
-              const newComment: Comment = {
-                id: `comment_${Date.now()}_${Math.random()}`,
-                authorId: userId,
-                authorName: userName,
-                content: draft,
-                timestamp: Date.now(),
-              };
-              return { ...p, comments: [...existingComments, newComment] };
-            }
-            return p;
-          })
-        );
+      const updated = addCommentLogic(postIts as unknown as PostItLogic[], postItId, userId, userName, draft);
+      if (updated !== postIts) {
+        setPostIts(updated as unknown as PostIt[]);
         const updatedDrafts = { ...newCommentTexts };
         updatedDrafts[postItId] = "";
         setNewCommentTexts(updatedDrafts);
