@@ -1,3 +1,5 @@
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+declare const figma: any; // Provided by FigJam runtime; declared for VS Code type checking only.
 const { widget } = figma;
 const { AutoLayout, Text } = widget;
 

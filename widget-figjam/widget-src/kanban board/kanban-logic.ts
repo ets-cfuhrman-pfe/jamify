@@ -1,3 +1,4 @@
+// kanban-logic.ts
 import { Issue } from './types';
 
 export const STATUS_ORDER = ['todo', 'in-progress', 'done'] as const;

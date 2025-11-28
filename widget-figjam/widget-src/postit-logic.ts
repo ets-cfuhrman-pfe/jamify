@@ -1,3 +1,4 @@
+// postit-logic.ts
 export type Comment = {
   id: string;
   authorId: string;

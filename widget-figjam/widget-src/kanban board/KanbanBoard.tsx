@@ -3,20 +3,16 @@ declare const figma: any;
 const { widget } = figma;
 const { useSyncedState, useEffect, AutoLayout, Text } = widget;
 
-// Import types
 import { Issue, Column } from "./types";
-
-// Import constants
 import { COLUMNS, XP_REWARDS, XP_PER_LEVEL } from "./constants";
 import { moveIssue, awardXP, checkLevelUp, safeAssignedStudentId } from './kanban-logic';
-
-// Import components
 import { CharacterProfile } from "./CharacterProfile";
 import { KanbanColumn } from "./KanbanColumn";
 
 // Exported Kanban board component to embed inside main widget
 export function KanbanBoard() {
-  const [issues, setIssues] = useSyncedState<Issue[]>("issues", []);
+  // Remove generic annotation to avoid TS2347 in editor
+  const [issues, setIssues] = useSyncedState("issues", [] as Issue[]);
 
   // Read the number of students from teacher profile
   const [numberOfStudentsStr] = useSyncedState("teacherNumStudents", "0");
@@ -42,9 +38,9 @@ export function KanbanBoard() {
 
   const [xp, setXp] = useSyncedState("xp", 45);
   const [level, setLevel] = useSyncedState("level", 1);
-  const [addingToColumn, setAddingToColumn] = useSyncedState<string | null>(
+  const [addingToColumn, setAddingToColumn] = useSyncedState(
     "addingToColumn",
-    null
+    null as string | null
   );
 
   const xpToNextLevel = level * XP_PER_LEVEL;

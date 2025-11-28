@@ -1,3 +1,4 @@
+// teacher-logic.ts
 export type Quest = {
   id: string;
   name: string;
