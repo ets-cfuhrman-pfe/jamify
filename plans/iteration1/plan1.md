@@ -40,7 +40,7 @@ Les éléments de travail suivants seront abordés dans cette itération:
 
 | Résumé             |                                                                                                                                |
 | ------------------ | ------------------------------------------------------------------------------------------------------------------------------ |
-| Cible d'évaluation | Itération <!-- *Cela pourrait être toute l'itération ou simplement un composant spécifique* -->                                |
+| Cible d'évaluation | Itération 1 <!-- *Cela pourrait être toute l'itération ou simplement un composant spécifique* -->                              |
 | Date d'évaluation  | 2025/10/10                                                                                                                     |
 | Participants       | **Coéquipiers** : Ashwin, Burak, Phillipe, Prabhjot<br> **Enseignement** : Christopher, Alexandra **Clients** : Corinne, Robin |
 | État du projet     | 🟢 <!-- 🔴🟠🟢 *Rouge, Orange, ou Vert.* -->                                                                                       |
