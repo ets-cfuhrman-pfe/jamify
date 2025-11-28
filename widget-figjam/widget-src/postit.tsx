@@ -218,7 +218,7 @@ export function PostItBoard() {
         <AutoLayout
           padding={{ vertical: 6, horizontal: 12 }}
           cornerRadius={6}
-          fill="#4CAF50"
+          fill="#053b50ff"
           onClick={() => setIsCreating(!isCreating)}
         >
           <Text fontSize={12} fill="#FFFFFF" fontWeight="bold">
@@ -234,8 +234,8 @@ export function PostItBoard() {
           spacing={8}
           padding={12}
           cornerRadius={8}
-          fill="#FFF9E6"
-          stroke="#FFD700"
+          fill="#FFFFFF"
+          stroke={{ type: "solid", color: { r: 0.37, g: 0.51, b: 0.82, a: 1 } }}
           width={"fill-parent"}
         >
           <Text fontSize={13} fontWeight="bold">
@@ -259,12 +259,12 @@ export function PostItBoard() {
           <AutoLayout
             padding={{ vertical: 6, horizontal: 12 }}
             cornerRadius={6}
-            fill="#4CAF50"
+            fill="#CCE5FF"
             horizontalAlignItems="center"
             onClick={addPostIt}
           >
-            <Text fontSize={12} fill="#FFFFFF" fontWeight="bold">
-              Ajouter le post-it
+            <Text fontSize={12} fontWeight="bold">
+              ➕ Ajouter le post-it
             </Text>
           </AutoLayout>
         </AutoLayout>

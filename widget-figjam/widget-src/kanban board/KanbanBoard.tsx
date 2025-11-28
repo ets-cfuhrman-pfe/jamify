@@ -163,10 +163,10 @@ export function KanbanBoard() {
       {/* Header */}
       <AutoLayout direction="vertical" spacing={8} width="fill-parent">
         <Text fontSize={32} fontWeight={700} fill="#111827">
-          Missions
+          Tâches
         </Text>
         <Text fontSize={14} fill="#6B7280">
-          Complétez les quêtes et améliorez votre personnage!
+          Complétez les missions et améliorez votre personnage!
         </Text>
       </AutoLayout>
 

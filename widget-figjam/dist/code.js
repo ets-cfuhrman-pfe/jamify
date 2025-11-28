@@ -151,7 +151,7 @@
       )))), /* @__PURE__ */ figma.widget.h(AutoLayout, { padding: { vertical: 4, horizontal: 8 }, cornerRadius: 6, fill: "#E0E0E0", onClick: () => setUiState(__spreadProps(__spreadValues({}, uiState), { showAvatarSelector: false })) }, /* @__PURE__ */ figma.widget.h(Text, { fontSize: 12 }, "Fermer"))), /* @__PURE__ */ figma.widget.h(Text, { fontSize: 11, fill: "#6B7280" }, "L'avatar est automatiquement choisi selon la classe.")), /* @__PURE__ */ figma.widget.h(AutoLayout, { direction: "vertical", spacing: 4 }, /* @__PURE__ */ figma.widget.h(Text, { fontSize: 14 }, "Nom :"), /* @__PURE__ */ figma.widget.h(AutoLayout, { padding: { vertical: 6, horizontal: 8 }, cornerRadius: 6, fill: "#F5F5F5", stroke: "#CCCCCC" }, /* @__PURE__ */ figma.widget.h(Input, { value: name, placeholder: "Entrez votre nom", fontSize: 14, onTextEditEnd: (e) => setName(e.characters) }))), /* @__PURE__ */ figma.widget.h(AutoLayout, { direction: "vertical", spacing: 4 }, /* @__PURE__ */ figma.widget.h(Text, { fontSize: 14 }, "Classe :"), /* @__PURE__ */ figma.widget.h(AutoLayout, { padding: { vertical: 6, horizontal: 10 }, fill: "#F5F5F5", stroke: "#CCCCCC", cornerRadius: 8, spacing: 4, onClick: () => setUiState(__spreadProps(__spreadValues({}, uiState), { showClassDropdown: !uiState.showClassDropdown })) }, /* @__PURE__ */ figma.widget.h(Text, null, selectedClass), /* @__PURE__ */ figma.widget.h(Text, { fontSize: 10 }, uiState.showClassDropdown ? "\u25B2" : "\u25BC")), uiState.showClassDropdown && /* @__PURE__ */ figma.widget.h(AutoLayout, { direction: "vertical", fill: "#FFFFFF", stroke: "#DDDDDD", cornerRadius: 8, padding: 6, spacing: 4, width: 120 }, classes.map((c) => /* @__PURE__ */ figma.widget.h(AutoLayout, { key: c, padding: { vertical: 4, horizontal: 8 }, cornerRadius: 6, fill: selectedClass === c ? "#CCE5FF" : "#FFFFFF", onClick: () => {
         setSelectedClass(c);
         setUiState(__spreadProps(__spreadValues({}, uiState), { showClassDropdown: false }));
-      } }, /* @__PURE__ */ figma.widget.h(Text, null, c))))), /* @__PURE__ */ figma.widget.h(AutoLayout, { direction: "vertical", spacing: 4, width: "fill-parent" }, /* @__PURE__ */ figma.widget.h(Text, { fontSize: 14 }, "Titre :"), /* @__PURE__ */ figma.widget.h(AutoLayout, { padding: { vertical: 6, horizontal: 10 }, fill: "#F5F5F5", stroke: "#CCCCCC", cornerRadius: 8, width: "fill-parent" }, /* @__PURE__ */ figma.widget.h(Text, { width: "fill-parent" }, getTitleFor(selectedClass, level)))), /* @__PURE__ */ figma.widget.h(AutoLayout, { padding: { vertical: 8, horizontal: 50 }, fill: "#CCE5FF", cornerRadius: 8, horizontalAlignItems: "center", onClick: () => setUiState(__spreadProps(__spreadValues({}, uiState), { isEditing: false })) }, /* @__PURE__ */ figma.widget.h(Text, { fontSize: 14, fontWeight: "bold" }, "Sauvegarder le profil"))) : /* @__PURE__ */ figma.widget.h(figma.widget.Fragment, null, /* @__PURE__ */ figma.widget.h(AutoLayout, { spacing: 8, verticalAlignItems: "center", width: "fill-parent" }, /* @__PURE__ */ figma.widget.h(Image, { src: getProfileImage(selectedClass, level), width: 40, height: 40, cornerRadius: 8 }), /* @__PURE__ */ figma.widget.h(AutoLayout, { direction: "vertical", width: "fill-parent" }, /* @__PURE__ */ figma.widget.h(Text, { fontSize: 16, fontWeight: "bold" }, name), /* @__PURE__ */ figma.widget.h(Text, { fontSize: 12 }, selectedClass), /* @__PURE__ */ figma.widget.h(Text, { fontSize: 12, width: "fill-parent" }, getTitleFor(selectedClass, level)))), /* @__PURE__ */ figma.widget.h(AutoLayout, { direction: "vertical", spacing: 4, width: "fill-parent", horizontalAlignItems: "center" }, /* @__PURE__ */ figma.widget.h(Text, { fontSize: 14, fontWeight: "bold" }, "Level ", level), /* @__PURE__ */ figma.widget.h(Text, { fontSize: 12, fill: "#666666" }, xp, " / ", xpToNextLevel, " XP")), /* @__PURE__ */ figma.widget.h(AutoLayout, { padding: { vertical: 8, horizontal: 24 }, cornerRadius: 8, fill: "#F5F5F5", onClick: () => setUiState(__spreadProps(__spreadValues({}, uiState), { isEditing: true })) }, /* @__PURE__ */ figma.widget.h(Text, { fontSize: 13 }, "Modifier")))
+      } }, /* @__PURE__ */ figma.widget.h(Text, null, c))))), /* @__PURE__ */ figma.widget.h(AutoLayout, { direction: "vertical", spacing: 4, width: "fill-parent" }, /* @__PURE__ */ figma.widget.h(Text, { fontSize: 14 }, "Titre :"), /* @__PURE__ */ figma.widget.h(AutoLayout, { padding: { vertical: 6, horizontal: 10 }, fill: "#F5F5F5", stroke: "#CCCCCC", cornerRadius: 8, width: "fill-parent" }, /* @__PURE__ */ figma.widget.h(Text, { width: "fill-parent" }, getTitleFor(selectedClass, level)))), /* @__PURE__ */ figma.widget.h(AutoLayout, { padding: { vertical: 8, horizontal: 50 }, fill: "#053b50ff", cornerRadius: 8, horizontalAlignItems: "center", onClick: () => setUiState(__spreadProps(__spreadValues({}, uiState), { isEditing: false })) }, /* @__PURE__ */ figma.widget.h(Text, { fontSize: 14, fontWeight: "bold", fill: "#ffffffff" }, "Sauvegarder le profil"))) : /* @__PURE__ */ figma.widget.h(figma.widget.Fragment, null, /* @__PURE__ */ figma.widget.h(AutoLayout, { spacing: 8, verticalAlignItems: "center", width: "fill-parent" }, /* @__PURE__ */ figma.widget.h(Image, { src: getProfileImage(selectedClass, level), width: 40, height: 40, cornerRadius: 8 }), /* @__PURE__ */ figma.widget.h(AutoLayout, { direction: "vertical", width: "fill-parent" }, /* @__PURE__ */ figma.widget.h(Text, { fontSize: 16, fontWeight: "bold" }, name), /* @__PURE__ */ figma.widget.h(Text, { fontSize: 12 }, selectedClass), /* @__PURE__ */ figma.widget.h(Text, { fontSize: 12, width: "fill-parent" }, getTitleFor(selectedClass, level)))), /* @__PURE__ */ figma.widget.h(AutoLayout, { direction: "vertical", spacing: 4, width: "fill-parent", horizontalAlignItems: "center" }, /* @__PURE__ */ figma.widget.h(Text, { fontSize: 14, fontWeight: "bold" }, "Level ", level), /* @__PURE__ */ figma.widget.h(Text, { fontSize: 12, fill: "#666666" }, xp, " / ", xpToNextLevel, " XP")), /* @__PURE__ */ figma.widget.h(AutoLayout, { padding: { vertical: 8, horizontal: 24 }, cornerRadius: 8, fill: "#F5F5F5", onClick: () => setUiState(__spreadProps(__spreadValues({}, uiState), { isEditing: true })) }, /* @__PURE__ */ figma.widget.h(Text, { fontSize: 13 }, "Modifier")))
     );
   }
 
@@ -198,7 +198,7 @@
     const addQuest = () => {
       const newQuest = {
         id: Date.now().toString(),
-        name: "Nouvelle qu\xEAte",
+        name: "Nouvelle mission",
         description: "",
         difficulty: "",
         xp: ""
@@ -320,7 +320,7 @@
             }
           }
         )
-      )), /* @__PURE__ */ figma.widget.h(AutoLayout2, { direction: "vertical", spacing: 6, width: "fill-parent" }, /* @__PURE__ */ figma.widget.h(Text2, { fontSize: 14, fontWeight: "bold" }, "Qu\xEAtes :"), quests.map((quest) => /* @__PURE__ */ figma.widget.h(
+      )), /* @__PURE__ */ figma.widget.h(AutoLayout2, { direction: "vertical", spacing: 6, width: "fill-parent" }, /* @__PURE__ */ figma.widget.h(Text2, { fontSize: 14, fontWeight: "bold" }, "Missions :"), quests.map((quest) => /* @__PURE__ */ figma.widget.h(
         AutoLayout2,
         {
           key: quest.id,
@@ -371,7 +371,7 @@
               Input2,
               {
                 value: quest.name,
-                placeholder: "Nom de la qu\xEAte",
+                placeholder: "Nom de la mission",
                 fontSize: 12,
                 width: "fill-parent",
                 onTextEditEnd: (e) => updateQuest(quest.id, "name", e.characters)
@@ -392,7 +392,7 @@
               Input2,
               {
                 value: quest.description,
-                placeholder: "D\xE9crivez la qu\xEAte...",
+                placeholder: "D\xE9crivez la mission...",
                 fontSize: 12,
                 width: "fill-parent",
                 onTextEditEnd: (e) => updateQuest(quest.id, "description", e.characters)
@@ -456,25 +456,25 @@
       )), isCreator && /* @__PURE__ */ figma.widget.h(
         AutoLayout2,
         {
-          fill: "#D6EAF8",
+          fill: "#CCE5FF",
           cornerRadius: 6,
           padding: { vertical: 6, horizontal: 12 },
           horizontalAlignItems: "center",
           width: "fill-parent",
           onClick: addQuest
         },
-        /* @__PURE__ */ figma.widget.h(Text2, { fontSize: 13, fontWeight: "bold" }, "\u2795 Ajouter une qu\xEAte")
+        /* @__PURE__ */ figma.widget.h(Text2, { fontSize: 13, fontWeight: "bold" }, "\u2795 Ajouter une mission")
       )), isCreator && /* @__PURE__ */ figma.widget.h(
         AutoLayout2,
         {
           padding: { vertical: 8, horizontal: 50 },
-          fill: "#CCE5FF",
+          fill: "#053b50ff",
           cornerRadius: 8,
           horizontalAlignItems: "center",
           onClick: () => setIsEditing(false)
         },
-        /* @__PURE__ */ figma.widget.h(Text2, { fontSize: 14, fontWeight: "bold" }, "Sauvegarder le formulaire")
-      )) : /* @__PURE__ */ figma.widget.h(figma.widget.Fragment, null, /* @__PURE__ */ figma.widget.h(Text2, { fontSize: 18, fontWeight: "bold" }, "Informations du projet"), /* @__PURE__ */ figma.widget.h(AutoLayout2, { direction: "vertical", spacing: 12, width: "fill-parent" }, /* @__PURE__ */ figma.widget.h(AutoLayout2, { direction: "vertical", spacing: 4 }, /* @__PURE__ */ figma.widget.h(Text2, { fontSize: 13, fontWeight: "bold" }, "Nombre d'\xE9tudiants :"), /* @__PURE__ */ figma.widget.h(Text2, { fontSize: 14 }, numberOfStudents || "\u2014")), /* @__PURE__ */ figma.widget.h(AutoLayout2, { direction: "vertical", spacing: 4 }, /* @__PURE__ */ figma.widget.h(Text2, { fontSize: 13, fontWeight: "bold" }, "Contexte :"), /* @__PURE__ */ figma.widget.h(Text2, { fontSize: 14 }, context || "\u2014")), /* @__PURE__ */ figma.widget.h(AutoLayout2, { direction: "vertical", spacing: 4 }, /* @__PURE__ */ figma.widget.h(Text2, { fontSize: 13, fontWeight: "bold" }, "R\xE8gles :"), /* @__PURE__ */ figma.widget.h(Text2, { fontSize: 14 }, rules || "\u2014")), /* @__PURE__ */ figma.widget.h(AutoLayout2, { direction: "vertical", spacing: 4, width: "fill-parent" }, /* @__PURE__ */ figma.widget.h(Text2, { fontSize: 13, fontWeight: "bold" }, "Qu\xEAtes :"), quests.length === 0 && /* @__PURE__ */ figma.widget.h(Text2, { fontSize: 12, fill: "#999" }, "Aucune qu\xEAte d\xE9finie."), quests.map((quest) => /* @__PURE__ */ figma.widget.h(
+        /* @__PURE__ */ figma.widget.h(Text2, { fontSize: 14, fontWeight: "bold", fill: "#ffffffff" }, "Sauvegarder le formulaire")
+      )) : /* @__PURE__ */ figma.widget.h(figma.widget.Fragment, null, /* @__PURE__ */ figma.widget.h(Text2, { fontSize: 18, fontWeight: "bold" }, "Informations du projet"), /* @__PURE__ */ figma.widget.h(AutoLayout2, { direction: "vertical", spacing: 12, width: "fill-parent" }, /* @__PURE__ */ figma.widget.h(AutoLayout2, { direction: "vertical", spacing: 4 }, /* @__PURE__ */ figma.widget.h(Text2, { fontSize: 13, fontWeight: "bold" }, "Nombre d'\xE9tudiants :"), /* @__PURE__ */ figma.widget.h(Text2, { fontSize: 14 }, numberOfStudents || "\u2014")), /* @__PURE__ */ figma.widget.h(AutoLayout2, { direction: "vertical", spacing: 4 }, /* @__PURE__ */ figma.widget.h(Text2, { fontSize: 13, fontWeight: "bold" }, "Contexte :"), /* @__PURE__ */ figma.widget.h(Text2, { fontSize: 14 }, context || "\u2014")), /* @__PURE__ */ figma.widget.h(AutoLayout2, { direction: "vertical", spacing: 4 }, /* @__PURE__ */ figma.widget.h(Text2, { fontSize: 13, fontWeight: "bold" }, "R\xE8gles :"), /* @__PURE__ */ figma.widget.h(Text2, { fontSize: 14 }, rules || "\u2014")), /* @__PURE__ */ figma.widget.h(AutoLayout2, { direction: "vertical", spacing: 4, width: "fill-parent" }, /* @__PURE__ */ figma.widget.h(Text2, { fontSize: 13, fontWeight: "bold" }, "Missions :"), quests.length === 0 && /* @__PURE__ */ figma.widget.h(Text2, { fontSize: 12, fill: "#999" }, "Aucune mission d\xE9finie."), quests.map((quest) => /* @__PURE__ */ figma.widget.h(
         AutoLayout2,
         {
           key: quest.id,
@@ -513,7 +513,7 @@
         {
           padding: { vertical: 8, horizontal: 24 },
           cornerRadius: 8,
-          fill: "#28A745",
+          fill: "#053b50ff",
           horizontalAlignItems: "center",
           width: "fill-parent",
           onClick: () => {
@@ -910,7 +910,7 @@
         AutoLayout4,
         {
           padding: 10,
-          fill: { type: "solid", color: { r: 0.37, g: 0.51, b: 0.82, a: 1 } },
+          fill: "#CCE5FF",
           cornerRadius: 6,
           onClick: () => {
             if (title.trim()) {
@@ -927,7 +927,7 @@
           width: "fill-parent",
           horizontalAlignItems: "center"
         },
-        /* @__PURE__ */ figma.widget.h(Text4, { fontSize: 12, fontWeight: 600, fill: "#FFFFFF" }, "Ajouter une t\xE2che")
+        /* @__PURE__ */ figma.widget.h(Text4, { fontSize: 12, fontWeight: 600 }, "\u2795 Ajouter une t\xE2che")
       ))
     );
   }
@@ -1164,7 +1164,7 @@
         width: "hug-contents",
         height: "hug-contents"
       },
-      /* @__PURE__ */ figma.widget.h(AutoLayout6, { direction: "vertical", spacing: 8, width: "fill-parent" }, /* @__PURE__ */ figma.widget.h(Text6, { fontSize: 32, fontWeight: 700, fill: "#111827" }, "Missions"), /* @__PURE__ */ figma.widget.h(Text6, { fontSize: 14, fill: "#6B7280" }, "Compl\xE9tez les qu\xEAtes et am\xE9liorez votre personnage!")),
+      /* @__PURE__ */ figma.widget.h(AutoLayout6, { direction: "vertical", spacing: 8, width: "fill-parent" }, /* @__PURE__ */ figma.widget.h(Text6, { fontSize: 32, fontWeight: 700, fill: "#111827" }, "T\xE2ches"), /* @__PURE__ */ figma.widget.h(Text6, { fontSize: 14, fill: "#6B7280" }, "Compl\xE9tez les missions et am\xE9liorez votre personnage!")),
       /* @__PURE__ */ figma.widget.h(AutoLayout6, { direction: "horizontal", spacing: 16 }, COLUMNS.map((column) => /* @__PURE__ */ figma.widget.h(
         KanbanColumn,
         {
@@ -1343,7 +1343,7 @@
           {
             padding: { vertical: 6, horizontal: 12 },
             cornerRadius: 6,
-            fill: "#4CAF50",
+            fill: "#053b50ff",
             onClick: () => setIsCreating(!isCreating)
           },
           /* @__PURE__ */ figma.widget.h(Text7, { fontSize: 12, fill: "#FFFFFF", fontWeight: "bold" }, isCreating ? "Annuler" : "+ Nouveau post-it")
@@ -1356,8 +1356,8 @@
           spacing: 8,
           padding: 12,
           cornerRadius: 8,
-          fill: "#FFF9E6",
-          stroke: "#FFD700",
+          fill: "#FFFFFF",
+          stroke: { type: "solid", color: { r: 0.37, g: 0.51, b: 0.82, a: 1 } },
           width: "fill-parent"
         },
         /* @__PURE__ */ figma.widget.h(Text7, { fontSize: 13, fontWeight: "bold" }, "Nouveau post-it :"),
@@ -1386,11 +1386,11 @@
           {
             padding: { vertical: 6, horizontal: 12 },
             cornerRadius: 6,
-            fill: "#4CAF50",
+            fill: "#CCE5FF",
             horizontalAlignItems: "center",
             onClick: addPostIt
           },
-          /* @__PURE__ */ figma.widget.h(Text7, { fontSize: 12, fill: "#FFFFFF", fontWeight: "bold" }, "Ajouter le post-it")
+          /* @__PURE__ */ figma.widget.h(Text7, { fontSize: 12, fontWeight: "bold" }, "\u2795 Ajouter le post-it")
         )
       ),
       /* @__PURE__ */ figma.widget.h(

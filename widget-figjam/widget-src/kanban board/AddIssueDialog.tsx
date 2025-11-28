@@ -258,7 +258,7 @@ export function AddIssueDialog({
 
                 <AutoLayout
                     padding={10}
-                    fill={{ type: "solid", color: { r: 0.37, g: 0.51, b: 0.82, a: 1 } }}
+                    fill="#CCE5FF"
                     cornerRadius={6}
                     onClick={() => {
                         if (title.trim()) {
@@ -275,7 +275,7 @@ export function AddIssueDialog({
                     width="fill-parent"
                     horizontalAlignItems="center"
                 >
-                    <Text fontSize={12} fontWeight={600} fill="#FFFFFF">Ajouter une tâche</Text>
+                    <Text fontSize={12} fontWeight={600}>➕ Ajouter une tâche</Text>
                 </AutoLayout>
             </AutoLayout>
         </AutoLayout>

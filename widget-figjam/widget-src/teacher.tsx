@@ -58,7 +58,7 @@ export function TeacherProfile() {
   const addQuest = () => {
     const newQuest: Quest = {
       id: Date.now().toString(),
-      name: "Nouvelle quête",
+      name: "Nouvelle mission",
       description: "",
       difficulty: "",
       xp: "",
@@ -208,7 +208,7 @@ export function TeacherProfile() {
           {/* --- NEW SECTION: QUESTS --- */}
           <AutoLayout direction="vertical" spacing={6} width={"fill-parent"}>
             <Text fontSize={14} fontWeight="bold">
-              Quêtes :
+              Missions :
             </Text>
 
             {quests.map((quest) => (
@@ -261,7 +261,7 @@ export function TeacherProfile() {
                     >
                       <Input
                         value={quest.name}
-                        placeholder="Nom de la quête"
+                        placeholder="Nom de la mission"
                         fontSize={12}
                         width={"fill-parent"}
                         onTextEditEnd={(e) =>
@@ -280,7 +280,7 @@ export function TeacherProfile() {
                     >
                       <Input
                         value={quest.description}
-                        placeholder="Décrivez la quête..."
+                        placeholder="Décrivez la mission..."
                         fontSize={12}
                         width={"fill-parent"}
                         onTextEditEnd={(e) =>
@@ -345,7 +345,7 @@ export function TeacherProfile() {
 
             {isCreator && (
               <AutoLayout
-                fill="#D6EAF8"
+                fill="#CCE5FF"
                 cornerRadius={6}
                 padding={{ vertical: 6, horizontal: 12 }}
                 horizontalAlignItems="center"
@@ -353,7 +353,7 @@ export function TeacherProfile() {
                 onClick={addQuest}
               >
                 <Text fontSize={13} fontWeight="bold">
-                  ➕ Ajouter une quête
+                  ➕ Ajouter une mission
                 </Text>
               </AutoLayout>
             )}
@@ -363,12 +363,12 @@ export function TeacherProfile() {
           {isCreator && (
             <AutoLayout
               padding={{ vertical: 8, horizontal: 50 }}
-              fill="#CCE5FF"
+              fill="#053b50ff"
               cornerRadius={8}
               horizontalAlignItems="center"
               onClick={() => setIsEditing(false)}
             >
-              <Text fontSize={14} fontWeight="bold">
+              <Text fontSize={14} fontWeight="bold" fill="#ffffffff">
                 Sauvegarder le formulaire
               </Text>
             </AutoLayout>
@@ -405,11 +405,11 @@ export function TeacherProfile() {
             {/* --- VIEW MODE QUESTS --- */}
             <AutoLayout direction="vertical" spacing={4} width={"fill-parent"}>
               <Text fontSize={13} fontWeight="bold">
-                Quêtes :
+                Missions :
               </Text>
               {quests.length === 0 && (
                 <Text fontSize={12} fill="#999">
-                  Aucune quête définie.
+                  Aucune mission définie.
                 </Text>
               )}
               {quests.map((quest) => (
@@ -472,7 +472,7 @@ export function TeacherProfile() {
               <AutoLayout
                 padding={{ vertical: 8, horizontal: 24 }}
                 cornerRadius={8}
-                fill="#28A745"
+                fill="#053b50ff"
                 horizontalAlignItems="center"
                 width={"fill-parent"}
                 onClick={() => {

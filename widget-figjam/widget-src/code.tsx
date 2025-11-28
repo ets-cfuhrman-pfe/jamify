@@ -141,8 +141,8 @@ export function StudentProfile({ studentId = 0 }: { studentId?: number }) {
             </AutoLayout>
           </AutoLayout>
 
-          <AutoLayout padding={{ vertical: 8, horizontal: 50 }} fill="#CCE5FF" cornerRadius={8} horizontalAlignItems="center" onClick={() => setUiState({ ...uiState, isEditing: false })}>
-            <Text fontSize={14} fontWeight="bold">Sauvegarder le profil</Text>
+          <AutoLayout padding={{ vertical: 8, horizontal: 50 }} fill="#053b50ff" cornerRadius={8} horizontalAlignItems="center" onClick={() => setUiState({ ...uiState, isEditing: false })}>
+            <Text fontSize={14} fontWeight="bold" fill="#ffffffff">Sauvegarder le profil</Text>
           </AutoLayout>
         </>
       ) : (
