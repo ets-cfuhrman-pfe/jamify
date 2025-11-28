@@ -7,7 +7,7 @@ import { IssueCard } from './IssueCard';
 import { AddIssueDialog } from './AddIssueDialog';
 
 // Helper function to convert hex to RGB
-function hexToRgb(hex: string): { r: number; g: number; b: number; a: number } {
+export function hexToRgb(hex: string): { r: number; g: number; b: number; a: number } {
     const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
     return result
         ? {

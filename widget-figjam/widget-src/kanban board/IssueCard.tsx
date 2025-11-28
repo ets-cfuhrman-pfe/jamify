@@ -75,7 +75,7 @@ export function IssueCard({
             >
                 {questName && (
                     <Text fontSize={10} fill="#153089ff">
-                        Quête: {questName}
+                        Mission: {questName}
                     </Text>
                 )}
             </AutoLayout>

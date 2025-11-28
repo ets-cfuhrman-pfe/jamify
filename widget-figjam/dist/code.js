@@ -644,7 +644,7 @@
           stroke: "#153089ff",
           strokeWidth: 1
         },
-        questName && /* @__PURE__ */ figma.widget.h(Text3, { fontSize: 10, fill: "#153089ff" }, "Qu\xEAte: ", questName)
+        questName && /* @__PURE__ */ figma.widget.h(Text3, { fontSize: 10, fill: "#153089ff" }, "Mission: ", questName)
       ),
       /* @__PURE__ */ figma.widget.h(AutoLayout3, { direction: "horizontal", spacing: 8, width: "fill-parent", verticalAlignItems: "center" }, /* @__PURE__ */ figma.widget.h(
         AutoLayout3,
