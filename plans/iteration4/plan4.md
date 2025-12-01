@@ -1,12 +1,12 @@
-# Plan d'itération 3
+# Plan d'itération 4
 
 ## Étapes jalons
 
 | Étape jalon          | Date       |
 | :------------------- | :--------- |
-| Début de l'itération | 2025/11/22 |
-| Démo                 | 2025/12/06 |
-| Fin de l'itération   | 2025/12/06 |
+| Début de l'itération | 2025/11/21 |
+| Démo                 | 2025/12/05 |
+| Fin de l'itération   | 2025/12/05 |
 
 ## Objectifs clés
 
