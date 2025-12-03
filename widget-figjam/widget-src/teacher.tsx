@@ -4,20 +4,20 @@ const { useSyncedState, AutoLayout, Text, Input } = widget;
 
 export function TeacherProfile() {
   const [teacherClaimed, setTeacherClaimed] = useSyncedState<boolean>(
-    "teacherClaimed",
+    'teacherClaimed',
     false
   );
   const [canEdit, setCanEdit] = useSyncedState<boolean>(
-    "teacherCanEdit",
+    'teacherCanEdit',
     false
   );
   const [numberOfStudents, setNumberOfStudents] = useSyncedState(
-    "teacherNumStudents",
-    ""
+    'teacherNumStudents',
+    ''
   );
-  const [rules, setRules] = useSyncedState("teacherRules", "");
-  const [context, setContext] = useSyncedState("teacherContext", "");
-  const [isEditing, setIsEditing] = useSyncedState("teacherIsEditing", true);
+  const [rules, setRules] = useSyncedState('teacherRules', '');
+  const [context, setContext] = useSyncedState('teacherContext', '');
+  const [isEditing, setIsEditing] = useSyncedState('teacherIsEditing', true);
 
   type Quest = {
     id: string;
@@ -28,9 +28,9 @@ export function TeacherProfile() {
   };
 
   // NEW STATE: Quests list
-  const [quests, setQuests] = useSyncedState<Quest[]>("teacherQuests", []);
+  const [quests, setQuests] = useSyncedState<Quest[]>('teacherQuests', []);
   const [expandedQuest, setExpandedQuest] = useSyncedState<string | null>(
-    "expandedQuest",
+    'expandedQuest',
     null
   );
 
@@ -58,10 +58,10 @@ export function TeacherProfile() {
   const addQuest = () => {
     const newQuest: Quest = {
       id: Date.now().toString(),
-      name: "Nouvelle mission",
-      description: "",
-      difficulty: "",
-      xp: "",
+      name: 'Nouvelle mission',
+      description: '',
+      difficulty: '',
+      xp: '',
     };
     quests.push(newQuest);
     setQuests(quests);
@@ -96,7 +96,7 @@ export function TeacherProfile() {
               cornerRadius={8}
               fill="#E5F5FF"
               stroke="#99CCFF"
-              width={"fill-parent"}
+              width={'fill-parent'}
               direction="vertical"
               spacing={8}
             >
@@ -122,7 +122,7 @@ export function TeacherProfile() {
               cornerRadius={8}
               fill="#FFE5E5"
               stroke="#FF9999"
-              width={"fill-parent"}
+              width={'fill-parent'}
             >
               <Text fontSize={12} fill="#CC0000">
                 ⚠️ Seul l'enseignant peut modifier ce formulaire
@@ -131,22 +131,22 @@ export function TeacherProfile() {
           )}
 
           {/* Number of students */}
-          <AutoLayout direction="vertical" spacing={4} width={"fill-parent"}>
+          <AutoLayout direction="vertical" spacing={4} width={'fill-parent'}>
             <Text fontSize={14} fontWeight="bold">
               Nombre d'étudiants :
             </Text>
             <AutoLayout
               padding={{ vertical: 6, horizontal: 8 }}
               cornerRadius={6}
-              fill={isCreator ? "#F5F5F5" : "#E0E0E0"}
+              fill={isCreator ? '#F5F5F5' : '#E0E0E0'}
               stroke="#CCCCCC"
-              width={"fill-parent"}
+              width={'fill-parent'}
             >
               <Input
                 value={numberOfStudents}
                 placeholder="Ex: 30"
                 fontSize={14}
-                width={"fill-parent"}
+                width={'fill-parent'}
                 inputFrameProps={{ opacity: isCreator ? 1 : 0.5 }}
                 onTextEditEnd={(e) => {
                   if (isCreator) setNumberOfStudents(e.characters);
@@ -156,22 +156,22 @@ export function TeacherProfile() {
           </AutoLayout>
 
           {/* Context */}
-          <AutoLayout direction="vertical" spacing={4} width={"fill-parent"}>
+          <AutoLayout direction="vertical" spacing={4} width={'fill-parent'}>
             <Text fontSize={14} fontWeight="bold">
               Contexte du projet :
             </Text>
             <AutoLayout
               padding={{ vertical: 6, horizontal: 8 }}
               cornerRadius={6}
-              fill={isCreator ? "#F5F5F5" : "#E0E0E0"}
+              fill={isCreator ? '#F5F5F5' : '#E0E0E0'}
               stroke="#CCCCCC"
-              width={"fill-parent"}
+              width={'fill-parent'}
             >
               <Input
                 value={context}
                 placeholder="Décrivez le contexte..."
                 fontSize={14}
-                width={"fill-parent"}
+                width={'fill-parent'}
                 inputFrameProps={{ opacity: isCreator ? 1 : 0.5 }}
                 onTextEditEnd={(e) => {
                   if (isCreator) setContext(e.characters);
@@ -181,22 +181,22 @@ export function TeacherProfile() {
           </AutoLayout>
 
           {/* Rules */}
-          <AutoLayout direction="vertical" spacing={4} width={"fill-parent"}>
+          <AutoLayout direction="vertical" spacing={4} width={'fill-parent'}>
             <Text fontSize={14} fontWeight="bold">
               Règles :
             </Text>
             <AutoLayout
               padding={{ vertical: 6, horizontal: 8 }}
               cornerRadius={6}
-              fill={isCreator ? "#F5F5F5" : "#E0E0E0"}
+              fill={isCreator ? '#F5F5F5' : '#E0E0E0'}
               stroke="#CCCCCC"
-              width={"fill-parent"}
+              width={'fill-parent'}
             >
               <Input
                 value={rules}
                 placeholder="Listez les règles..."
                 fontSize={14}
-                width={"fill-parent"}
+                width={'fill-parent'}
                 inputFrameProps={{ opacity: isCreator ? 1 : 0.5 }}
                 onTextEditEnd={(e) => {
                   if (isCreator) setRules(e.characters);
@@ -206,7 +206,7 @@ export function TeacherProfile() {
           </AutoLayout>
 
           {/* --- NEW SECTION: QUESTS --- */}
-          <AutoLayout direction="vertical" spacing={6} width={"fill-parent"}>
+          <AutoLayout direction="vertical" spacing={6} width={'fill-parent'}>
             <Text fontSize={14} fontWeight="bold">
               Missions :
             </Text>
@@ -219,11 +219,11 @@ export function TeacherProfile() {
                 stroke="#CCCCCC"
                 cornerRadius={6}
                 padding={8}
-                width={"fill-parent"}
+                width={'fill-parent'}
                 spacing={6}
               >
                 <AutoLayout
-                  width={"fill-parent"}
+                  width={'fill-parent'}
                   onClick={() =>
                     setExpandedQuest(
                       expandedQuest === quest.id ? null : quest.id
@@ -231,16 +231,16 @@ export function TeacherProfile() {
                   }
                 >
                   <AutoLayout
-                    width={"fill-parent"}
-                    horizontalAlignItems={"start"}
+                    width={'fill-parent'}
+                    horizontalAlignItems={'start'}
                   >
                     <Text fontWeight="bold" fontSize={13}>
-                      {quest.name || "Sans titre"}
+                      {quest.name || 'Sans titre'}
                     </Text>
                   </AutoLayout>
-                  <AutoLayout horizontalAlignItems={"end"}>
+                  <AutoLayout horizontalAlignItems={'end'}>
                     <Text fontSize={12} fill="#667">
-                      {expandedQuest === quest.id ? "▲" : "▼"}
+                      {expandedQuest === quest.id ? '▲' : '▼'}
                     </Text>
                   </AutoLayout>
                 </AutoLayout>
@@ -249,23 +249,23 @@ export function TeacherProfile() {
                   <AutoLayout
                     direction="vertical"
                     spacing={4}
-                    width={"fill-parent"}
+                    width={'fill-parent'}
                   >
                     <Text fontSize={12}>Nom :</Text>
                     <AutoLayout
                       padding={{ vertical: 6, horizontal: 8 }}
                       cornerRadius={6}
-                      fill={isCreator ? "#FFFFFF" : "#E0E0E0"}
+                      fill={isCreator ? '#FFFFFF' : '#E0E0E0'}
                       stroke="#CCCCCC"
-                      width={"fill-parent"}
+                      width={'fill-parent'}
                     >
                       <Input
                         value={quest.name}
                         placeholder="Nom de la mission"
                         fontSize={12}
-                        width={"fill-parent"}
+                        width={'fill-parent'}
                         onTextEditEnd={(e) =>
-                          updateQuest(quest.id, "name", e.characters)
+                          updateQuest(quest.id, 'name', e.characters)
                         }
                       />
                     </AutoLayout>
@@ -274,17 +274,17 @@ export function TeacherProfile() {
                     <AutoLayout
                       padding={{ vertical: 6, horizontal: 8 }}
                       cornerRadius={6}
-                      fill={isCreator ? "#FFFFFF" : "#E0E0E0"}
+                      fill={isCreator ? '#FFFFFF' : '#E0E0E0'}
                       stroke="#CCCCCC"
-                      width={"fill-parent"}
+                      width={'fill-parent'}
                     >
                       <Input
                         value={quest.description}
                         placeholder="Décrivez la mission..."
                         fontSize={12}
-                        width={"fill-parent"}
+                        width={'fill-parent'}
                         onTextEditEnd={(e) =>
-                          updateQuest(quest.id, "description", e.characters)
+                          updateQuest(quest.id, 'description', e.characters)
                         }
                       />
                     </AutoLayout>
@@ -293,17 +293,17 @@ export function TeacherProfile() {
                     <AutoLayout
                       padding={{ vertical: 6, horizontal: 8 }}
                       cornerRadius={6}
-                      fill={isCreator ? "#FFFFFF" : "#E0E0E0"}
+                      fill={isCreator ? '#FFFFFF' : '#E0E0E0'}
                       stroke="#CCCCCC"
-                      width={"fill-parent"}
+                      width={'fill-parent'}
                     >
                       <Input
                         value={quest.difficulty}
                         placeholder="Facile / Moyenne / Difficile"
                         fontSize={12}
-                        width={"fill-parent"}
+                        width={'fill-parent'}
                         onTextEditEnd={(e) =>
-                          updateQuest(quest.id, "difficulty", e.characters)
+                          updateQuest(quest.id, 'difficulty', e.characters)
                         }
                       />
                     </AutoLayout>
@@ -312,17 +312,17 @@ export function TeacherProfile() {
                     <AutoLayout
                       padding={{ vertical: 6, horizontal: 8 }}
                       cornerRadius={6}
-                      fill={isCreator ? "#FFFFFF" : "#E0E0E0"}
+                      fill={isCreator ? '#FFFFFF' : '#E0E0E0'}
                       stroke="#CCCCCC"
-                      width={"fill-parent"}
+                      width={'fill-parent'}
                     >
                       <Input
                         value={quest.xp}
                         placeholder="Ex: 100"
                         fontSize={12}
-                        width={"fill-parent"}
+                        width={'fill-parent'}
                         onTextEditEnd={(e) =>
-                          updateQuest(quest.id, "xp", e.characters)
+                          updateQuest(quest.id, 'xp', e.characters)
                         }
                       />
                     </AutoLayout>
@@ -349,7 +349,7 @@ export function TeacherProfile() {
                 cornerRadius={6}
                 padding={{ vertical: 6, horizontal: 12 }}
                 horizontalAlignItems="center"
-                width={"fill-parent"}
+                width={'fill-parent'}
                 onClick={addQuest}
               >
                 <Text fontSize={13} fontWeight="bold">
@@ -380,30 +380,30 @@ export function TeacherProfile() {
             Informations du projet
           </Text>
 
-          <AutoLayout direction="vertical" spacing={12} width={"fill-parent"}>
+          <AutoLayout direction="vertical" spacing={12} width={'fill-parent'}>
             <AutoLayout direction="vertical" spacing={4}>
               <Text fontSize={13} fontWeight="bold">
                 Nombre d'étudiants :
               </Text>
-              <Text fontSize={14}>{numberOfStudents || "—"}</Text>
+              <Text fontSize={14}>{numberOfStudents || '—'}</Text>
             </AutoLayout>
 
             <AutoLayout direction="vertical" spacing={4}>
               <Text fontSize={13} fontWeight="bold">
                 Contexte :
               </Text>
-              <Text fontSize={14}>{context || "—"}</Text>
+              <Text fontSize={14}>{context || '—'}</Text>
             </AutoLayout>
 
             <AutoLayout direction="vertical" spacing={4}>
               <Text fontSize={13} fontWeight="bold">
                 Règles :
               </Text>
-              <Text fontSize={14}>{rules || "—"}</Text>
+              <Text fontSize={14}>{rules || '—'}</Text>
             </AutoLayout>
 
             {/* --- VIEW MODE QUESTS --- */}
-            <AutoLayout direction="vertical" spacing={4} width={"fill-parent"}>
+            <AutoLayout direction="vertical" spacing={4} width={'fill-parent'}>
               <Text fontSize={13} fontWeight="bold">
                 Missions :
               </Text>
@@ -420,7 +420,7 @@ export function TeacherProfile() {
                   stroke="#CCCCCC"
                   cornerRadius={6}
                   padding={8}
-                  width={"fill-parent"}
+                  width={'fill-parent'}
                   spacing={4}
                   onClick={() =>
                     setExpandedQuest(
@@ -428,18 +428,18 @@ export function TeacherProfile() {
                     )
                   }
                 >
-                  <AutoLayout width={"fill-parent"}>
+                  <AutoLayout width={'fill-parent'}>
                     <AutoLayout
-                      width={"fill-parent"}
-                      horizontalAlignItems={"start"}
+                      width={'fill-parent'}
+                      horizontalAlignItems={'start'}
                     >
                       <Text fontWeight="bold" fontSize={13}>
-                        {quest.name || "Sans titre"}
+                        {quest.name || 'Sans titre'}
                       </Text>
                     </AutoLayout>
-                    <AutoLayout horizontalAlignItems={"end"}>
+                    <AutoLayout horizontalAlignItems={'end'}>
                       <Text fontSize={12} fill="#667">
-                        {expandedQuest === quest.id ? "▲" : "▼"}
+                        {expandedQuest === quest.id ? '▲' : '▼'}
                       </Text>
                     </AutoLayout>
                   </AutoLayout>
@@ -448,15 +448,15 @@ export function TeacherProfile() {
                     <AutoLayout
                       direction="vertical"
                       spacing={2}
-                      width={"fill-parent"}
+                      width={'fill-parent'}
                     >
                       <Text fontSize={12}>
-                        Description : {quest.description || "—"}
+                        Description : {quest.description || '—'}
                       </Text>
                       <Text fontSize={12}>
-                        Difficulté : {quest.difficulty || "—"}
+                        Difficulté : {quest.difficulty || '—'}
                       </Text>
-                      <Text fontSize={12}>XP : {quest.xp || "—"}</Text>
+                      <Text fontSize={12}>XP : {quest.xp || '—'}</Text>
                     </AutoLayout>
                   )}
                 </AutoLayout>
@@ -467,18 +467,18 @@ export function TeacherProfile() {
 
           {/* Teacher action buttons */}
           {isCreator && (
-            <AutoLayout direction="vertical" spacing={8} width={"fill-parent"}>
+            <AutoLayout direction="vertical" spacing={8} width={'fill-parent'}>
               {/* Download Excel button */}
               <AutoLayout
                 padding={{ vertical: 8, horizontal: 24 }}
                 cornerRadius={8}
                 fill="#053b50ff"
                 horizontalAlignItems="center"
-                width={"fill-parent"}
+                width={'fill-parent'}
                 onClick={() => {
                   return new Promise<void>((resolve) => {
                     const csvContent =
-                      "Nom,Classe,Titre,Nombre_Etudiants,Contexte,Regles\n";
+                      'Nom,Classe,Titre,Nombre_Etudiants,Contexte,Regles\n';
                     const csvData = `"Données","du","projet","${numberOfStudents}","${context}","${rules}"\n`;
                     const fullCsv = csvContent + csvData;
 
@@ -511,13 +511,13 @@ export function TeacherProfile() {
                     );
 
                     figma.ui.onmessage = (msg) => {
-                      if (msg.type === "download-complete") {
+                      if (msg.type === 'download-complete') {
                         figma.closePlugin();
                         resolve();
                       }
                     };
 
-                    figma.notify("📊 Téléchargement du fichier en cours...");
+                    figma.notify('📊 Téléchargement du fichier en cours...');
                   });
                 }}
               >
@@ -531,10 +531,10 @@ export function TeacherProfile() {
                 cornerRadius={8}
                 fill="#F5F5F5"
                 horizontalAlignItems="center"
-                width={"fill-parent"}
+                width={'fill-parent'}
                 onClick={() => setIsEditing(true)}
               >
-                <Text fontSize={13}>Modifier</Text>
+                <Text fontSize={13}>✏️Modifier</Text>
               </AutoLayout>
             </AutoLayout>
           )}

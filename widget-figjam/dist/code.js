@@ -95,14 +95,11 @@
     );
     const [xp] = useSyncedState(`student_${studentId}_xp`, 0);
     const [level] = useSyncedState(`student_${studentId}_level`, 1);
-    const [uiState, setUiState] = useSyncedState(
-      `student_${studentId}_ui`,
-      {
-        showAvatarSelector: false,
-        showClassDropdown: false,
-        isEditing: true
-      }
-    );
+    const [uiState, setUiState] = useSyncedState(`student_${studentId}_ui`, {
+      showAvatarSelector: false,
+      showClassDropdown: false,
+      isEditing: true
+    });
     const classes = CLASSES;
     const xpToNextLevel = level * 100;
     const firstRow = classes.slice(0, 3);
@@ -120,38 +117,204 @@
         stroke: "#E6E6E6",
         width: 280
       },
-      uiState.isEditing ? /* @__PURE__ */ figma.widget.h(figma.widget.Fragment, null, /* @__PURE__ */ figma.widget.h(Text, { fontSize: 18, fontWeight: "bold" }, "Profil de l'\xE9tudiant"), /* @__PURE__ */ figma.widget.h(AutoLayout, { direction: "vertical", spacing: 8 }, /* @__PURE__ */ figma.widget.h(Text, { fontSize: 14 }, "Avatar :"), !uiState.showAvatarSelector ? /* @__PURE__ */ figma.widget.h(AutoLayout, { padding: 4, cornerRadius: 8, fill: "#FFFFFF", stroke: "#CCCCCC", onClick: () => setUiState(__spreadProps(__spreadValues({}, uiState), { showAvatarSelector: true })) }, /* @__PURE__ */ figma.widget.h(Image, { src: getProfileImage(selectedClass, level), width: 64, height: 64, cornerRadius: 8 })) : /* @__PURE__ */ figma.widget.h(AutoLayout, { direction: "vertical", spacing: 8, padding: 8, cornerRadius: 12, fill: "#F9F9F9", stroke: "#DDDDDD" }, /* @__PURE__ */ figma.widget.h(AutoLayout, { direction: "vertical", spacing: 8 }, /* @__PURE__ */ figma.widget.h(AutoLayout, { spacing: 8 }, firstRow.map((c) => /* @__PURE__ */ figma.widget.h(
+      uiState.isEditing ? /* @__PURE__ */ figma.widget.h(figma.widget.Fragment, null, /* @__PURE__ */ figma.widget.h(Text, { fontSize: 18, fontWeight: "bold" }, "Profil de l'\xE9tudiant"), /* @__PURE__ */ figma.widget.h(AutoLayout, { direction: "vertical", spacing: 8 }, /* @__PURE__ */ figma.widget.h(Text, { fontSize: 14 }, "Avatar :"), !uiState.showAvatarSelector ? /* @__PURE__ */ figma.widget.h(
         AutoLayout,
         {
-          key: c,
           padding: 4,
           cornerRadius: 8,
-          fill: c === selectedClass ? "#CCE5FF" : "#FFFFFF",
+          fill: "#FFFFFF",
           stroke: "#CCCCCC",
-          onClick: () => {
-            setSelectedClass(c);
-            setUiState(__spreadProps(__spreadValues({}, uiState), { showAvatarSelector: false }));
-          }
+          onClick: () => setUiState(__spreadProps(__spreadValues({}, uiState), { showAvatarSelector: true }))
         },
-        /* @__PURE__ */ figma.widget.h(Image, { src: getProfileImage(c, level), width: 64, height: 64, cornerRadius: 8 })
-      ))), secondRow.length > 0 && /* @__PURE__ */ figma.widget.h(AutoLayout, { spacing: 8 }, secondRow.map((c) => /* @__PURE__ */ figma.widget.h(
+        /* @__PURE__ */ figma.widget.h(
+          Image,
+          {
+            src: getProfileImage(selectedClass, level),
+            width: 64,
+            height: 64,
+            cornerRadius: 8
+          }
+        )
+      ) : /* @__PURE__ */ figma.widget.h(
         AutoLayout,
         {
-          key: c,
-          padding: 4,
-          cornerRadius: 8,
-          fill: c === selectedClass ? "#CCE5FF" : "#FFFFFF",
-          stroke: "#CCCCCC",
-          onClick: () => {
-            setSelectedClass(c);
-            setUiState(__spreadProps(__spreadValues({}, uiState), { showAvatarSelector: false }));
-          }
+          direction: "vertical",
+          spacing: 8,
+          padding: 8,
+          cornerRadius: 12,
+          fill: "#F9F9F9",
+          stroke: "#DDDDDD"
         },
-        /* @__PURE__ */ figma.widget.h(Image, { src: getProfileImage(c, level), width: 64, height: 64, cornerRadius: 8 })
-      )))), /* @__PURE__ */ figma.widget.h(AutoLayout, { padding: { vertical: 4, horizontal: 8 }, cornerRadius: 6, fill: "#E0E0E0", onClick: () => setUiState(__spreadProps(__spreadValues({}, uiState), { showAvatarSelector: false })) }, /* @__PURE__ */ figma.widget.h(Text, { fontSize: 12 }, "Fermer"))), /* @__PURE__ */ figma.widget.h(Text, { fontSize: 11, fill: "#6B7280" }, "L'avatar est automatiquement choisi selon la classe.")), /* @__PURE__ */ figma.widget.h(AutoLayout, { direction: "vertical", spacing: 4 }, /* @__PURE__ */ figma.widget.h(Text, { fontSize: 14 }, "Nom :"), /* @__PURE__ */ figma.widget.h(AutoLayout, { padding: { vertical: 6, horizontal: 8 }, cornerRadius: 6, fill: "#F5F5F5", stroke: "#CCCCCC" }, /* @__PURE__ */ figma.widget.h(Input, { value: name, placeholder: "Entrez votre nom", fontSize: 14, onTextEditEnd: (e) => setName(e.characters) }))), /* @__PURE__ */ figma.widget.h(AutoLayout, { direction: "vertical", spacing: 4 }, /* @__PURE__ */ figma.widget.h(Text, { fontSize: 14 }, "Classe :"), /* @__PURE__ */ figma.widget.h(AutoLayout, { padding: { vertical: 6, horizontal: 10 }, fill: "#F5F5F5", stroke: "#CCCCCC", cornerRadius: 8, spacing: 4, onClick: () => setUiState(__spreadProps(__spreadValues({}, uiState), { showClassDropdown: !uiState.showClassDropdown })) }, /* @__PURE__ */ figma.widget.h(Text, null, selectedClass), /* @__PURE__ */ figma.widget.h(Text, { fontSize: 10 }, uiState.showClassDropdown ? "\u25B2" : "\u25BC")), uiState.showClassDropdown && /* @__PURE__ */ figma.widget.h(AutoLayout, { direction: "vertical", fill: "#FFFFFF", stroke: "#DDDDDD", cornerRadius: 8, padding: 6, spacing: 4, width: 120 }, classes.map((c) => /* @__PURE__ */ figma.widget.h(AutoLayout, { key: c, padding: { vertical: 4, horizontal: 8 }, cornerRadius: 6, fill: selectedClass === c ? "#CCE5FF" : "#FFFFFF", onClick: () => {
-        setSelectedClass(c);
-        setUiState(__spreadProps(__spreadValues({}, uiState), { showClassDropdown: false }));
-      } }, /* @__PURE__ */ figma.widget.h(Text, null, c))))), /* @__PURE__ */ figma.widget.h(AutoLayout, { direction: "vertical", spacing: 4, width: "fill-parent" }, /* @__PURE__ */ figma.widget.h(Text, { fontSize: 14 }, "Titre :"), /* @__PURE__ */ figma.widget.h(AutoLayout, { padding: { vertical: 6, horizontal: 10 }, fill: "#F5F5F5", stroke: "#CCCCCC", cornerRadius: 8, width: "fill-parent" }, /* @__PURE__ */ figma.widget.h(Text, { width: "fill-parent" }, getTitleFor(selectedClass, level)))), /* @__PURE__ */ figma.widget.h(AutoLayout, { padding: { vertical: 8, horizontal: 50 }, fill: "#053b50ff", cornerRadius: 8, horizontalAlignItems: "center", onClick: () => setUiState(__spreadProps(__spreadValues({}, uiState), { isEditing: false })) }, /* @__PURE__ */ figma.widget.h(Text, { fontSize: 14, fontWeight: "bold", fill: "#ffffffff" }, "Sauvegarder le profil"))) : /* @__PURE__ */ figma.widget.h(figma.widget.Fragment, null, /* @__PURE__ */ figma.widget.h(AutoLayout, { spacing: 8, verticalAlignItems: "center", width: "fill-parent" }, /* @__PURE__ */ figma.widget.h(Image, { src: getProfileImage(selectedClass, level), width: 40, height: 40, cornerRadius: 8 }), /* @__PURE__ */ figma.widget.h(AutoLayout, { direction: "vertical", width: "fill-parent" }, /* @__PURE__ */ figma.widget.h(Text, { fontSize: 16, fontWeight: "bold" }, name), /* @__PURE__ */ figma.widget.h(Text, { fontSize: 12 }, selectedClass), /* @__PURE__ */ figma.widget.h(Text, { fontSize: 12, width: "fill-parent" }, getTitleFor(selectedClass, level)))), /* @__PURE__ */ figma.widget.h(AutoLayout, { direction: "vertical", spacing: 4, width: "fill-parent", horizontalAlignItems: "center" }, /* @__PURE__ */ figma.widget.h(Text, { fontSize: 14, fontWeight: "bold" }, "Level ", level), /* @__PURE__ */ figma.widget.h(Text, { fontSize: 12, fill: "#666666" }, xp, " / ", xpToNextLevel, " XP")), /* @__PURE__ */ figma.widget.h(AutoLayout, { padding: { vertical: 8, horizontal: 24 }, cornerRadius: 8, fill: "#F5F5F5", onClick: () => setUiState(__spreadProps(__spreadValues({}, uiState), { isEditing: true })) }, /* @__PURE__ */ figma.widget.h(Text, { fontSize: 13 }, "Modifier")))
+        /* @__PURE__ */ figma.widget.h(AutoLayout, { direction: "vertical", spacing: 8 }, /* @__PURE__ */ figma.widget.h(AutoLayout, { spacing: 8 }, firstRow.map((c) => /* @__PURE__ */ figma.widget.h(
+          AutoLayout,
+          {
+            key: c,
+            padding: 4,
+            cornerRadius: 8,
+            fill: c === selectedClass ? "#CCE5FF" : "#FFFFFF",
+            stroke: "#CCCCCC",
+            onClick: () => {
+              setSelectedClass(c);
+              setUiState(__spreadProps(__spreadValues({}, uiState), { showAvatarSelector: false }));
+            }
+          },
+          /* @__PURE__ */ figma.widget.h(
+            Image,
+            {
+              src: getProfileImage(c, level),
+              width: 64,
+              height: 64,
+              cornerRadius: 8
+            }
+          )
+        ))), secondRow.length > 0 && /* @__PURE__ */ figma.widget.h(AutoLayout, { spacing: 8 }, secondRow.map((c) => /* @__PURE__ */ figma.widget.h(
+          AutoLayout,
+          {
+            key: c,
+            padding: 4,
+            cornerRadius: 8,
+            fill: c === selectedClass ? "#CCE5FF" : "#FFFFFF",
+            stroke: "#CCCCCC",
+            onClick: () => {
+              setSelectedClass(c);
+              setUiState(__spreadProps(__spreadValues({}, uiState), {
+                showAvatarSelector: false
+              }));
+            }
+          },
+          /* @__PURE__ */ figma.widget.h(
+            Image,
+            {
+              src: getProfileImage(c, level),
+              width: 64,
+              height: 64,
+              cornerRadius: 8
+            }
+          )
+        )))),
+        /* @__PURE__ */ figma.widget.h(
+          AutoLayout,
+          {
+            padding: { vertical: 4, horizontal: 8 },
+            cornerRadius: 6,
+            fill: "#E0E0E0",
+            onClick: () => setUiState(__spreadProps(__spreadValues({}, uiState), { showAvatarSelector: false }))
+          },
+          /* @__PURE__ */ figma.widget.h(Text, { fontSize: 12 }, "Fermer")
+        )
+      ), /* @__PURE__ */ figma.widget.h(Text, { fontSize: 11, fill: "#6B7280" }, "L'avatar est automatiquement choisi selon la classe.")), /* @__PURE__ */ figma.widget.h(AutoLayout, { direction: "vertical", spacing: 4 }, /* @__PURE__ */ figma.widget.h(Text, { fontSize: 14 }, "Nom :"), /* @__PURE__ */ figma.widget.h(
+        AutoLayout,
+        {
+          padding: { vertical: 6, horizontal: 8 },
+          cornerRadius: 6,
+          fill: "#F5F5F5",
+          stroke: "#CCCCCC"
+        },
+        /* @__PURE__ */ figma.widget.h(
+          Input,
+          {
+            value: name,
+            placeholder: "Entrez votre nom",
+            fontSize: 14,
+            onTextEditEnd: (e) => setName(e.characters)
+          }
+        )
+      )), /* @__PURE__ */ figma.widget.h(AutoLayout, { direction: "vertical", spacing: 4 }, /* @__PURE__ */ figma.widget.h(Text, { fontSize: 14 }, "Classe :"), /* @__PURE__ */ figma.widget.h(
+        AutoLayout,
+        {
+          padding: { vertical: 6, horizontal: 10 },
+          fill: "#F5F5F5",
+          stroke: "#CCCCCC",
+          cornerRadius: 8,
+          spacing: 4,
+          onClick: () => setUiState(__spreadProps(__spreadValues({}, uiState), {
+            showClassDropdown: !uiState.showClassDropdown
+          }))
+        },
+        /* @__PURE__ */ figma.widget.h(Text, null, selectedClass),
+        /* @__PURE__ */ figma.widget.h(Text, { fontSize: 10 }, uiState.showClassDropdown ? "\u25B2" : "\u25BC")
+      ), uiState.showClassDropdown && /* @__PURE__ */ figma.widget.h(
+        AutoLayout,
+        {
+          direction: "vertical",
+          fill: "#FFFFFF",
+          stroke: "#DDDDDD",
+          cornerRadius: 8,
+          padding: 6,
+          spacing: 4,
+          width: 120
+        },
+        classes.map((c) => /* @__PURE__ */ figma.widget.h(
+          AutoLayout,
+          {
+            key: c,
+            padding: { vertical: 4, horizontal: 8 },
+            cornerRadius: 6,
+            fill: selectedClass === c ? "#CCE5FF" : "#FFFFFF",
+            onClick: () => {
+              setSelectedClass(c);
+              setUiState(__spreadProps(__spreadValues({}, uiState), { showClassDropdown: false }));
+            }
+          },
+          /* @__PURE__ */ figma.widget.h(Text, null, c)
+        ))
+      )), /* @__PURE__ */ figma.widget.h(AutoLayout, { direction: "vertical", spacing: 4, width: "fill-parent" }, /* @__PURE__ */ figma.widget.h(Text, { fontSize: 14 }, "Titre :"), /* @__PURE__ */ figma.widget.h(
+        AutoLayout,
+        {
+          padding: { vertical: 6, horizontal: 10 },
+          fill: "#F5F5F5",
+          stroke: "#CCCCCC",
+          cornerRadius: 8,
+          width: "fill-parent"
+        },
+        /* @__PURE__ */ figma.widget.h(Text, { width: "fill-parent" }, getTitleFor(selectedClass, level))
+      )), /* @__PURE__ */ figma.widget.h(
+        AutoLayout,
+        {
+          padding: { vertical: 8, horizontal: 50 },
+          fill: "#053b50ff",
+          cornerRadius: 8,
+          horizontalAlignItems: "center",
+          onClick: () => setUiState(__spreadProps(__spreadValues({}, uiState), { isEditing: false }))
+        },
+        /* @__PURE__ */ figma.widget.h(Text, { fontSize: 14, fontWeight: "bold", fill: "#ffffffff" }, "Sauvegarder le profil")
+      )) : /* @__PURE__ */ figma.widget.h(figma.widget.Fragment, null, /* @__PURE__ */ figma.widget.h(
+        AutoLayout,
+        {
+          spacing: 8,
+          verticalAlignItems: "center",
+          width: "fill-parent"
+        },
+        /* @__PURE__ */ figma.widget.h(
+          Image,
+          {
+            src: getProfileImage(selectedClass, level),
+            width: 40,
+            height: 40,
+            cornerRadius: 8
+          }
+        ),
+        /* @__PURE__ */ figma.widget.h(AutoLayout, { direction: "vertical", width: "fill-parent" }, /* @__PURE__ */ figma.widget.h(Text, { fontSize: 16, fontWeight: "bold" }, name), /* @__PURE__ */ figma.widget.h(Text, { fontSize: 12 }, selectedClass), /* @__PURE__ */ figma.widget.h(Text, { fontSize: 12, width: "fill-parent" }, getTitleFor(selectedClass, level)))
+      ), /* @__PURE__ */ figma.widget.h(
+        AutoLayout,
+        {
+          direction: "vertical",
+          spacing: 4,
+          width: "fill-parent",
+          horizontalAlignItems: "center"
+        },
+        /* @__PURE__ */ figma.widget.h(Text, { fontSize: 14, fontWeight: "bold" }, "Level ", level),
+        /* @__PURE__ */ figma.widget.h(Text, { fontSize: 12, fill: "#666666" }, xp, " / ", xpToNextLevel, " XP")
+      ), /* @__PURE__ */ figma.widget.h(
+        AutoLayout,
+        {
+          padding: { vertical: 8, horizontal: 24 },
+          cornerRadius: 8,
+          fill: "#F5F5F5",
+          onClick: () => setUiState(__spreadProps(__spreadValues({}, uiState), { isEditing: true }))
+        },
+        /* @__PURE__ */ figma.widget.h(Text, { fontSize: 13 }, "\u270F\uFE0FModifier")
+      ))
     );
   }
 
@@ -569,7 +732,7 @@
           width: "fill-parent",
           onClick: () => setIsEditing(true)
         },
-        /* @__PURE__ */ figma.widget.h(Text2, { fontSize: 13 }, "Modifier")
+        /* @__PURE__ */ figma.widget.h(Text2, { fontSize: 13 }, "\u270F\uFE0FModifier")
       )))
     );
   }
@@ -1572,7 +1735,7 @@
                   {
                     padding: { vertical: 3, horizontal: 6 },
                     cornerRadius: 4,
-                    fill: "#2196F3",
+                    fill: "#F5F5F5",
                     onClick: () => {
                       return new Promise((resolve) => {
                         if (isCurrentUserAuthor(postIt.authorId)) {
@@ -1589,7 +1752,7 @@
                       });
                     }
                   },
-                  /* @__PURE__ */ figma.widget.h(Text7, { fontSize: 9, fill: "#FFFFFF" }, "\u270F\uFE0F Modifier")
+                  /* @__PURE__ */ figma.widget.h(Text7, { fontSize: 9 }, "\u270F\uFE0F Modifier")
                 ), /* @__PURE__ */ figma.widget.h(
                   AutoLayout7,
                   {
