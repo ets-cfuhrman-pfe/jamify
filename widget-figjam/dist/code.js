@@ -1115,10 +1115,10 @@
       );
       setIssues(updatedIssues);
       if (newStatus === "done") {
-        addXP(XP_REWARDS.COMPLETE_ISSUE, "T\xE2che termin\xE9e");
+        addXP(XP_REWARDS.COMPLETE_ISSUE, "\u2705 T\xE2che termin\xE9e");
         addStudentXP(issue.assignedToId, XP_REWARDS.COMPLETE_ISSUE);
       } else {
-        addXP(XP_REWARDS.MOVE_ISSUE, "T\xE2che d\xE9plac\xE9e");
+        addXP(XP_REWARDS.MOVE_ISSUE, "\u{1F504} T\xE2che d\xE9plac\xE9e");
         addStudentXP(issue.assignedToId, XP_REWARDS.MOVE_ISSUE);
       }
     };
@@ -1135,7 +1135,7 @@
         assignedToId
       };
       setIssues(issues.concat([newIssue]));
-      addXP(XP_REWARDS.ADD_ISSUE, "T\xE2che cr\xE9\xE9e");
+      addXP(XP_REWARDS.ADD_ISSUE, "\u2705 T\xE2che cr\xE9\xE9e");
       addStudentXP(assignedToId, XP_REWARDS.ADD_ISSUE);
     };
     const handleDelete = (issueId) => {
