@@ -1084,7 +1084,7 @@
               setAssignedToId(null);
               setSelectedQuest("");
             } else {
-              figma.notify("Please enter a title");
+              figma.notify("\u26A0\uFE0F Veuilllez entrer un titre pour la t\xE2che.");
             }
           },
           width: "fill-parent",
@@ -1236,16 +1236,9 @@
       null
     );
     const xpToNextLevel = level * XP_PER_LEVEL;
-    useEffect(() => {
-      if (xp >= xpToNextLevel) {
-        setLevel(level + 1);
-        setXp(xp - xpToNextLevel);
-        figma.notify(`\uFFFD\uFFFD Level Up! You're now Level ${level + 1}!`);
-      }
-    });
     const addXP = (amount, reason) => {
       setXp(xp + amount);
-      figma.notify(`+${amount} XP - ${reason}`);
+      figma.notify(`\u{1F48E} +${amount} XP - ${reason} \u{1F48E}`);
     };
     const addStudentXP = (studentId, amount) => {
       if (studentId === void 0) return;
@@ -1258,7 +1251,7 @@
         setStudentLevels[studentId](currentLevel + 1);
         setStudentXP[studentId](newXP - xpToNextLevel2);
         try {
-          figma.notify(`\u{1F389} ${studentNames[studentId]} leveled up to level ${currentLevel + 1}!`);
+          figma.notify(`\u{1F389} ${studentNames[studentId]} est pass\xE9 au niveau ${currentLevel + 1}! \u{1F389}`);
         } catch (_) {
         }
       }
@@ -1285,10 +1278,10 @@
       );
       setIssues(updatedIssues);
       if (newStatus === "done") {
-        addXP(XP_REWARDS.COMPLETE_ISSUE, "Issue completed");
+        addXP(XP_REWARDS.COMPLETE_ISSUE, "\u2705 T\xE2che termin\xE9e");
         addStudentXP(issue.assignedToId, XP_REWARDS.COMPLETE_ISSUE);
       } else {
-        addXP(XP_REWARDS.MOVE_ISSUE, "Issue moved");
+        addXP(XP_REWARDS.MOVE_ISSUE, "\u{1F504} T\xE2che d\xE9plac\xE9e");
         addStudentXP(issue.assignedToId, XP_REWARDS.MOVE_ISSUE);
       }
     };
@@ -1305,7 +1298,7 @@
         assignedToId
       };
       setIssues(issues.concat([newIssue]));
-      addXP(XP_REWARDS.ADD_ISSUE, "Issue created");
+      addXP(XP_REWARDS.ADD_ISSUE, "\u2705 T\xE2che cr\xE9\xE9e");
       addStudentXP(assignedToId, XP_REWARDS.ADD_ISSUE);
     };
     const handleDelete = (issueId) => {

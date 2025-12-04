@@ -46,18 +46,9 @@ export function KanbanBoard() {
 
   const xpToNextLevel = level * XP_PER_LEVEL;
 
-  // Level up effect
-  useEffect(() => {
-    if (xp >= xpToNextLevel) {
-      setLevel(level + 1);
-      setXp(xp - xpToNextLevel);
-      figma.notify(`�� Level Up! You're now Level ${level + 1}!`);
-    }
-  });
-
   const addXP = (amount: number, reason: string) => {
     setXp(xp + amount);
-    figma.notify(`+${amount} XP - ${reason}`);
+    figma.notify(`💎 +${amount} XP - ${reason} 💎`);
   };
 
   // Add XP to a specific student
@@ -76,7 +67,7 @@ export function KanbanBoard() {
       setStudentLevels[studentId](currentLevel + 1);
       setStudentXP[studentId](newXP - xpToNextLevel);
       try {
-        figma.notify(`🎉 ${studentNames[studentId]} leveled up to level ${currentLevel + 1}!`);
+        figma.notify(`🎉 ${studentNames[studentId]} est passé au niveau ${currentLevel + 1}! 🎉`);
       } catch (_) { }
     }
   };
@@ -110,10 +101,10 @@ export function KanbanBoard() {
     setIssues(updatedIssues);
 
     if (newStatus === "done") {
-      addXP(XP_REWARDS.COMPLETE_ISSUE, "Issue completed");
+      addXP(XP_REWARDS.COMPLETE_ISSUE, "✅ Tâche terminée");
       addStudentXP(issue.assignedToId, XP_REWARDS.COMPLETE_ISSUE);
     } else {
-      addXP(XP_REWARDS.MOVE_ISSUE, "Issue moved");
+      addXP(XP_REWARDS.MOVE_ISSUE, "🔄 Tâche déplacée");
       addStudentXP(issue.assignedToId, XP_REWARDS.MOVE_ISSUE);
     }
   };
@@ -138,7 +129,7 @@ export function KanbanBoard() {
       assignedToId: assignedToId,
     };
     setIssues(issues.concat([newIssue]));
-    addXP(XP_REWARDS.ADD_ISSUE, "Issue created");
+    addXP(XP_REWARDS.ADD_ISSUE, "✅ Tâche créée");
     addStudentXP(assignedToId, XP_REWARDS.ADD_ISSUE);
   };
 

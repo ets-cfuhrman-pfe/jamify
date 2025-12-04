@@ -269,7 +269,7 @@ export function AddIssueDialog({
                             setAssignedToId(null);
                             setSelectedQuest("");
                         } else {
-                            figma.notify("Please enter a title");
+                            figma.notify("⚠️ Veuilllez entrer un titre pour la tâche.");
                         }
                     }}
                     width="fill-parent"
