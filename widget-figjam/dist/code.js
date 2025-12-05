@@ -337,11 +337,36 @@
     const [rules, setRules] = useSyncedState2("teacherRules", "");
     const [context, setContext] = useSyncedState2("teacherContext", "");
     const [isEditing, setIsEditing] = useSyncedState2("teacherIsEditing", true);
+    const [issues] = useSyncedState2("issues", []);
+    const numberOfStudentsNum = parseInt(numberOfStudents) || 0;
+    const studentNames = [];
+    for (let i = 0; i < numberOfStudentsNum; i++) {
+      const [studentName] = useSyncedState2(
+        `student_${i}_name`,
+        `\xC9tudiant ${i + 1}`
+      );
+      studentNames.push(studentName);
+    }
+    const studentProfiles = [];
+    for (let i = 0; i < numberOfStudentsNum; i++) {
+      const [studentName] = useSyncedState2(
+        `student_${i}_name`,
+        `\xC9tudiant ${i + 1}`
+      );
+      const [xp] = useSyncedState2(`student_${i}_xp`, 0);
+      const [level] = useSyncedState2(`student_${i}_level`, 1);
+      studentProfiles.push({ name: studentName, xp, level });
+    }
     const [quests, setQuests] = useSyncedState2("teacherQuests", []);
     const [expandedQuest, setExpandedQuest] = useSyncedState2(
       "expandedQuest",
       null
     );
+    const getQuestName = (questId) => {
+      if (!questId || questId === "Aucune") return "Aucune";
+      const quest = quests.find((q) => q.id === questId);
+      return quest ? quest.name : "Inconnue";
+    };
     const claimTeacherRole = () => {
       if (!teacherClaimed) {
         setTeacherClaimed(true);
@@ -681,10 +706,36 @@
           width: "fill-parent",
           onClick: () => {
             return new Promise((resolve) => {
-              const csvContent = "Nom,Classe,Titre,Nombre_Etudiants,Contexte,Regles\n";
-              const csvData = `"Donn\xE9es","du","projet","${numberOfStudents}","${context}","${rules}"
+              const csvHeader = "Nombre_Etudiants,Contexte,Regles\n";
+              const csvProjectData = `"${numberOfStudents}","${context}","${rules}"
+
 `;
-              const fullCsv = csvContent + csvData;
+              const studentHeader = "Nom_Etudiant,Niveau,XP\n";
+              const studentData = studentProfiles.map(
+                (student) => `"${student.name}","${student.level}","${student.xp}"`
+              ).join("\n");
+              const issuesHeader = "Titre_T\xE2che,Quest,Priorit\xE9,Description,Date_D\xE9but,Date_Completion,\xC9tudiant_Assign\xE9\n";
+              const issuesData = issues.map((issue) => {
+                const questName = getQuestName(issue.questId);
+                const startDate = issue.createdAt ? new Date(issue.createdAt).toLocaleDateString(
+                  "fr-FR"
+                ) : "";
+                const completionDate = issue.completedAt ? new Date(issue.completedAt).toLocaleDateString(
+                  "fr-FR"
+                ) : "";
+                const studentName = issue.assignedToId !== void 0 && issue.assignedToId < studentNames.length ? studentNames[issue.assignedToId] : "Non assign\xE9";
+                const description = (issue.description || "").replace(
+                  /"/g,
+                  '""'
+                );
+                return `"${issue.title}","${questName}","${issue.priority}","${description}","${startDate}","${completionDate}","${studentName}"`;
+              }).join("\n");
+              const missionsHeader = "Nom_Mission,Description,Difficult\xE9,XP_R\xE9compense\n";
+              const missionsData = quests.map((quest) => {
+                const questDescription = (quest.description || "").replace(/"/g, '""');
+                return `"${quest.name}","${questDescription}","${quest.difficulty}","${quest.xp}"`;
+              }).join("\n");
+              const fullCsv = csvHeader + csvProjectData + "\n" + studentHeader + studentData + "\n\n" + missionsHeader + missionsData + "\n\n" + issuesHeader + issuesData;
               figma.showUI(
                 `
                       <!DOCTYPE html>
