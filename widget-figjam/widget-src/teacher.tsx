@@ -2,6 +2,19 @@
 const { widget } = figma;
 const { useSyncedState, AutoLayout, Text, Input } = widget;
 
+// Import Issue type
+interface Issue {
+  id: string;
+  title: string;
+  description: string;
+  status: string;
+  priority: 'low' | 'medium' | 'high';
+  createdAt: string;
+  completedAt?: string;
+  questId: string | null;
+  assignedToId?: number;
+}
+
 export function TeacherProfile() {
   const [teacherClaimed, setTeacherClaimed] = useSyncedState<boolean>(
     'teacherClaimed',
@@ -19,6 +32,9 @@ export function TeacherProfile() {
   const [context, setContext] = useSyncedState('teacherContext', '');
   const [isEditing, setIsEditing] = useSyncedState('teacherIsEditing', true);
 
+  // Read issues from Kanban board
+  const [issues] = useSyncedState<Issue[]>('issues', []);
+
   type Quest = {
     id: string;
     name: string;
@@ -27,12 +43,45 @@ export function TeacherProfile() {
     xp: string;
   };
 
+  // Read the number of students from teacher profile
+  const numberOfStudentsNum = parseInt(numberOfStudents) || 0;
+
+  // Collect all student names
+  const studentNames: string[] = [];
+  for (let i = 0; i < numberOfStudentsNum; i++) {
+    const [studentName] = useSyncedState(
+      `student_${i}_name`,
+      `Étudiant ${i + 1}`
+    );
+    studentNames.push(studentName);
+  }
+
+  // Collect all student profile data (XP and Level)
+  const studentProfiles: Array<{ name: string; xp: number; level: number }> =
+    [];
+  for (let i = 0; i < numberOfStudentsNum; i++) {
+    const [studentName] = useSyncedState(
+      `student_${i}_name`,
+      `Étudiant ${i + 1}`
+    );
+    const [xp] = useSyncedState(`student_${i}_xp`, 0);
+    const [level] = useSyncedState(`student_${i}_level`, 1);
+    studentProfiles.push({ name: studentName, xp, level });
+  }
+
   // NEW STATE: Quests list
   const [quests, setQuests] = useSyncedState<Quest[]>('teacherQuests', []);
   const [expandedQuest, setExpandedQuest] = useSyncedState<string | null>(
     'expandedQuest',
     null
   );
+
+  // Helper function to get quest name by ID
+  const getQuestName = (questId: string | null): string => {
+    if (!questId || questId === 'Aucune') return 'Aucune';
+    const quest = quests.find((q) => q.id === questId);
+    return quest ? quest.name : 'Inconnue';
+  };
 
   const claimTeacherRole = () => {
     if (!teacherClaimed) {
@@ -477,10 +526,74 @@ export function TeacherProfile() {
                 width={'fill-parent'}
                 onClick={() => {
                   return new Promise<void>((resolve) => {
-                    const csvContent =
-                      'Nom,Classe,Titre,Nombre_Etudiants,Contexte,Regles\n';
-                    const csvData = `"Données","du","projet","${numberOfStudents}","${context}","${rules}"\n`;
-                    const fullCsv = csvContent + csvData;
+                    // Build project info CSV
+                    const csvHeader = 'Nombre_Etudiants,Contexte,Regles\n';
+                    const csvProjectData = `"${numberOfStudents}","${context}","${rules}"\n\n`;
+
+                    // Build student profiles CSV
+                    const studentHeader = 'Nom_Etudiant,Niveau,XP\n';
+                    const studentData = studentProfiles
+                      .map(
+                        (student) =>
+                          `"${student.name}","${student.level}","${student.xp}"`
+                      )
+                      .join('\n');
+
+                    // Build issues CSV with questName, priority, and description
+                    const issuesHeader =
+                      'Titre_Tâche,Quest,Priorité,Description,Date_Début,Date_Completion,Étudiant_Assigné\n';
+                    const issuesData = issues
+                      .map((issue) => {
+                        const questName = getQuestName(issue.questId);
+                        const startDate = issue.createdAt
+                          ? new Date(issue.createdAt).toLocaleDateString(
+                              'fr-FR'
+                            )
+                          : '';
+                        const completionDate = issue.completedAt
+                          ? new Date(issue.completedAt).toLocaleDateString(
+                              'fr-FR'
+                            )
+                          : '';
+                        const studentName =
+                          issue.assignedToId !== undefined &&
+                          issue.assignedToId < studentNames.length
+                            ? studentNames[issue.assignedToId]
+                            : 'Non assigné';
+                        // Escape quotes in description
+                        const description = (issue.description || '').replace(
+                          /"/g,
+                          '""'
+                        );
+                        return `"${issue.title}","${questName}","${issue.priority}","${description}","${startDate}","${completionDate}","${studentName}"`;
+                      })
+                      .join('\n');
+
+                    // Build missions CSV
+                    const missionsHeader =
+                      'Nom_Mission,Description,Difficulté,XP_Récompense\n';
+                    const missionsData = quests
+                      .map((quest) => {
+                        // Escape quotes in description
+                        const questDescription = (
+                          quest.description || ''
+                        ).replace(/"/g, '""');
+                        return `"${quest.name}","${questDescription}","${quest.difficulty}","${quest.xp}"`;
+                      })
+                      .join('\n');
+
+                    const fullCsv =
+                      csvHeader +
+                      csvProjectData +
+                      '\n' +
+                      studentHeader +
+                      studentData +
+                      '\n\n' +
+                      missionsHeader +
+                      missionsData +
+                      '\n\n' +
+                      issuesHeader +
+                      issuesData;
 
                     // Use figma.showUI to access browser APIs for download
                     figma.showUI(
