@@ -283,6 +283,8 @@ export function StudentProfile({ studentId = 0 }: { studentId?: number }) {
             padding={{ vertical: 8, horizontal: 24 }}
             cornerRadius={8}
             fill="#F5F5F5"
+            horizontalAlignItems="center"
+            width={'fill-parent'}
             onClick={() => setUiState({ ...uiState, isEditing: true })}
           >
             <Text fontSize={13}>✏️Modifier</Text>

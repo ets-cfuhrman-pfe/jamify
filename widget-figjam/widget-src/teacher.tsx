@@ -8,11 +8,30 @@ interface Issue {
   title: string;
   description: string;
   status: string;
-  priority: 'low' | 'medium' | 'high';
+  priority: 'bas' | 'moyen' | 'élevé';
   createdAt: string;
   completedAt?: string;
   questId: string | null;
   assignedToId?: number;
+}
+
+interface Comment {
+  id: string;
+  authorId: string;
+  authorName: string;
+  content: string;
+  timestamp: number;
+}
+
+interface PostIt {
+  id: string;
+  content: string;
+  authorId: string;
+  authorName: string;
+  color: string;
+  timestamp: number;
+  likes: string[];
+  comments?: Comment[];
 }
 
 export function TeacherProfile() {
@@ -35,12 +54,14 @@ export function TeacherProfile() {
   // Read issues from Kanban board
   const [issues] = useSyncedState<Issue[]>('issues', []);
 
+  // Read post-its from feedback section
+  const [postIts] = useSyncedState<PostIt[]>('postIts', []);
+
   type Quest = {
     id: string;
     name: string;
     description: string;
     difficulty: string;
-    xp: string;
   };
 
   // Read the number of students from teacher profile
@@ -110,7 +131,6 @@ export function TeacherProfile() {
       name: 'Nouvelle mission',
       description: '',
       difficulty: '',
-      xp: '',
     };
     quests.push(newQuest);
     setQuests(quests);
@@ -357,25 +377,6 @@ export function TeacherProfile() {
                       />
                     </AutoLayout>
 
-                    <Text fontSize={12}>Points d'expérience :</Text>
-                    <AutoLayout
-                      padding={{ vertical: 6, horizontal: 8 }}
-                      cornerRadius={6}
-                      fill={isCreator ? '#FFFFFF' : '#E0E0E0'}
-                      stroke="#CCCCCC"
-                      width={'fill-parent'}
-                    >
-                      <Input
-                        value={quest.xp}
-                        placeholder="Ex: 100"
-                        fontSize={12}
-                        width={'fill-parent'}
-                        onTextEditEnd={(e) =>
-                          updateQuest(quest.id, 'xp', e.characters)
-                        }
-                      />
-                    </AutoLayout>
-
                     <AutoLayout
                       fill="#FFCCCC"
                       cornerRadius={6}
@@ -505,7 +506,6 @@ export function TeacherProfile() {
                       <Text fontSize={12}>
                         Difficulté : {quest.difficulty || '—'}
                       </Text>
-                      <Text fontSize={12}>XP : {quest.xp || '—'}</Text>
                     </AutoLayout>
                   )}
                 </AutoLayout>
@@ -582,6 +582,31 @@ export function TeacherProfile() {
                       })
                       .join('\n');
 
+                    // Build post-its CSV with comments and likes
+                    const postitsHeader =
+                      'Contenu_Post_it,Auteur,Date,Nombre_Likes,Commentaires\n';
+                    const postitsData = postIts
+                      .map((postit) => {
+                        const date = new Date(
+                          postit.timestamp
+                        ).toLocaleDateString('fr-FR');
+                        const likes = postit.likes ? postit.likes.length : 0;
+                        const content = (postit.content || '').replace(
+                          /"/g,
+                          '""'
+                        );
+                        const commentsText = (postit.comments || [])
+                          .map(
+                            (comment) =>
+                              `${comment.authorName}: ${(
+                                comment.content || ''
+                              ).replace(/"/g, '""')}`
+                          )
+                          .join(' | ');
+                        return `"${content}","${postit.authorName}","${date}","${likes}","${commentsText}"`;
+                      })
+                      .join('\n');
+
                     const fullCsv =
                       csvHeader +
                       csvProjectData +
@@ -591,6 +616,9 @@ export function TeacherProfile() {
                       '\n\n' +
                       missionsHeader +
                       missionsData +
+                      '\n\n' +
+                      postitsHeader +
+                      postitsData +
                       '\n\n' +
                       issuesHeader +
                       issuesData;

@@ -311,6 +311,8 @@
           padding: { vertical: 8, horizontal: 24 },
           cornerRadius: 8,
           fill: "#F5F5F5",
+          horizontalAlignItems: "center",
+          width: "fill-parent",
           onClick: () => setUiState(__spreadProps(__spreadValues({}, uiState), { isEditing: true }))
         },
         /* @__PURE__ */ figma.widget.h(Text, { fontSize: 13 }, "\u270F\uFE0FModifier")
@@ -338,6 +340,7 @@
     const [context, setContext] = useSyncedState2("teacherContext", "");
     const [isEditing, setIsEditing] = useSyncedState2("teacherIsEditing", true);
     const [issues] = useSyncedState2("issues", []);
+    const [postIts] = useSyncedState2("postIts", []);
     const numberOfStudentsNum = parseInt(numberOfStudents) || 0;
     const studentNames = [];
     for (let i = 0; i < numberOfStudentsNum; i++) {
@@ -388,8 +391,7 @@
         id: Date.now().toString(),
         name: "Nouvelle mission",
         description: "",
-        difficulty: "",
-        xp: ""
+        difficulty: ""
       };
       quests.push(newQuest);
       setQuests(quests);
@@ -608,27 +610,6 @@
               }
             )
           ),
-          /* @__PURE__ */ figma.widget.h(Text2, { fontSize: 12 }, "Points d'exp\xE9rience :"),
-          /* @__PURE__ */ figma.widget.h(
-            AutoLayout2,
-            {
-              padding: { vertical: 6, horizontal: 8 },
-              cornerRadius: 6,
-              fill: isCreator ? "#FFFFFF" : "#E0E0E0",
-              stroke: "#CCCCCC",
-              width: "fill-parent"
-            },
-            /* @__PURE__ */ figma.widget.h(
-              Input2,
-              {
-                value: quest.xp,
-                placeholder: "Ex: 100",
-                fontSize: 12,
-                width: "fill-parent",
-                onTextEditEnd: (e) => updateQuest(quest.id, "xp", e.characters)
-              }
-            )
-          ),
           /* @__PURE__ */ figma.widget.h(
             AutoLayout2,
             {
@@ -693,8 +674,7 @@
             width: "fill-parent"
           },
           /* @__PURE__ */ figma.widget.h(Text2, { fontSize: 12 }, "Description : ", quest.description || "\u2014"),
-          /* @__PURE__ */ figma.widget.h(Text2, { fontSize: 12 }, "Difficult\xE9 : ", quest.difficulty || "\u2014"),
-          /* @__PURE__ */ figma.widget.h(Text2, { fontSize: 12 }, "XP : ", quest.xp || "\u2014")
+          /* @__PURE__ */ figma.widget.h(Text2, { fontSize: 12 }, "Difficult\xE9 : ", quest.difficulty || "\u2014")
         )
       )))), isCreator && /* @__PURE__ */ figma.widget.h(AutoLayout2, { direction: "vertical", spacing: 8, width: "fill-parent" }, /* @__PURE__ */ figma.widget.h(
         AutoLayout2,
@@ -735,7 +715,22 @@
                 const questDescription = (quest.description || "").replace(/"/g, '""');
                 return `"${quest.name}","${questDescription}","${quest.difficulty}","${quest.xp}"`;
               }).join("\n");
-              const fullCsv = csvHeader + csvProjectData + "\n" + studentHeader + studentData + "\n\n" + missionsHeader + missionsData + "\n\n" + issuesHeader + issuesData;
+              const postitsHeader = "Contenu_Post_it,Auteur,Date,Nombre_Likes,Commentaires\n";
+              const postitsData = postIts.map((postit) => {
+                const date = new Date(
+                  postit.timestamp
+                ).toLocaleDateString("fr-FR");
+                const likes = postit.likes ? postit.likes.length : 0;
+                const content = (postit.content || "").replace(
+                  /"/g,
+                  '""'
+                );
+                const commentsText = (postit.comments || []).map(
+                  (comment) => `${comment.authorName}: ${(comment.content || "").replace(/"/g, '""')}`
+                ).join(" | ");
+                return `"${content}","${postit.authorName}","${date}","${likes}","${commentsText}"`;
+              }).join("\n");
+              const fullCsv = csvHeader + csvProjectData + "\n" + studentHeader + studentData + "\n\n" + missionsHeader + missionsData + "\n\n" + postitsHeader + postitsData + "\n\n" + issuesHeader + issuesData;
               figma.showUI(
                 `
                       <!DOCTYPE html>
@@ -838,17 +833,26 @@
       },
       /* @__PURE__ */ figma.widget.h(Text3, { fontSize: 14, fontWeight: 600, fill: "#111827", width: "fill-parent" }, issue.title),
       issue.description.trim().length > 0 ? /* @__PURE__ */ figma.widget.h(Text3, { fontSize: 12, fill: "#6B7280", width: "fill-parent" }, issue.description) : null,
-      /* @__PURE__ */ figma.widget.h(AutoLayout3, { direction: "horizontal", spacing: 8, width: "fill-parent", verticalAlignItems: "center" }, /* @__PURE__ */ figma.widget.h(
+      /* @__PURE__ */ figma.widget.h(
         AutoLayout3,
         {
-          padding: { vertical: 4, horizontal: 8 },
-          fill: "#F0F9FF",
-          cornerRadius: 4,
-          stroke: { type: "solid", color: { r: 0.7, g: 0.85, b: 1, a: 1 } },
-          strokeWidth: 1
+          direction: "horizontal",
+          spacing: 8,
+          width: "fill-parent",
+          verticalAlignItems: "center"
         },
-        /* @__PURE__ */ figma.widget.h(Text3, { fontSize: 11, fill: "#0369A1" }, getAssignedName())
-      )),
+        /* @__PURE__ */ figma.widget.h(
+          AutoLayout3,
+          {
+            padding: { vertical: 4, horizontal: 8 },
+            fill: "#F0F9FF",
+            cornerRadius: 4,
+            stroke: { type: "solid", color: { r: 0.7, g: 0.85, b: 1, a: 1 } },
+            strokeWidth: 1
+          },
+          /* @__PURE__ */ figma.widget.h(Text3, { fontSize: 11, fill: "#0369A1" }, getAssignedName())
+        )
+      ),
       /* @__PURE__ */ figma.widget.h(
         AutoLayout3,
         {
@@ -860,43 +864,74 @@
         },
         questName && /* @__PURE__ */ figma.widget.h(Text3, { fontSize: 10, fill: "#153089ff" }, "Qu\xEAte: ", questName)
       ),
-      /* @__PURE__ */ figma.widget.h(AutoLayout3, { direction: "horizontal", spacing: 8, width: "fill-parent", verticalAlignItems: "center" }, /* @__PURE__ */ figma.widget.h(
+      /* @__PURE__ */ figma.widget.h(
         AutoLayout3,
         {
-          padding: { vertical: 2, horizontal: 8 },
-          fill: priorityColor.bg,
-          cornerRadius: 4,
-          stroke: priorityColor.border,
-          strokeWidth: 1
+          direction: "horizontal",
+          spacing: 8,
+          width: "fill-parent",
+          verticalAlignItems: "center"
         },
-        /* @__PURE__ */ figma.widget.h(Text3, { fontSize: 11, fill: priorityColor.text }, getPriorityLabel(issue.priority))
-      )),
-      /* @__PURE__ */ figma.widget.h(AutoLayout3, { direction: "vertical", spacing: 4, width: "fill-parent" }, /* @__PURE__ */ figma.widget.h(AutoLayout3, { direction: "horizontal", spacing: 8, width: "fill-parent", verticalAlignItems: "center" }, /* @__PURE__ */ figma.widget.h(
+        /* @__PURE__ */ figma.widget.h(
+          AutoLayout3,
+          {
+            padding: { vertical: 2, horizontal: 8 },
+            fill: priorityColor.bg,
+            cornerRadius: 4,
+            stroke: priorityColor.border,
+            strokeWidth: 1
+          },
+          /* @__PURE__ */ figma.widget.h(Text3, { fontSize: 11, fill: priorityColor.text }, getPriorityLabel(issue.priority))
+        )
+      ),
+      /* @__PURE__ */ figma.widget.h(AutoLayout3, { direction: "vertical", spacing: 4, width: "fill-parent" }, /* @__PURE__ */ figma.widget.h(
         AutoLayout3,
         {
-          padding: { vertical: 6, horizontal: 12 },
-          fill: { type: "solid", color: { r: 0.92, g: 0.3, b: 0.3, a: 1 } },
-          cornerRadius: 6,
-          onClick: () => {
-            onDelete(issue.id);
-          }
+          direction: "horizontal",
+          spacing: 8,
+          width: "fill-parent",
+          verticalAlignItems: "center"
         },
-        /* @__PURE__ */ figma.widget.h(Text3, { fontSize: 11, fill: "#FFFFFF", fontWeight: 600 }, "\u{1F5D1}\uFE0F Supprimer")
-      ), /* @__PURE__ */ figma.widget.h(AutoLayout3, { width: "fill-parent" }), /* @__PURE__ */ figma.widget.h(
+        /* @__PURE__ */ figma.widget.h(
+          AutoLayout3,
+          {
+            padding: { vertical: 6, horizontal: 12 },
+            fill: { type: "solid", color: { r: 0.37, g: 0.51, b: 0.82, a: 1 } },
+            cornerRadius: 6,
+            onClick: () => {
+              const statusOrder = ["todo", "in-progress", "done"];
+              const currentIndex = statusOrder.indexOf(issue.status);
+              const nextStatus = statusOrder[(currentIndex + 1) % statusOrder.length];
+              onMove(issue.id, nextStatus);
+            }
+          },
+          /* @__PURE__ */ figma.widget.h(Text3, { fontSize: 11, fill: "#FFFFFF", fontWeight: 600 }, "Avancer \u2192")
+        ),
+        /* @__PURE__ */ figma.widget.h(AutoLayout3, { width: "fill-parent" }),
+        /* @__PURE__ */ figma.widget.h(
+          AutoLayout3,
+          {
+            padding: { vertical: 6, horizontal: 12 },
+            fill: { type: "solid", color: { r: 0.92, g: 0.3, b: 0.3, a: 1 } },
+            cornerRadius: 6,
+            onClick: () => {
+              onDelete(issue.id);
+            }
+          },
+          /* @__PURE__ */ figma.widget.h(Text3, { fontSize: 11, fill: "#FFFFFF", fontWeight: 600 }, "\u{1F5D1}\uFE0F Supprimer")
+        )
+      ), /* @__PURE__ */ figma.widget.h(
         AutoLayout3,
         {
-          padding: { vertical: 6, horizontal: 12 },
-          fill: { type: "solid", color: { r: 0.37, g: 0.51, b: 0.82, a: 1 } },
-          cornerRadius: 6,
-          onClick: () => {
-            const statusOrder = ["todo", "in-progress", "done"];
-            const currentIndex = statusOrder.indexOf(issue.status);
-            const nextStatus = statusOrder[(currentIndex + 1) % statusOrder.length];
-            onMove(issue.id, nextStatus);
-          }
+          direction: "horizontal",
+          spacing: 8,
+          width: "fill-parent",
+          verticalAlignItems: "center"
         },
-        /* @__PURE__ */ figma.widget.h(Text3, { fontSize: 11, fill: "#FFFFFF", fontWeight: 600 }, "Avancer \u2192")
-      )), /* @__PURE__ */ figma.widget.h(AutoLayout3, { direction: "horizontal", spacing: 8, width: "fill-parent", verticalAlignItems: "center" }, /* @__PURE__ */ figma.widget.h(Text3, { fontSize: 10, fill: "#9CA3AF" }, "Cr\xE9ation: ", new Date(issue.createdAt).toLocaleDateString()), /* @__PURE__ */ figma.widget.h(AutoLayout3, { width: "fill-parent" }), issue.status === "done" && issue.completedAt ? /* @__PURE__ */ figma.widget.h(Text3, { fontSize: 10, fill: "#10B981" }, "Compl\xE9t\xE9: ", new Date(issue.completedAt).toLocaleDateString()) : null))
+        /* @__PURE__ */ figma.widget.h(Text3, { fontSize: 10, fill: "#9CA3AF" }, "Cr\xE9ation: ", new Date(issue.createdAt).toLocaleDateString()),
+        /* @__PURE__ */ figma.widget.h(AutoLayout3, { width: "fill-parent" }),
+        issue.status === "done" && issue.completedAt ? /* @__PURE__ */ figma.widget.h(Text3, { fontSize: 10, fill: "#10B981" }, "Compl\xE9t\xE9: ", new Date(issue.completedAt).toLocaleDateString()) : null
+      ))
     );
   }
 
