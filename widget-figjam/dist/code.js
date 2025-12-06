@@ -418,7 +418,7 @@
         stroke: "#E6E6E6",
         width: 320
       },
-      isEditing ? /* @__PURE__ */ figma.widget.h(figma.widget.Fragment, null, /* @__PURE__ */ figma.widget.h(Text2, { fontSize: 18, fontWeight: "bold" }, "Formulaire enseignant"), !teacherClaimed && /* @__PURE__ */ figma.widget.h(
+      isEditing ? /* @__PURE__ */ figma.widget.h(figma.widget.Fragment, null, /* @__PURE__ */ figma.widget.h(Text2, { fontSize: 18, fontWeight: "bold" }, "Formulaire du projet"), !teacherClaimed && /* @__PURE__ */ figma.widget.h(
         AutoLayout2,
         {
           padding: 8,
@@ -429,7 +429,7 @@
           direction: "vertical",
           spacing: 8
         },
-        /* @__PURE__ */ figma.widget.h(Text2, { fontSize: 12, fill: "#0066CC" }, "\u{1F44B} Cliquez ci-dessous pour devenir l'enseignant"),
+        /* @__PURE__ */ figma.widget.h(Text2, { fontSize: 12, fill: "#0066CC" }, "\u{1F44B} Cliquez ci-dessous pour devenir le gestionnaire"),
         /* @__PURE__ */ figma.widget.h(
           AutoLayout2,
           {
@@ -438,7 +438,7 @@
             fill: "#0066CC",
             onClick: claimTeacherRole
           },
-          /* @__PURE__ */ figma.widget.h(Text2, { fontSize: 12, fill: "#FFFFFF", fontWeight: "bold" }, "Je suis l'enseignant")
+          /* @__PURE__ */ figma.widget.h(Text2, { fontSize: 12, fill: "#FFFFFF", fontWeight: "bold" }, "Je suis le gestionnaire du projet")
         )
       ), teacherClaimed && !isCreator && /* @__PURE__ */ figma.widget.h(
         AutoLayout2,
@@ -449,7 +449,7 @@
           stroke: "#FF9999",
           width: "fill-parent"
         },
-        /* @__PURE__ */ figma.widget.h(Text2, { fontSize: 12, fill: "#CC0000" }, "\u26A0\uFE0F Seul l'enseignant peut modifier ce formulaire")
+        /* @__PURE__ */ figma.widget.h(Text2, { fontSize: 12, fill: "#CC0000" }, "\u26A0\uFE0F Seul le gestionnaire du projet peut modifier ce formulaire")
       ), /* @__PURE__ */ figma.widget.h(AutoLayout2, { direction: "vertical", spacing: 4, width: "fill-parent" }, /* @__PURE__ */ figma.widget.h(Text2, { fontSize: 14, fontWeight: "bold" }, "Nombre d'\xE9tudiants :"), /* @__PURE__ */ figma.widget.h(
         AutoLayout2,
         {

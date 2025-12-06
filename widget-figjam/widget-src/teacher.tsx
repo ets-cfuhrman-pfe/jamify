@@ -163,7 +163,7 @@ export function TeacherProfile() {
       {isEditing ? (
         <>
           <Text fontSize={18} fontWeight="bold">
-            Formulaire enseignant
+            Formulaire du projet
           </Text>
 
           {/* Claim teacher role */}
@@ -178,7 +178,7 @@ export function TeacherProfile() {
               spacing={8}
             >
               <Text fontSize={12} fill="#0066CC">
-                👋 Cliquez ci-dessous pour devenir l'enseignant
+                👋 Cliquez ci-dessous pour devenir le gestionnaire
               </Text>
               <AutoLayout
                 padding={{ vertical: 6, horizontal: 12 }}
@@ -187,7 +187,7 @@ export function TeacherProfile() {
                 onClick={claimTeacherRole}
               >
                 <Text fontSize={12} fill="#FFFFFF" fontWeight="bold">
-                  Je suis l'enseignant
+                  Je suis le gestionnaire du projet
                 </Text>
               </AutoLayout>
             </AutoLayout>
@@ -202,7 +202,7 @@ export function TeacherProfile() {
               width={'fill-parent'}
             >
               <Text fontSize={12} fill="#CC0000">
-                ⚠️ Seul l'enseignant peut modifier ce formulaire
+                ⚠️ Seul le gestionnaire du projet peut modifier ce formulaire
               </Text>
             </AutoLayout>
           )}
