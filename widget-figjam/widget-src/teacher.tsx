@@ -104,6 +104,14 @@ export function TeacherProfile() {
     return quest ? quest.name : 'Inconnue';
   };
 
+  // Helper function to convert priority to French
+  const getPriorityLabel = (priority: string): string => {
+    if (priority === 'low') return 'bas';
+    if (priority === 'medium') return 'moyen';
+    if (priority === 'high') return 'élevé';
+    return priority;
+  };
+
   const claimTeacherRole = () => {
     if (!teacherClaimed) {
       setTeacherClaimed(true);
@@ -565,7 +573,11 @@ export function TeacherProfile() {
                           /"/g,
                           '""'
                         );
-                        return `"${issue.title}","${questName}","${issue.priority}","${description}","${startDate}","${completionDate}","${studentName}"`;
+                        return `"${
+                          issue.title
+                        }","${questName}","${getPriorityLabel(
+                          issue.priority
+                        )}","${description}","${startDate}","${completionDate}","${studentName}"`;
                       })
                       .join('\n');
 

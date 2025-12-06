@@ -370,6 +370,12 @@
       const quest = quests.find((q) => q.id === questId);
       return quest ? quest.name : "Inconnue";
     };
+    const getPriorityLabel = (priority) => {
+      if (priority === "low") return "bas";
+      if (priority === "medium") return "moyen";
+      if (priority === "high") return "\xE9lev\xE9";
+      return priority;
+    };
     const claimTeacherRole = () => {
       if (!teacherClaimed) {
         setTeacherClaimed(true);
@@ -708,7 +714,9 @@
                   /"/g,
                   '""'
                 );
-                return `"${issue.title}","${questName}","${issue.priority}","${description}","${startDate}","${completionDate}","${studentName}"`;
+                return `"${issue.title}","${questName}","${getPriorityLabel(
+                  issue.priority
+                )}","${description}","${startDate}","${completionDate}","${studentName}"`;
               }).join("\n");
               const missionsHeader = "Nom_Mission,Description,Difficult\xE9,XP_R\xE9compense\n";
               const missionsData = quests.map((quest) => {
