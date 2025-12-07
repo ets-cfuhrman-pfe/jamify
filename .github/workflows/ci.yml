@@ -22,7 +22,6 @@ jobs:
           node-version: '18'
 
       - name: Install dependencies
-        working-directory: ./widget-figjam
         run: npm install
 
       - name: Run unit tests
