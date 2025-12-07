@@ -100,10 +100,10 @@ export function KanbanBoard() {
 
     const newStatus = updatedIssues.find((i: Issue) => i.id === issueId)?.status;
     if (newStatus === "done") {
-      addXP(XP_REWARDS.COMPLETE_ISSUE, "Issue completed");
+      addXP(XP_REWARDS.COMPLETE_ISSUE, "✅ Tâche terminée");
       addStudentXP(issue.assignedToId, XP_REWARDS.COMPLETE_ISSUE);
     } else {
-      addXP(XP_REWARDS.MOVE_ISSUE, "Issue moved");
+      addXP(XP_REWARDS.MOVE_ISSUE, "🔄 Tâche déplacée");
       addStudentXP(issue.assignedToId, XP_REWARDS.MOVE_ISSUE);
     }
   };
@@ -128,7 +128,7 @@ export function KanbanBoard() {
       assignedToId: assignedToId,
     };
     setIssues(issues.concat([newIssue]));
-    addXP(XP_REWARDS.ADD_ISSUE, "Issue created");
+    addXP(XP_REWARDS.ADD_ISSUE, "✅ Tâche créée");
     addStudentXP(assignedToId, XP_REWARDS.ADD_ISSUE);
   };
 

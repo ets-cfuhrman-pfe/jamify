@@ -25,48 +25,48 @@ interface PostIt {
 
 export function PostItBoard() {
   // Store all post-its
-  const [postIts, setPostIts] = useSyncedState<PostIt[]>("postIts", []);
+  const [postIts, setPostIts] = useSyncedState<PostIt[]>('postIts', []);
 
-  const [isCreating, setIsCreating] = useSyncedState("isCreatingPostIt", false);
+  const [isCreating, setIsCreating] = useSyncedState('isCreatingPostIt', false);
   const [newPostItContent, setNewPostItContent] = useSyncedState(
-    "newPostItContent",
-    ""
+    'newPostItContent',
+    ''
   );
 
   const [editingPostItId, setEditingPostItId] = useSyncedState<string | null>(
-    "editingPostItId",
+    'editingPostItId',
     null
   );
   const [editContents, setEditContents] = useSyncedState<
     Record<string, string>
-  >("editContents", {});
+  >('editContents', {});
 
   // Store current user info in synced state (set once when needed)
   const [currentUserId, setCurrentUserId] = useSyncedState<string>(
-    "currentUserId",
-    ""
+    'currentUserId',
+    ''
   );
   const [currentUserName, setCurrentUserName] = useSyncedState<string>(
-    "currentUserName",
-    "Anonyme"
+    'currentUserName',
+    'Anonyme'
   );
 
   // Comment UI state maps
   const [openComments, setOpenComments] = useSyncedState<
     Record<string, boolean>
-  >("openComments", {});
+  >('openComments', {});
   const [newCommentTexts, setNewCommentTexts] = useSyncedState<
     Record<string, string>
-  >("newCommentTexts", {});
+  >('newCommentTexts', {});
 
   // Available colors for post-its
   const colors = [
-    "#FFE5B4",
-    "#FFB6C1",
-    "#B4E5FF",
-    "#C1FFB6",
-    "#E5B4FF",
-    "#FFD700",
+    '#FFE5B4',
+    '#FFB6C1',
+    '#B4E5FF',
+    '#C1FFB6',
+    '#E5B4FF',
+    '#FFD700',
   ];
 
   // Add a new post-it
@@ -74,8 +74,8 @@ export function PostItBoard() {
     return new Promise<void>((resolve) => {
       // Get current user info inside the event handler
       const user = figma.currentUser;
-      const userId = user?.id || "anonymous";
-      const userName = user?.name || "Anonyme";
+      const userId = user?.id || 'anonymous';
+      const userName = user?.name || 'Anonyme';
 
       // Update stored user info if needed
       if (!currentUserId) {
@@ -95,7 +95,7 @@ export function PostItBoard() {
           comments: [],
         };
         setPostIts([...postIts, newPostIt]);
-        setNewPostItContent("");
+        setNewPostItContent('');
         setIsCreating(false);
       }
       resolve();
@@ -113,9 +113,9 @@ export function PostItBoard() {
     return new Promise<void>((resolve) => {
       if (isCurrentUserAuthor(authorId)) {
         setPostIts(postIts.filter((p) => p.id !== id));
-        figma.notify("🗑️ Post-it supprimé");
+        figma.notify('🗑️ Post-it supprimé');
       } else {
-        figma.notify("⚠️ Vous ne pouvez supprimer que vos propres post-its");
+        figma.notify('⚠️ Vous ne pouvez supprimer que vos propres post-its');
       }
       resolve();
     });
@@ -132,11 +132,11 @@ export function PostItBoard() {
   const toggleLike = (postItId: string) => {
     return new Promise<void>((resolve) => {
       const user = figma.currentUser;
-      const userId = user?.id || "anonymous";
+      const userId = user?.id || 'anonymous';
 
       if (!currentUserId) {
         setCurrentUserId(userId);
-        setCurrentUserName(user?.name || "Anonyme");
+        setCurrentUserName(user?.name || 'Anonyme');
       }
 
       setPostIts(toggleLikeLogic(postIts as unknown as PostItLogic[], postItId, userId) as unknown as PostIt[]);
@@ -161,7 +161,7 @@ export function PostItBoard() {
       if (updated !== postIts) {
         setPostIts(updated as unknown as PostIt[]);
         const updatedDrafts = { ...newCommentTexts };
-        updatedDrafts[postItId] = "";
+        updatedDrafts[postItId] = '';
         setNewCommentTexts(updatedDrafts);
       }
       resolve();
@@ -182,7 +182,7 @@ export function PostItBoard() {
         direction="horizontal"
         spacing={8}
         verticalAlignItems="center"
-        width={"fill-parent"}
+        width={'fill-parent'}
       >
         <Text fontSize={18} fontWeight="bold">
           📝 Idéation
@@ -194,7 +194,7 @@ export function PostItBoard() {
           onClick={() => setIsCreating(!isCreating)}
         >
           <Text fontSize={12} fill="#FFFFFF" fontWeight="bold">
-            {isCreating ? "Annuler" : "+ Nouveau post-it"}
+            {isCreating ? 'Annuler' : '+ Nouveau post-it'}
           </Text>
         </AutoLayout>
       </AutoLayout>
@@ -207,8 +207,8 @@ export function PostItBoard() {
           padding={12}
           cornerRadius={8}
           fill="#FFFFFF"
-          stroke={{ type: "solid", color: { r: 0.37, g: 0.51, b: 0.82, a: 1 } }}
-          width={"fill-parent"}
+          stroke={{ type: 'solid', color: { r: 0.37, g: 0.51, b: 0.82, a: 1 } }}
+          width={'fill-parent'}
         >
           <Text fontSize={13} fontWeight="bold">
             Nouveau post-it :
@@ -218,13 +218,13 @@ export function PostItBoard() {
             cornerRadius={6}
             fill="#FFFFFF"
             stroke="#CCCCCC"
-            width={"fill-parent"}
+            width={'fill-parent'}
           >
             <Input
               value={newPostItContent}
               placeholder="Écrivez votre rétroaction..."
               fontSize={12}
-              width={"fill-parent"}
+              width={'fill-parent'}
               onTextEditEnd={(e) => setNewPostItContent(e.characters)}
             />
           </AutoLayout>
@@ -247,7 +247,7 @@ export function PostItBoard() {
         direction="horizontal"
         spacing={12}
         wrap={true}
-        width={"fill-parent"}
+        width={'fill-parent'}
       >
         {postIts.length === 0 ? (
           <Text fontSize={12} fill="#999">
@@ -264,7 +264,7 @@ export function PostItBoard() {
 
             // Get current user ID for this post-it (safe in map context)
             const currentUserLiked = (postIt.likes || []).includes(
-              currentUserId || "anonymous"
+              currentUserId || 'anonymous'
             );
 
             return (
@@ -285,12 +285,12 @@ export function PostItBoard() {
                       padding={{ vertical: 6, horizontal: 8 }}
                       cornerRadius={6}
                       fill="#FFFFFF"
-                      width={"fill-parent"}
+                      width={'fill-parent'}
                     >
                       <Input
                         value={editContent}
                         fontSize={11}
-                        width={"fill-parent"}
+                        width={'fill-parent'}
                         onTextEditEnd={(e) => {
                           const newContents = { ...editContents };
                           newContents[postIt.id] = e.characters;
@@ -341,7 +341,7 @@ export function PostItBoard() {
                     <AutoLayout
                       direction="vertical"
                       spacing={4}
-                      width={"fill-parent"}
+                      width={'fill-parent'}
                     >
                       <Text fontSize={9} fill="#666">
                         — {postIt.authorName}
@@ -350,7 +350,7 @@ export function PostItBoard() {
                       <AutoLayout
                         padding={{ vertical: 3, horizontal: 6 }}
                         cornerRadius={4}
-                        fill={currentUserLiked ? "#FF69B4" : "#E0E0E0"}
+                        fill={currentUserLiked ? '#FF69B4' : '#E0E0E0'}
                         onClick={() => toggleLike(postIt.id)}
                         spacing={4}
                         verticalAlignItems="center"
@@ -367,15 +367,15 @@ export function PostItBoard() {
                       <AutoLayout
                         padding={{ vertical: 3, horizontal: 6 }}
                         cornerRadius={4}
-                        fill={openComments[postIt.id] ? "#CCE5FF" : "#F0F0F0"}
+                        fill={openComments[postIt.id] ? '#CCE5FF' : '#F0F0F0'}
                         onClick={() => toggleComments(postIt.id)}
                         spacing={4}
                         verticalAlignItems="center"
-                        width={"fill-parent"}
+                        width={'fill-parent'}
                       >
                         <Text fontSize={9}>
                           {openComments[postIt.id]
-                            ? "▼ Masquer commentaires"
+                            ? '▼ Masquer commentaires'
                             : `💬 Commentaires (${
                                 (postIt.comments || []).length
                               })`}
@@ -386,7 +386,7 @@ export function PostItBoard() {
                         <AutoLayout
                           direction="vertical"
                           spacing={6}
-                          width={"fill-parent"}
+                          width={'fill-parent'}
                           fill="#F9F9F9"
                           stroke="#DDDDDD"
                           cornerRadius={6}
@@ -402,7 +402,7 @@ export function PostItBoard() {
                                 key={c.id}
                                 direction="vertical"
                                 spacing={2}
-                                width={"fill-parent"}
+                                width={'fill-parent'}
                               >
                                 <Text fontSize={10} fontWeight="bold">
                                   {c.authorName}
@@ -417,13 +417,13 @@ export function PostItBoard() {
                             cornerRadius={4}
                             fill="#FFFFFF"
                             stroke="#CCCCCC"
-                            width={"fill-parent"}
+                            width={'fill-parent'}
                           >
                             <Input
-                              value={newCommentTexts[postIt.id] || ""}
+                              value={newCommentTexts[postIt.id] || ''}
                               placeholder="Nouveau commentaire..."
                               fontSize={10}
-                              width={"fill-parent"}
+                              width={'fill-parent'}
                               onTextEditEnd={(e) => {
                                 const drafts = { ...newCommentTexts };
                                 drafts[postIt.id] = e.characters;
@@ -448,7 +448,7 @@ export function PostItBoard() {
                         <AutoLayout
                           padding={{ vertical: 3, horizontal: 6 }}
                           cornerRadius={4}
-                          fill="#2196F3"
+                          fill="#F5F5F5"
                           onClick={() => {
                             return new Promise<void>((resolve) => {
                               if (isCurrentUserAuthor(postIt.authorId)) {
@@ -458,16 +458,14 @@ export function PostItBoard() {
                                 setEditingPostItId(postIt.id);
                               } else {
                                 figma.notify(
-                                  "⚠️ Vous ne pouvez modifier que vos propres post-its"
+                                  '⚠️ Vous ne pouvez modifier que vos propres post-its'
                                 );
                               }
                               resolve();
                             });
                           }}
                         >
-                          <Text fontSize={9} fill="#FFFFFF">
-                            ✏️ Modifier
-                          </Text>
+                          <Text fontSize={9}>✏️ Modifier</Text>
                         </AutoLayout>
                         <AutoLayout
                           padding={{ vertical: 3, horizontal: 6 }}
