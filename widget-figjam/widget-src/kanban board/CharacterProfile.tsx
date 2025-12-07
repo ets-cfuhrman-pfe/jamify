@@ -1,3 +1,5 @@
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+declare const figma: any;
 const { widget } = figma;
 const { AutoLayout, Text, SVG } = widget;
 import { TrophySVG, ZapSVG } from './constants';

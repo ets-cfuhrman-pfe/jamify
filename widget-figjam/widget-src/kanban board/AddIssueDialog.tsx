@@ -1,3 +1,6 @@
+// AddIssueDialog.tsx
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+declare const figma: any;
 const { widget } = figma;
 const { useSyncedState, AutoLayout, Text, Input } = widget;
 
@@ -14,14 +17,14 @@ export function AddIssueDialog({
 }) {
   const [title, setTitle] = useSyncedState(`newIssueTitle_${status}`, "");
   const [description, setDescription] = useSyncedState(`newIssueDesc_${status}`, "");
-  const [priority, setPriority] = useSyncedState<"low" | "medium" | "high">(`newIssuePriority_${status}`, "medium");
+    const [priority, setPriority] = useSyncedState(`newIssuePriority_${status}`, "medium" as "low" | "medium" | "high");
   const [showPriorityDropdown, setShowPriorityDropdown] = useSyncedState(`showPriorityDropdown_${status}`, false);
 
-  // 🆕 Quest selection
+  // Quest selection
   const [quests] = useSyncedState("teacherQuests", []); // shared from teacher section
   const [selectedQuest, setSelectedQuest] = useSyncedState(`selectedQuest_${status}`, "");
   const [showQuestDropdown, setShowQuestDropdown] = useSyncedState(`showQuestDropdown_${status}`, false);
-  const [assignedToId, setAssignedToId] = useSyncedState<number | null>(`newIssueAssignedTo_${status}`, null);
+    const [assignedToId, setAssignedToId] = useSyncedState(`newIssueAssignedTo_${status}`, null as number | null);
   const [showStudentDropdown, setShowStudentDropdown] = useSyncedState(`showStudentDropdown_${status}`, false);
 
   const priorities: ("low" | "medium" | "high")[] = ["low", "medium", "high"];

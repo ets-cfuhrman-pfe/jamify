@@ -2,37 +2,7 @@
 const { widget } = figma;
 const { useSyncedState, AutoLayout, Text, Input } = widget;
 
-// Import Issue type
-interface Issue {
-  id: string;
-  title: string;
-  description: string;
-  status: string;
-  priority: 'bas' | 'moyen' | 'élevé';
-  createdAt: string;
-  completedAt?: string;
-  questId: string | null;
-  assignedToId?: number;
-}
-
-interface Comment {
-  id: string;
-  authorId: string;
-  authorName: string;
-  content: string;
-  timestamp: number;
-}
-
-interface PostIt {
-  id: string;
-  content: string;
-  authorId: string;
-  authorName: string;
-  color: string;
-  timestamp: number;
-  likes: string[];
-  comments?: Comment[];
-}
+import { addQuest as addQuestLogic, updateQuest as updateQuestLogic, deleteQuest as deleteQuestLogic, type Quest as QuestLogic, newQuest } from './teacher-logic';
 
 export function TeacherProfile() {
   const [teacherClaimed, setTeacherClaimed] = useSyncedState<boolean>(
@@ -57,12 +27,7 @@ export function TeacherProfile() {
   // Read post-its from feedback section
   const [postIts] = useSyncedState<PostIt[]>('postIts', []);
 
-  type Quest = {
-    id: string;
-    name: string;
-    description: string;
-    difficulty: string;
-  };
+  type Quest = QuestLogic;
 
   // Read the number of students from teacher profile
   const numberOfStudentsNum = parseInt(numberOfStudents) || 0;
@@ -122,30 +87,15 @@ export function TeacherProfile() {
   const isCreator = canEdit;
 
   const updateQuest = (id: string, field: keyof Quest, value: string) => {
-    const updated = quests.map((q) => {
-      if (q.id === id) {
-        // Use object spread with explicit casting so TS doesn’t complain
-        return { ...q, [field]: value } as Quest;
-      }
-      return q;
-    });
-
-    setQuests(updated);
+    setQuests(updateQuestLogic(quests, id, field, value));
   };
 
   const addQuest = () => {
-    const newQuest: Quest = {
-      id: Date.now().toString(),
-      name: 'Nouvelle mission',
-      description: '',
-      difficulty: '',
-    };
-    quests.push(newQuest);
-    setQuests(quests);
+    setQuests(addQuestLogic(quests));
   };
 
   const deleteQuest = (id: string) => {
-    setQuests(quests.filter((q) => q.id !== id));
+    setQuests(deleteQuestLogic(quests, id));
   };
 
   return (

@@ -1,19 +1,18 @@
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+declare const figma: any;
 const { widget } = figma;
 const { useSyncedState, useEffect, AutoLayout, Text } = widget;
 
-// Import types
 import { Issue, Column } from "./types";
-
-// Import constants
 import { COLUMNS, XP_REWARDS, XP_PER_LEVEL } from "./constants";
-
-// Import components
+import { moveIssue, awardXP, checkLevelUp, safeAssignedStudentId } from './kanban-logic';
 import { CharacterProfile } from "./CharacterProfile";
 import { KanbanColumn } from "./KanbanColumn";
 
 // Exported Kanban board component to embed inside main widget
 export function KanbanBoard() {
-  const [issues, setIssues] = useSyncedState<Issue[]>("issues", []);
+  // Remove generic annotation to avoid TS2347 in editor
+  const [issues, setIssues] = useSyncedState("issues", [] as Issue[]);
 
   // Read the number of students from teacher profile
   const [numberOfStudentsStr] = useSyncedState("teacherNumStudents", "0");
@@ -39,41 +38,52 @@ export function KanbanBoard() {
 
   const [xp, setXp] = useSyncedState("xp", 45);
   const [level, setLevel] = useSyncedState("level", 1);
-  const [addingToColumn, setAddingToColumn] = useSyncedState<string | null>(
+  const [addingToColumn, setAddingToColumn] = useSyncedState(
     "addingToColumn",
-    null
+    null as string | null
   );
 
   const xpToNextLevel = level * XP_PER_LEVEL;
 
+  // Level up effect
+  useEffect(() => {
+    const res = checkLevelUp(xp, level, XP_PER_LEVEL);
+    if (res.leveledUp) {
+      setLevel(res.level);
+      setXp(res.xp);
+      try { figma.notify(`🎉 Level Up! You're now Level ${res.level}!`); } catch (_) {}
+    }
+  });
+
   const addXP = (amount: number, reason: string) => {
-    setXp(xp + amount);
-    figma.notify(`💎 +${amount} XP - ${reason} 💎`);
+    setXp(awardXP(xp, amount));
+    try { figma.notify(`+${amount} XP - ${reason}`); } catch (_) {}
   };
 
   // Add XP to a specific student
   const addStudentXP = (studentId: number | undefined, amount: number) => {
-    if (studentId === undefined) return; // No student assigned
+    const sid = safeAssignedStudentId(studentId);
+    if (sid === undefined) return; // No student assigned
 
-    const currentXP = studentXP[studentId];
-    const currentLevel = studentLevels[studentId];
+    const currentXP = studentXP[sid];
+    const currentLevel = studentLevels[sid];
     const xpToNextLevel = currentLevel * XP_PER_LEVEL;
 
-    const newXP = currentXP + amount;
-    setStudentXP[studentId](newXP);
+    const newXP = awardXP(currentXP, amount);
+    setStudentXP[sid](newXP);
 
     // Check for level up
     if (newXP >= xpToNextLevel) {
-      setStudentLevels[studentId](currentLevel + 1);
-      setStudentXP[studentId](newXP - xpToNextLevel);
+      setStudentLevels[sid](currentLevel + 1);
+      setStudentXP[sid](newXP - xpToNextLevel);
       try {
-        figma.notify(`🎉 ${studentNames[studentId]} est passé au niveau ${currentLevel + 1}! 🎉`);
+        figma.notify(`🎉 ${studentNames[sid]} leveled up to level ${currentLevel + 1}!`);
       } catch (_) { }
     }
   };
 
   const handleMove = (issueId: string) => {
-    const issue = issues.find((i) => i.id === issueId);
+    const issue = issues.find((i: Issue) => i.id === issueId);
     if (!issue) return;
 
     //Vérifie si la tâche est déjà terminée
@@ -85,21 +95,10 @@ export function KanbanBoard() {
       return;
     }
 
-    // Cycle through statuses: todo -> in-progress -> done -> todo
-    const statusOrder = ["todo", "in-progress", "done"];
-    const currentIndex = statusOrder.indexOf(issue.status);
-    const newStatus = statusOrder[(currentIndex + 1) % statusOrder.length];
-
-    if (issue.status === newStatus) return;
-
-    const updatedIssues = issues.map((i) =>
-      i.id === issueId ? Object.assign({}, i, {
-        status: newStatus,
-        completedAt: newStatus === "done" ? new Date().toISOString() : undefined
-      }) : i
-    );
+    const updatedIssues = issues.map((i: Issue) => (i.id === issueId ? moveIssue(i) : i));
     setIssues(updatedIssues);
 
+    const newStatus = updatedIssues.find((i: Issue) => i.id === issueId)?.status;
     if (newStatus === "done") {
       addXP(XP_REWARDS.COMPLETE_ISSUE, "✅ Tâche terminée");
       addStudentXP(issue.assignedToId, XP_REWARDS.COMPLETE_ISSUE);
@@ -134,7 +133,7 @@ export function KanbanBoard() {
   };
 
   const handleDelete = (issueId: string) => {
-    const updatedIssues = issues.filter((i) => i.id !== issueId);
+    const updatedIssues = issues.filter((i: Issue) => i.id !== issueId);
     setIssues(updatedIssues);
     try {
       figma.notify("✅ Tâche supprimée");

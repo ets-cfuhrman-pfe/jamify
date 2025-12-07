@@ -3,11 +3,12 @@
   "version": "1.0.0",
   "description": "Your Figma widget",
   "scripts": {
-  "build": "esbuild widget-src/widget.tsx --bundle --outfile=dist/code.js --target=es6 --loader:.png=dataurl --loader:.jpg=dataurl --loader:.svg=text",
-  "build:profile": "esbuild widget-src/code.tsx --bundle --outfile=dist/profile.js --target=es6 --loader:.png=dataurl --loader:.jpg=dataurl --loader:.svg=text",
+    "build": "esbuild widget-src/widget.tsx --bundle --outfile=dist/code.js --target=es6 --loader:.png=dataurl --loader:.jpg=dataurl --loader:.svg=text",
+    "build:profile": "esbuild widget-src/code.tsx --bundle --outfile=dist/profile.js --target=es6 --loader:.png=dataurl --loader:.jpg=dataurl --loader:.svg=text",
     "lint": "eslint --ext .ts,.tsx --ignore-pattern node_modules .",
     "lint:fix": "eslint --ext .ts,.tsx --ignore-pattern node_modules --fix .",
     "tsc": "tsc --noEmit -p widget-src",
+    "test": "jest --coverage",
     "watch": "npm run build -- --watch",
     "watch:profile": "npm run build:profile -- --watch"
   },
@@ -17,10 +18,13 @@
     "@figma/eslint-plugin-figma-plugins": "*",
     "@figma/plugin-typings": "*",
     "@figma/widget-typings": "*",
+    "@types/jest": "^29.5.11",
     "@typescript-eslint/eslint-plugin": "^6.12.0",
     "@typescript-eslint/parser": "^6.12.0",
     "esbuild": "*",
     "eslint": "^8.54.0",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.1.1",
     "typescript": "^5.3.2"
   },
   "eslintConfig": {
