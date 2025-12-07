@@ -623,27 +623,6 @@
               }
             )
           ),
-          /* @__PURE__ */ figma.widget.h(Text2, { fontSize: 12 }, "Points d'exp\xE9rience :"),
-          /* @__PURE__ */ figma.widget.h(
-            AutoLayout2,
-            {
-              padding: { vertical: 6, horizontal: 8 },
-              cornerRadius: 6,
-              fill: isCreator ? "#FFFFFF" : "#E0E0E0",
-              stroke: "#CCCCCC",
-              width: "fill-parent"
-            },
-            /* @__PURE__ */ figma.widget.h(
-              Input2,
-              {
-                value: quest.xp,
-                placeholder: "Ex: 100",
-                fontSize: 12,
-                width: "fill-parent",
-                onTextEditEnd: (e) => updateQuest2(quest.id, "xp", e.characters)
-              }
-            )
-          ),
           /* @__PURE__ */ figma.widget.h(
             AutoLayout2,
             {
@@ -925,7 +904,7 @@
           stroke: "#153089ff",
           strokeWidth: 1
         },
-        questName && /* @__PURE__ */ figma.widget.h(Text3, { fontSize: 10, fill: "#153089ff" }, "Mission: ", questName)
+        questName && /* @__PURE__ */ figma.widget.h(Text3, { fontSize: 10, fill: "#153089ff" }, "Qu\xEAte: ", questName)
       ),
       /* @__PURE__ */ figma.widget.h(
         AutoLayout3,

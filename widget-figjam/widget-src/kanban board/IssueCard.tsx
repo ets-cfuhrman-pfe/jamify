@@ -151,101 +151,16 @@ export function IssueCard({
           </AutoLayout>
         </AutoLayout>
 
-            {/* Description */}
-            {issue.description.trim().length > 0 ? (
-                <Text fontSize={12} fill="#6B7280" width="fill-parent">
-                    {issue.description}
-                </Text>
-            ) : null}
-
-            {/* Student assignment display (read-only) */}
-            <AutoLayout direction="horizontal" spacing={8} width="fill-parent" verticalAlignItems="center">
-                <AutoLayout
-                    padding={{ vertical: 4, horizontal: 8 }}
-                    fill="#F0F9FF"
-                    cornerRadius={4}
-                    stroke={{ type: "solid", color: { r: 0.7, g: 0.85, b: 1, a: 1 } }}
-                    strokeWidth={1}
-                >
-                    <Text fontSize={11} fill="#0369A1">
-                        {getAssignedName()}
-                    </Text>
-                </AutoLayout>
-            </AutoLayout>
-
-            <AutoLayout
-                padding={{ vertical: 2, horizontal: 8 }}
-                fill={"#80a7f6ba"}
-                cornerRadius={4}
-                stroke={"#153089ff"}
-                strokeWidth={1}
-            >
-                {questName && (
-                    <Text fontSize={10} fill="#153089ff">
-                        Mission: {questName}
-                    </Text>
-                )}
-            </AutoLayout>
-
-            {/* Footer with priority */}
-            <AutoLayout direction="horizontal" spacing={8} width="fill-parent" verticalAlignItems="center">
-                <AutoLayout
-                    padding={{ vertical: 2, horizontal: 8 }}
-                    fill={priorityColor.bg}
-                    cornerRadius={4}
-                    stroke={priorityColor.border}
-                    strokeWidth={1}
-                >
-                    <Text fontSize={11} fill={priorityColor.text}>
-                        {getPriorityLabel(issue.priority)}
-                    </Text>
-                </AutoLayout>
-
-            </AutoLayout>
-
-            {/* Action Buttons and Dates Container */}
-            <AutoLayout direction="vertical" spacing={4} width="fill-parent">
-                {/* Buttons */}
-                <AutoLayout direction="horizontal" spacing={8} width="fill-parent" verticalAlignItems="center">
-                    {/* Delete button */}
-                    <AutoLayout
-                        padding={{ vertical: 6, horizontal: 12 }}
-                        fill={{ type: "solid", color: { r: 0.92, g: 0.3, b: 0.3, a: 1 } }}
-                        cornerRadius={6}
-                        onClick={() => {
-                            onDelete(issue.id);
-                        }}
-                    >
-                        <Text fontSize={11} fill="#FFFFFF" fontWeight={600}>
-                            🗑️ Supprimer
-                        </Text>
-                    </AutoLayout>
-
-                    <AutoLayout width="fill-parent" />
-
-                    {/* Move button (on the right) */}
-                    <AutoLayout
-                        padding={{ vertical: 6, horizontal: 12 }}
-                        fill={{ type: "solid", color: { r: 0.37, g: 0.51, b: 0.82, a: 1 } }}
-                        cornerRadius={6}
-                        onClick={() => {
-                            const statusOrder = ["todo", "in-progress", "done"];
-                            const currentIndex = statusOrder.indexOf(issue.status);
-                            const nextStatus = statusOrder[(currentIndex + 1) % statusOrder.length];
-                            onMove(issue.id, nextStatus);
-                        }}
-                    >
-                        <Text fontSize={11} fill="#FFFFFF" fontWeight={600}>
-                            Avancer →
-                        </Text>
-                    </AutoLayout>
-                </AutoLayout>
-
-                {/* Dates row inside buttons container */}
-                <AutoLayout direction="horizontal" spacing={8} width="fill-parent" verticalAlignItems="center">
-                    <Text fontSize={10} fill="#9CA3AF">
-                        Création: {new Date(issue.createdAt).toLocaleDateString()}
-                    </Text>
+        {/* Dates row inside buttons container */}
+        <AutoLayout
+          direction="horizontal"
+          spacing={8}
+          width="fill-parent"
+          verticalAlignItems="center"
+        >
+          <Text fontSize={10} fill="#9CA3AF">
+            Création: {new Date(issue.createdAt).toLocaleDateString()}
+          </Text>
 
           <AutoLayout width="fill-parent" />
 
