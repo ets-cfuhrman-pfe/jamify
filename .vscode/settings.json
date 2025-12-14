@@ -1,5 +1,5 @@
 {
-  "jest.jestCommandLine": "npx jest --config jest.config.cjs",
+  "jest.jestCommandLine": "npx jest",
   "jest.rootPath": ".",
   "jest.autoRun": "watch",
   "testing.automaticallyOpenPeekView": "never"
