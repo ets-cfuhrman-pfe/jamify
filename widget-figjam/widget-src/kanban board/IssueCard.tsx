@@ -1,6 +1,8 @@
+// IssueCard.tsx
 import { Issue } from './types';
 import { PRIORITY_COLORS } from './constants';
-
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+declare const figma: any;
 const { widget } = figma;
 const { AutoLayout, Text, useSyncedState } = widget;
 

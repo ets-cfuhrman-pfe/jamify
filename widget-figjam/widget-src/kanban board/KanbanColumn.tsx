@@ -1,3 +1,5 @@
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+declare const figma: any; // Provided by FigJam runtime; declared for VS Code type checking only.
 const { widget } = figma;
 const { AutoLayout, Text } = widget;
 
@@ -7,7 +9,7 @@ import { IssueCard } from './IssueCard';
 import { AddIssueDialog } from './AddIssueDialog';
 
 // Helper function to convert hex to RGB
-function hexToRgb(hex: string): { r: number; g: number; b: number; a: number } {
+export function hexToRgb(hex: string): { r: number; g: number; b: number; a: number } {
     const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
     return result
         ? {
