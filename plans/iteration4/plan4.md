@@ -38,11 +38,67 @@ Les éléments de travail suivants seront abordés dans cette itération:
 | UCE-11 Rajout de date de complétion d'une tâche                    |        1 |                                                             2 | Prabhjot        | GitHub                 |
 | Mise à jour des plans d'itération pour les rendre conformes        |        1 |                                                             8 | Toute l'équipe  | GitHub                 |
 
+## Problèmes
+
+| Problème                                              | Notes |
+| ----------------------------------------------------- | ----- |
+| L'équipe a eu de la difficulté avec les notifications |       |
+                                                                                         
+
 ## Critères d'évaluation
 
-- Démonstration des fonctionnalités prévues ci-dessus.
-- Validation des éléments visuels par le client.
+- Démonstration des fonctionnalités UCS-03, UCE-09, UCE-10 et UCE-11 pas à pas avec le client.
+- Démonstration des changement visuelles du tableau kanban
+
+## Évaluation
+
+| Résumé             |                                                                                                                                |
+| ------------------ | ------------------------------------------------------------------------------------------------------------------------------ |
+| Cible d'évaluation | Itération 2 <!-- *Cela pourrait être toute l'itération ou simplement un composant spécifique* -->                              |
+| Date d'évaluation  | 2025/12/5                                                                                                                      |
+| Participants       | **Coéquipiers** : Ashwin, Burak, Phillipe, Prabhjot<br> **Enseignement** : Christopher, Alexandra **Clients** : Corinne, Robin |
+| État du projet     | 🟢 <!-- 🔴🟠🟢 *Rouge, Orange, ou Vert.* -->                                                                                       |
+
+
+
+### Évaluation par rapport aux objectifs
+
+- La réaction aux UCS-03, UCE-09, UCE-10 et UCE-11 a été positive.
 
 ### Éléments de travail: prévus vs réalisés
 
-> Résumez si tous les éléments de travail prévus dans l'itération ont été abordés, et des éléments de travail qui ont été reportés ou ajoutés.
+##### Éléments complétés: 
+- UCP-03 Données dans le téléchargement Excel  
+- UCE-09 Rajout de boutons modifier et supprimer pour les tâches 
+- UCE-10 Changer taille et place du pop-up 
+- UCE-11 Rajout de date de complétion d'une tâche  
+- Tests unitaires
+- Documentation pour le guide utilisateur    
+
+##### Éléments à continuer:
+
+- 
+
+
+### Évaluation par rapport aux résultats selon les critères d'évaluation
+
+Les clients sont vraiment satisfaits des nouvelles fonctionnalités présentées lors de la démonstration.
+
+## Autres préoccupations et écarts
+
+Les clients nous ont remerciez pour le projet.
+
+## Évaluation du travail d'équipe
+
+Tous les membres de l’équipe ont participé aux réunions et ont fait leur part durant l’itération.
+
+Nous avons répondu au formulaire de rétrospection que Christopher nous a envoyé.
+
+---
+
+<a name="commentPlanifier">Comment planifier une itération selon le
+processus unifié :</a>
+<https://etsmtl365-my.sharepoint.com/:w:/g/personal/christopher_fuhrman_etsmtl_ca/EWVA3MlzFHdElIMlduUvg6oBSAlrgHO7hjM2J93D1LGPSg?e=kCbXch>
+
+<a name="commentEstimer">Comment estimer la taille :</a>
+<https://etsmtl365-my.sharepoint.com/:w:/g/personal/christopher_fuhrman_etsmtl_ca/EaEe2fDK94RAkfWthKX1pr4B7KBgbD9BW4UMrzwtQzOrkg?e=XMf4IK>
