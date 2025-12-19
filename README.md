@@ -1,4 +1,4 @@
-# Jamify - Tableau Kanban Gamifié
+# Jamify - Tableau Kanban Gamifié (StudyQuest)
 
 Jamify est un widget FigJam qui transforme la gestion de projet en une expérience ludique pour les équipes étudiantes. Les étudiants peuvent suivre leurs tâches tout en gagnant des points d'expérience (XP) et en progressant dans les niveaux !
 
